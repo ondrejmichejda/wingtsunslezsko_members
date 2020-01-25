@@ -13,14 +13,9 @@ export class PageVideoComponent implements OnInit {
 
   selected;
   url = 'https://www.youtube.com/embed/tgbNymZ7vqY';
-  trustedUrl;
 
-  set login_cb(value) {
-    if (value) {
-      this.userAuthService.login('Ondrej Michejda');
-    } else {
-      this.userAuthService.logout();
-    }
+  set trustedUrl(value) {
+    this.trustedUrl = this.sanitizer.bypassSecurityTrustUrl(value);
   }
 
   constructor(private headerService: HeaderService,
