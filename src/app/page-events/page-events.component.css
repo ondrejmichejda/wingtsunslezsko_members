@@ -1,0 +1,32 @@
+mat-expansion-panel{
+}
+
+.event-name {
+    margin-top: 3px;
+}
+
+mat-icon{
+    margin-right: 10px;
+}
+
+table{
+    width: 100%;
+    border-collapse: collapse;
+}
+
+td{
+    width: 50%;
+    border-bottom: 1px solid rgba(255,255,255,.12);
+}
+
+.row-value{
+    text-align: left;
+}
+
+button{
+    float: right;
+    margin-left: 5px;
+}
+
+
+

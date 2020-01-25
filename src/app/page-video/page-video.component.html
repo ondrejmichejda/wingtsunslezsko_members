@@ -1,0 +1,17 @@
+<div class="page-container">
+    <mat-form-field>
+        <mat-label>Vyber video</mat-label>
+        <mat-select [(value)]="selected">
+            <mat-option>None</mat-option>
+            <mat-option value="https://www.youtube.com/embed/tgbNymZ7vqY">Option 1</mat-option>
+            <mat-option value="option2">Option 2</mat-option>
+            <mat-option value="option3">Option 3</mat-option>
+        </mat-select>
+    </mat-form-field>
+
+    <p>{{selected}}</p>
+
+    <iframe allowfullscreen
+            src="{{trustedUrl}}">
+    </iframe>
+</div>

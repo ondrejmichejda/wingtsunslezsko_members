@@ -1,0 +1,19 @@
+.artikl-card {
+    margin: 20px;
+    max-width: 300px;
+}
+
+mat-icon {
+    position: absolute;
+    right: 0px;
+    top: 0px;
+    margin: 10px;
+}
+
+button{
+    float: right;
+}
+
+mat-card {
+    float: left;
+}

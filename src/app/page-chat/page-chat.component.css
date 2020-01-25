@@ -1,0 +1,34 @@
+ul{
+    padding-left: 1em;
+}
+
+li{
+    overflow: auto;
+    width: 90%;
+    list-style-type: none;
+    margin-bottom: .5em;
+}
+
+#chat-box{
+    height: 50vh;
+    overflow: scroll;
+}
+
+mat-form-field{
+    margin-top: 10px;
+    float: bottom;
+    display: block;
+}
+
+textarea{
+    height: 10vh;
+    width: 100%;
+}
+
+button {
+    float: right;
+}
+
+.chat-me {
+    color: #ff428d;
+}

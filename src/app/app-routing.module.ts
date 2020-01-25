@@ -1,8 +1,49 @@
 import { NgModule } from '@angular/core';
 import { Routes, RouterModule } from '@angular/router';
+import { PageEventsComponent } from './page-events/page-events.component';
+import { PageWtlogComponent } from './page-wtlog/page-wtlog.component';
+import { PageSettingsComponent } from './page-settings/page-settings.component';
+import { PageArtiklComponent } from './page-artikl/page-artikl.component';
+import { PageChatComponent } from './page-chat/page-chat.component';
+import { PageDashboardComponent } from './page-dashboard/page-dashboard.component';
+import {PageVideoComponent} from './page-video/page-video.component';
 
 
-const routes: Routes = [];
+
+const routes: Routes = [
+  {
+    path: '',
+    component: PageDashboardComponent,
+  },
+  {
+    path: 'prehled',
+    component: PageDashboardComponent,
+  },
+  {
+    path: 'nastenka',
+    component: PageWtlogComponent,
+  },
+  {
+    path: 'udalosti',
+    component: PageEventsComponent,
+  },
+  {
+    path: 'artikl',
+    component: PageArtiklComponent,
+  },
+  {
+    path: 'chat',
+    component: PageChatComponent,
+  },
+  {
+    path: 'video',
+    component: PageVideoComponent,
+  },
+  {
+    path: 'nastaveni',
+    component: PageSettingsComponent,
+  },
+];
 
 @NgModule({
   imports: [RouterModule.forRoot(routes)],

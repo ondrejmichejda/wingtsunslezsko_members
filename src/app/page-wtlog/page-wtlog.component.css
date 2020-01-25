@@ -1,0 +1,17 @@
+.page-container{
+    margin: 20px;
+}
+
+mat-card{
+    margin-bottom: 20px;
+}
+
+mat-card-content{
+}
+
+mat-card-footer{
+    float: right;
+    font-size: .9em;
+    opacity: .5;
+    padding-right: 5px;
+}

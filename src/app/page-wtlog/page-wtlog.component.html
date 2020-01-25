@@ -1,0 +1,7 @@
+<div class="page-container">
+    <p class="hint-text">Aktuální informace ohledně tréninků, událostí a všeho co se v našich školách děje.</p>
+    <mat-card *ngFor="let log of logs">
+        <mat-card-content>{{log.Text}}</mat-card-content>
+        <mat-card-footer>{{log.Date.toLocaleDateString('cs-CZ')}}</mat-card-footer>
+    </mat-card>
+</div>

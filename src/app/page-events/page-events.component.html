@@ -1,0 +1,47 @@
+<div class="page-container">
+    <p class="hint-text">Seznam událostí, na které se můžeš přihlásit.</p>
+    <mat-accordion multi>
+        <mat-expansion-panel
+                *ngFor="let event of events">
+            <mat-expansion-panel-header>
+                <mat-panel-title>
+                    <mat-icon *ngIf="GetEventStatus(event.Id) == 2" color="primary">check_circle</mat-icon>
+                    <mat-icon *ngIf="GetEventStatus(event.Id) == 1" color="warn">error</mat-icon>
+                    <mat-icon *ngIf="GetEventStatus(event.Id) == 0" color="accent">panorama_fish_eye</mat-icon>
+                    <span class="event-name">{{ event.Datetime.toLocaleDateString('cs-CZ') + ' : ' + event.Name }}</span>
+                </mat-panel-title>
+                <mat-panel-description>
+                    {{ event.Members + '/' + event.Memberlimit }}
+                </mat-panel-description>
+            </mat-expansion-panel-header>
+
+            <table>
+                <tr><td class="row-name">Místo konání</td><td class="row-value">{{ event.Location }}</td></tr>
+                <tr><td class="row-name">Pro školu</td><td class="row-value">{{ event.School }}</td></tr>
+                <tr><td class="row-name">Cena</td><td class="row-value">{{ event.Prize }}</td></tr>
+                <tr><td class="row-name">Přihlašování do</td><td class="row-value">{{ event.DatetimeDeadline.toLocaleString('cs-CZ') }}</td></tr>
+                <tr><td class="row-name">Začátek</td><td class="row-value">{{ event.Datetime.toLocaleString('cs-CZ') }}</td></tr>
+                <tr><td class="row-name">Konec</td><td class="row-value">{{ event.DatetimeEnd.toLocaleString('cs-CZ') }}</td></tr>
+                <tr><td class="row-name">Min. účastníků</td><td class="row-value">{{ event.MemberlimitMin }}</td></tr>
+                <tr><td class="row-name">Stav</td><td class="row-value">{{GetEventStatusText(event.Id)}}</td></tr>
+            </table>
+
+            <p>{{ event.Description }}</p>
+
+            <button mat-raised-button
+                    color="primary"
+                    (click)="dataService.SetSignInUserToEvent() && (event.DatetimeDeadline > now)"
+                    [disabled]="GetEventStatus(event.Id) > 0">
+                Přihlásit
+            </button>
+
+            <button mat-raised-button
+                    color="primary"
+                    (click)="dataService.SetSignOutUserToEvent()"
+                    [disabled]="GetEventStatus(event.Id) == 0">
+                Odhlásit
+            </button>
+        </mat-expansion-panel>
+    </mat-accordion>
+</div>
+

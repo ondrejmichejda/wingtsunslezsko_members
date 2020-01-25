@@ -1,0 +1,23 @@
+mat-tab-group {
+    margin-left: 20px;
+    margin-right: 20px;
+}
+
+.settings-content {
+    padding: 20px;
+}
+
+.settings-buttons {
+    position: absolute;
+    bottom: 0px;
+    right: 0px;
+}
+
+mat-slide-toggle {
+    margin-bottom: 10px;
+}
+
+button {
+    float: right;
+    margin-left: 5px;
+}

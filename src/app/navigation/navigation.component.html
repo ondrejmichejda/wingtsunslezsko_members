@@ -1,0 +1,45 @@
+<mat-sidenav-container class="sidenav-container">
+    <mat-sidenav #drawer class="sidenav" fixedInViewport
+                 [attr.role]="(isHandset$ | async) ? 'dialog' : 'navigation'"
+                 [mode]="(isHandset$ | async) ? 'over' : 'side'"
+                 [opened]="(isHandset$ | async) === false">
+        <mat-toolbar>Menu</mat-toolbar>
+        <mat-nav-list>
+            <a mat-list-item href="prehled"><mat-icon>dashboard</mat-icon>Přehled</a>
+            <a mat-list-item href="nastenka"><mat-icon>assignment</mat-icon>Nástěnka</a>
+            <a mat-list-item href="udalosti"><mat-icon>group</mat-icon>Události</a>
+            <a mat-list-item href="artikl"><mat-icon>shopping_cart</mat-icon>Artikl</a>
+            <a mat-list-item href="chat"><mat-icon>textsms</mat-icon>Chat</a>
+            <a mat-list-item href="video"><mat-icon>live_tv</mat-icon>Video</a>
+            <a mat-list-item href="nastaveni"><mat-icon>settings_applications</mat-icon>Nastavení</a>
+
+            <ng-container *ngIf="userAuthService.isLoggedAdmin()">
+                <mat-divider></mat-divider>
+
+                <a mat-list-item href="edit">Přidat</a>
+                <a mat-list-item href="clenove">Členové</a>
+                <a mat-list-item href="chat">Chat</a>
+            </ng-container>
+        </mat-nav-list>
+    </mat-sidenav>
+    <mat-sidenav-content>
+        <mat-toolbar color="primary">
+            <button
+                    type="button"
+                    aria-label="Toggle sidenav"
+                    mat-icon-button
+                    (click)="drawer.toggle()"
+                    *ngIf="isHandset$ | async">
+                <mat-icon aria-label="Side nav toggle icon">menu</mat-icon>
+            </button>
+            <span>{{title}}</span>
+            <p><button
+                    id="logout-button"
+                    mat-button (click)="userAuthService.logout();"
+                    matTooltip="Odhlásit">
+                <mat-icon>logout</mat-icon>
+            </button></p>
+        </mat-toolbar>
+        <router-outlet></router-outlet>
+    </mat-sidenav-content>
+</mat-sidenav-container>
