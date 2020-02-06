@@ -1,8 +1,8 @@
 import {Component, OnInit, ɵbypassSanitizationTrustResourceUrl} from '@angular/core';
 import {HeaderService} from '../services/header-title-change.service';
-import { DomSanitizer } from '@angular/platform-browser';
-import {sanitizeIdentifier} from '@angular/compiler';
-import {LocalStorage} from '../enum/LocalStorage';
+import {DomSanitizer, SafeResourceUrl} from '@angular/platform-browser';
+import {DataService} from '../services/data.service';
+
 
 @Component({
   selector: 'app-page-video',
@@ -11,20 +11,32 @@ import {LocalStorage} from '../enum/LocalStorage';
 })
 export class PageVideoComponent implements OnInit {
 
-  selected;
-  url = 'https://www.youtube.com/embed/tgbNymZ7vqY';
+  videos = this.dataService.GetVideoData().Data;
+  selVideo;
 
-  set trustedUrl(value) {
-    this.trustedUrl = this.sanitizer.bypassSecurityTrustUrl(value);
+  set selectedVideoID(value: number) {
+    this.selVideo = this.videos.find(x => x.Id === value);
+    console.log(this.selVideo);
+    this.selectedVideoID = value;
   }
 
   constructor(private headerService: HeaderService,
-              private sanitizer: DomSanitizer) {
+              private sanitizer: DomSanitizer,
+              private dataService: DataService) {
+  }
+
+  videoText(id: number): string {
+    const foundVideo = this.videos.find(x => x.Id === id);
+    return foundVideo.Text;
+  }
+
+  videoURL(id: number): SafeResourceUrl {
+    const foundVideo = this.videos.find(x => x.Id === id);
+    return this.sanitizer.bypassSecurityTrustResourceUrl(foundVideo.VideoURL);
   }
 
   ngOnInit() {
     this.headerService.setTitle('Video');
-    this.trustedUrl = this.sanitizer.bypassSecurityTrustUrl(this.selected);
   }
 
 }

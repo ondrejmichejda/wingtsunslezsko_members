@@ -1,4 +1,19 @@
-import {StructArtikl, StructEvent, StructWtLog} from './DatabaseStruct';
+import {StructArtikl, StructEvent, StructWtLog, StructVideo} from './DatabaseStruct';
+
+export class DatabaseDataVideo {
+
+  public Data: Array<StructVideo> = new Array<StructVideo>();
+
+  public AddData(id: number, name: string, videoURL: string, text: string) {
+    const newData: StructVideo = new StructVideo();
+    newData.Id = id;
+    newData.Name = name;
+    newData.VideoURL = videoURL;
+    newData.Text = text;
+
+    this.Data.push(newData);
+  }
+}
 
 export class DatabaseDataWtlog {
 

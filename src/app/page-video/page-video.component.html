@@ -1,17 +1,13 @@
 <div class="page-container">
     <mat-form-field>
         <mat-label>Vyber video</mat-label>
-        <mat-select [(value)]="selected">
-            <mat-option>None</mat-option>
-            <mat-option value="https://www.youtube.com/embed/tgbNymZ7vqY">Option 1</mat-option>
-            <mat-option value="option2">Option 2</mat-option>
-            <mat-option value="option3">Option 3</mat-option>
+        <mat-select [(value)]="selectedVideoID">
+            <mat-option value="{{video.Id}}" *ngFor="let video of videos">{{video.Name}}</mat-option>
         </mat-select>
     </mat-form-field>
 
-    <p>{{selected}}</p>
+    <!--<p>{{videoText(selectedVideoID)}}</p>
 
-    <iframe allowfullscreen
-            src="{{trustedUrl}}">
-    </iframe>
+    <iframe allowfullscreen [src]="videoURL(selectedVideoID)">
+    </iframe>-->
 </div>

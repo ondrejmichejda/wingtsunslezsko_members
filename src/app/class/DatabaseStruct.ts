@@ -2,6 +2,12 @@ class DataBaseStruct {
     Id: number;
 }
 
+export class StructVideo extends DataBaseStruct {
+    Name: string;
+    VideoURL: string;
+    Text: string;
+}
+
 export class StructWtLog extends DataBaseStruct {
     Date: Date;
     Text: string;
