@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import {HeaderService} from '../services/header-title-change.service';
+import { HeaderService } from '../services/header-title-change.service';
 
 @Component({
   selector: 'app-page-dashboard',
@@ -8,10 +8,9 @@ import {HeaderService} from '../services/header-title-change.service';
 })
 export class PageDashboardComponent implements OnInit {
 
-  constructor(private headerService: HeaderService) { }
+  constructor(private headerService: HeaderService) {}
 
   ngOnInit() {
     this.headerService.setTitle('Přehled');
   }
-
 }

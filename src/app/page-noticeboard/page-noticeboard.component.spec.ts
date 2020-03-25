@@ -1,20 +1,20 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { PageWtlogComponent } from './page-wtlog.component';
+import { PageNoticeboardComponent } from './page-noticeboard.component';
 
-describe('PageWtlogComponent', () => {
-  let component: PageWtlogComponent;
-  let fixture: ComponentFixture<PageWtlogComponent>;
+describe('PageNoticeboardComponent', () => {
+  let component: PageNoticeboardComponent;
+  let fixture: ComponentFixture<PageNoticeboardComponent>;
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ PageWtlogComponent ]
+      declarations: [ PageNoticeboardComponent ]
     })
     .compileComponents();
   }));
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(PageWtlogComponent);
+    fixture = TestBed.createComponent(PageNoticeboardComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

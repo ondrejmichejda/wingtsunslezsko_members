@@ -17,7 +17,6 @@ import { MatTableModule } from '@angular/material/table';
 import { MatPaginatorModule } from '@angular/material/paginator';
 import { MatSortModule } from '@angular/material/sort';
 import { PageEventsComponent } from './page-events/page-events.component';
-import { PageWtlogComponent } from './page-wtlog/page-wtlog.component';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { PageLoginComponent } from './page-login/page-login.component';
 import { MatFormFieldModule} from '@angular/material/form-field';
@@ -42,13 +41,15 @@ import { MatTabsModule } from '@angular/material/tabs';
 import { HeaderService } from './services/header-title-change.service';
 import { PageVideoComponent } from './page-video/page-video.component';
 import { MatSelectModule } from '@angular/material/select';
+import { HttpClientModule } from '@angular/common/http';
+import { PageNoticeboardComponent } from './page-noticeboard/page-noticeboard.component';
+
 
 @NgModule({
   declarations: [
     AppComponent,
     NavigationComponent,
     PageEventsComponent,
-    PageWtlogComponent,
     PageLoginComponent,
     TestpanelComponent,
     PageSettingsComponent,
@@ -56,7 +57,8 @@ import { MatSelectModule } from '@angular/material/select';
     DialogComponent,
     PageChatComponent,
     PageDashboardComponent,
-    PageVideoComponent
+    PageVideoComponent,
+    PageNoticeboardComponent
   ],
   imports: [
     BrowserModule,
@@ -87,7 +89,9 @@ import { MatSelectModule } from '@angular/material/select';
     MatDialogModule,
     MatInputModule,
     MatTabsModule,
-    MatSelectModule
+    MatSelectModule,
+    BrowserModule,
+    HttpClientModule
   ],
   entryComponents: [DialogComponent],
   providers: [HeaderService],

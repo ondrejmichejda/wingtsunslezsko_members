@@ -28,4 +28,10 @@ h1{margin-left: 30px;}
     margin: 20px;
 }
 
+.error-text{
+  color: #f44336;
+}
 
+a{
+  color: #fff;
+}

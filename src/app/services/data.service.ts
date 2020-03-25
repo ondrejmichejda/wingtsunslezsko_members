@@ -13,23 +13,6 @@ export class DataService {
   constructor(private alertService: AlertService) {
   }
 
-  public GetWTLogData(): DatabaseDataWtlog {
-
-    // create test data
-    const testData = new DatabaseDataWtlog();
-
-    for (let i = 0; i < 3; i++) {
-      testData.AddData(i, new Date(), 'Mr oh winding it enjoyed by between. The servants securing material goodness her. ' +
-          'Saw principles themselves ten are possession. So endeavor to continue cheerful doubtful we to. Turned ' +
-          'advice the set vanity why mutual. Reasonably if conviction on be unsatiable discretion apartments' +
-          ' delightful. Are melancholy appearance stimulated occasional entreaties end. Shy ham had esteem happen' +
-          ' active county. Winding morning am shyness evident to. Garrets because elderly new manners however one' +
-          ' village she.  ' + i);
-    }
-
-    return testData;
-  }
-
   public GetVideoData(): DatabaseDataVideo {
 
     // create test data
