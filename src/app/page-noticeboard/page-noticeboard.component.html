@@ -1,5 +1,7 @@
 <div class="page-container">
   <p class="hint-text">Aktuální informace ohledně tréninků, událostí a všeho co se v našich školách děje.</p>
+
+
   <div class="error-text" *ngIf="error">{{error}}</div>
   <mat-card *ngFor="let notice of notices">
     <mat-card-content [innerHTML]="notice.text"></mat-card-content>

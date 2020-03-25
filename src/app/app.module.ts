@@ -43,6 +43,7 @@ import { PageVideoComponent } from './page-video/page-video.component';
 import { MatSelectModule } from '@angular/material/select';
 import { HttpClientModule } from '@angular/common/http';
 import { PageNoticeboardComponent } from './page-noticeboard/page-noticeboard.component';
+import { CKEditorModule } from '@ckeditor/ckeditor5-angular';
 
 
 @NgModule({
@@ -91,7 +92,8 @@ import { PageNoticeboardComponent } from './page-noticeboard/page-noticeboard.co
     MatTabsModule,
     MatSelectModule,
     BrowserModule,
-    HttpClientModule
+    HttpClientModule,
+    CKEditorModule
   ],
   entryComponents: [DialogComponent],
   providers: [HeaderService],

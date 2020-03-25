@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import {HeaderService} from '../services/header-title-change.service';
 import {HttpService} from '../services/http.service';
 import {Notice} from '../class/Notice';
+import * as ClassicEditor from '@ckeditor/ckeditor5-build-classic';
 
 @Component({
   selector: 'app-page-noticeboard',
@@ -9,6 +10,8 @@ import {Notice} from '../class/Notice';
   styleUrls: ['./page-noticeboard.component.css']
 })
 export class PageNoticeboardComponent implements OnInit {
+
+
 
   constructor(private headerService: HeaderService, private httpService: HttpService) {}
 
