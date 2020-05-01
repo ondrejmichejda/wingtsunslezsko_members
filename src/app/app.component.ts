@@ -9,7 +9,7 @@ import {UserAuthenticationService} from './services/user-authentication.service'
   styleUrls: ['./app.component.css']
 })
 export class AppComponent {
-  constructor(private router: Router, private userAuthService: UserAuthenticationService) {
+  constructor(private router: Router, public userAuthService: UserAuthenticationService) {
     this.router.events.subscribe((event: Event) => {
       if (event instanceof NavigationEnd) {
         if (!userAuthService.isLogged()) {

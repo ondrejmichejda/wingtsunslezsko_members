@@ -30,14 +30,14 @@
 
             <button mat-raised-button
                     color="primary"
-                    (click)="dataService.SetSignInUserToEvent() && (event.DatetimeDeadline > now)"
+                    (click)="dataService.SetSignInUserToEvent(1, 1) && (event.DatetimeDeadline > now)"
                     [disabled]="GetEventStatus(event.Id) > 0">
                 Přihlásit
             </button>
 
             <button mat-raised-button
                     color="primary"
-                    (click)="dataService.SetSignOutUserToEvent()"
+                    (click)="dataService.SetSignOutUserToEvent(1,1)"
                     [disabled]="GetEventStatus(event.Id) == 0">
                 Odhlásit
             </button>

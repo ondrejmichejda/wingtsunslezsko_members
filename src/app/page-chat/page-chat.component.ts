@@ -26,12 +26,12 @@ export class PageChatComponent implements OnInit, AfterViewInit {
     this.ScrollChatDown();
   }
 
-  private ScrollChatDown(): void {
+  public ScrollChatDown(): void {
     this.chatBox = document.getElementById('chat-box');
     this.chatBox.scrollTop = this.chatBox.scrollHeight;
   }
 
-  private GetClass(me: boolean): string {
+  public GetClass(me: boolean): string {
     return me ? 'chat-me' : '';
   }
 }

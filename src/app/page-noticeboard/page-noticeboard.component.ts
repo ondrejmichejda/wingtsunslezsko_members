@@ -11,7 +11,7 @@ import * as ClassicEditor from '@ckeditor/ckeditor5-build-classic';
 })
 export class PageNoticeboardComponent implements OnInit {
 
-
+  public Editor = ClassicEditor;
 
   constructor(private headerService: HeaderService, private httpService: HttpService) {}
 

@@ -13,12 +13,12 @@
         "build": {
           "builder": "@angular-devkit/build-angular:browser",
           "options": {
-            "outputPath": "/Applications/XAMPP/xamppfiles/htdocs/members",
+            "outputPath": "/Applications/XAMPP/xamppfiles/htdocs/wt/members",
             "index": "src/index.html",
             "main": "src/main.ts",
             "polyfills": "src/polyfills.ts",
             "tsConfig": "tsconfig.app.json",
-            "aot": false,
+            "aot": true,
             "assets": [
               "src/favicon.ico",
               "src/assets",
@@ -45,7 +45,6 @@
               "sourceMap": false,
               "extractCss": true,
               "namedChunks": false,
-              "aot": true,
               "extractLicenses": true,
               "vendorChunk": false,
               "buildOptimizer": true,
@@ -127,5 +126,8 @@
       }
     }
   },
-  "defaultProject": "members"
+  "defaultProject": "members",
+  "cli": {
+    "analytics": "768a50e2-2c7d-4859-97f7-c0aba3b96a3a"
+  }
 }

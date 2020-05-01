@@ -13,11 +13,11 @@ export class PageEventsComponent implements OnInit {
   user = this.dataService.GetUserData();
   now = new Date();
 
-  constructor(private dataService: DataService,
-              private headerService: HeaderService) {
+  constructor(public dataService: DataService,
+              public headerService: HeaderService) {
   }
 
-  private GetEventStatus(eventId: number): number {
+  public GetEventStatus(eventId: number): number {
     let status = 0; // not signed event
 
     if (this.user.confirmedEvents.indexOf(eventId) > -1) {
@@ -29,7 +29,7 @@ export class PageEventsComponent implements OnInit {
     return status;
   }
 
-  private GetEventStatusText(eventId: number): string {
+  public GetEventStatusText(eventId: number): string {
     return EventState[this.GetEventStatus(eventId)];
   }
 

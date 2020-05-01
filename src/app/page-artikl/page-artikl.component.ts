@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { DataService } from '../services/data.service';
-import { MatDialog } from '@angular/material';
+import { MatDialog } from '@angular/material/dialog';
 import { DialogComponent } from '../dialog/dialog.component';
 import {HeaderService} from '../services/header-title-change.service';
 
@@ -14,11 +14,11 @@ export class PageArtiklComponent implements OnInit {
   artikls = this.dataService.GetArtiklData().Data;
   user = this.dataService.GetUserData();
 
-  constructor(private dataService: DataService,
+  constructor(public dataService: DataService,
               private dialog: MatDialog,
               private headerService: HeaderService) { }
 
-  private GetArtiklState(artiklId: number): number {
+  public GetArtiklState(artiklId: number): number {
     let status = 0; // not ordered
 
     if (this.user.confirmedArtikls.indexOf(artiklId) > -1) {
@@ -28,7 +28,7 @@ export class PageArtiklComponent implements OnInit {
     return status;
   }
 
-  private GetArtiklStateText(artiklId: number): string {
+  public GetArtiklStateText(artiklId: number): string {
     return ArtiklState[this.GetArtiklState(artiklId)];
   }
 

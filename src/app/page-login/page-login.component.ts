@@ -12,7 +12,7 @@ export class PageLoginComponent implements OnInit {
   hide = true;
 
   constructor(private formBuilder: FormBuilder,
-              private userAuthService: UserAuthenticationService) { }
+              public userAuthService: UserAuthenticationService) { }
 
   ngOnInit() {
   }

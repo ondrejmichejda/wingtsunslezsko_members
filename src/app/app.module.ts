@@ -25,7 +25,6 @@ import { TestpanelComponent } from './testpanel/testpanel.component';
 import { MatDividerModule } from '@angular/material/divider';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { MatCheckboxModule } from '@angular/material/checkbox';
-import { PageSettingsComponent } from './page-settings/page-settings.component';
 import { MatRadioModule } from '@angular/material/radio';
 import { MatCardModule } from '@angular/material/card';
 import { MatTooltipModule } from '@angular/material/tooltip';
@@ -34,7 +33,7 @@ import { MatMenuModule } from '@angular/material/menu';
 import { PageArtiklComponent } from './page-artikl/page-artikl.component';
 import { MatDialogModule } from '@angular/material/dialog';
 import { DialogComponent } from './dialog/dialog.component';
-import { MatInputModule } from '@angular/material';
+import { MatInputModule } from '@angular/material/input';
 import { PageChatComponent } from './page-chat/page-chat.component';
 import { PageDashboardComponent } from './page-dashboard/page-dashboard.component';
 import { MatTabsModule } from '@angular/material/tabs';
@@ -53,7 +52,6 @@ import { CKEditorModule } from '@ckeditor/ckeditor5-angular';
     PageEventsComponent,
     PageLoginComponent,
     TestpanelComponent,
-    PageSettingsComponent,
     PageArtiklComponent,
     DialogComponent,
     PageChatComponent,

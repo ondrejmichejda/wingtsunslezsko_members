@@ -17,7 +17,7 @@ export class NavigationComponent implements OnInit {
   title = '';
 
   constructor(private breakpointObserver: BreakpointObserver,
-              private userAuthService: UserAuthenticationService,
+              public userAuthService: UserAuthenticationService,
               private menuService: MenuService,
               private headerService: HeaderService) {
   }
