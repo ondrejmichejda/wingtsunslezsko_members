@@ -21,9 +21,10 @@ export class HttpService {
 
   getNotices(): Observable<Notice[]> {
     let notices: Notice[];
+    const data = 'data';
     return this.http.get(`${this.baseUrl}noticeboard_get.php`).pipe(
       map((res) => {
-        notices = res['data'];
+        notices = res[data];
         return notices;
       }), catchError(this.handleError));
   }

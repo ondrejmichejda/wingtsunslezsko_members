@@ -13,7 +13,7 @@
         "build": {
           "builder": "@angular-devkit/build-angular:browser",
           "options": {
-            "outputPath": "/Applications/XAMPP/xamppfiles/htdocs/wt/members",
+            "outputPath": "/Applications/XAMPP/xamppfiles/htdocs/members",
             "index": "src/index.html",
             "main": "src/main.ts",
             "polyfills": "src/polyfills.ts",

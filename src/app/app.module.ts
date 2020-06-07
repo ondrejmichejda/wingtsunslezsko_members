@@ -42,7 +42,7 @@ import { PageVideoComponent } from './page-video/page-video.component';
 import { MatSelectModule } from '@angular/material/select';
 import { HttpClientModule } from '@angular/common/http';
 import { PageNoticeboardComponent } from './page-noticeboard/page-noticeboard.component';
-import { CKEditorModule } from '@ckeditor/ckeditor5-angular';
+import { FrameAdminComponent } from './frame-admin/frame-admin.component';
 
 
 @NgModule({
@@ -57,7 +57,8 @@ import { CKEditorModule } from '@ckeditor/ckeditor5-angular';
     PageChatComponent,
     PageDashboardComponent,
     PageVideoComponent,
-    PageNoticeboardComponent
+    PageNoticeboardComponent,
+    FrameAdminComponent
   ],
   imports: [
     BrowserModule,
@@ -90,8 +91,7 @@ import { CKEditorModule } from '@ckeditor/ckeditor5-angular';
     MatTabsModule,
     MatSelectModule,
     BrowserModule,
-    HttpClientModule,
-    CKEditorModule
+    HttpClientModule
   ],
   entryComponents: [DialogComponent],
   providers: [HeaderService],

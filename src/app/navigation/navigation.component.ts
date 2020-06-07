@@ -4,7 +4,7 @@ import { Observable } from 'rxjs';
 import { map, shareReplay } from 'rxjs/operators';
 import { UserAuthenticationService } from '../services/user-authentication.service';
 import { MenuService } from '../services/menu.service';
-import {HeaderService} from '../services/header-title-change.service';
+import { HeaderService } from '../services/header-title-change.service';
 
 
 @Component({
