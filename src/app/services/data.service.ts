@@ -3,7 +3,7 @@ import {DatabaseDataArtikls, DatabaseDataEvents, DatabaseDataVideo, DatabaseData
 import { User } from '../class/User';
 import { AlertService } from './alert.service';
 import { AlertTexts } from '../enum/AlertTexts';
-import {UserChat} from '../class/UserChat';
+import { UserChat } from '../class/UserChat';
 
 @Injectable({
   providedIn: 'root'
@@ -13,6 +13,7 @@ export class DataService {
   constructor(private alertService: AlertService) {
   }
 
+  /* old */
   public GetVideoData(): DatabaseDataVideo {
 
     // create test data

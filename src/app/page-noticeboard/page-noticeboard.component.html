@@ -1,12 +1,10 @@
 <div class="page-container">
   <p class="hint-text">Aktuální informace ohledně tréninků, událostí a všeho co se v našich školách děje.</p>
 
-  <app-frame-admin *ngIf="true"></app-frame-admin>
-
   <div class="error-text" *ngIf="error">{{error}}</div>
   <mat-card *ngFor="let notice of notices">
     <mat-card-content [innerHTML]="notice.text"></mat-card-content>
-    <mat-card-footer>Datum?</mat-card-footer>
+    <mat-card-footer [innerHTML]="notice.datetime"></mat-card-footer>
   </mat-card>
 
 </div>

@@ -42,7 +42,6 @@ import { PageVideoComponent } from './page-video/page-video.component';
 import { MatSelectModule } from '@angular/material/select';
 import { HttpClientModule } from '@angular/common/http';
 import { PageNoticeboardComponent } from './page-noticeboard/page-noticeboard.component';
-import { FrameAdminComponent } from './frame-admin/frame-admin.component';
 
 
 @NgModule({
@@ -57,8 +56,7 @@ import { FrameAdminComponent } from './frame-admin/frame-admin.component';
     PageChatComponent,
     PageDashboardComponent,
     PageVideoComponent,
-    PageNoticeboardComponent,
-    FrameAdminComponent
+    PageNoticeboardComponent
   ],
   imports: [
     BrowserModule,
