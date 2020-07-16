@@ -1,6 +1,7 @@
 import {Component, OnInit} from '@angular/core';
-import { DataService } from '../services/data.service';
 import {HeaderService} from '../services/header-title-change.service';
+import {HttpService} from '../services/http.service';
+import {WTEvent} from '../class/WTEvent';
 
 @Component({
   selector: 'app-page-events',
@@ -9,15 +10,16 @@ import {HeaderService} from '../services/header-title-change.service';
 })
 export class PageEventsComponent implements OnInit {
 
-  events = this.dataService.GetEventData().Data;
-  user = this.dataService.GetUserData();
   now = new Date();
+  events: WTEvent[];
+  error = '';
 
-  constructor(public dataService: DataService,
-              public headerService: HeaderService) {
+  constructor(private headerService: HeaderService,
+              private httpService: HttpService) {
+    this.headerService.setTitle('Události');
   }
 
-  public GetEventStatus(eventId: number): number {
+  /*public GetEventStatus(eventId: number): number {
     let status = 0; // not signed event
 
     if (this.user.confirmedEvents.indexOf(eventId) > -1) {
@@ -31,10 +33,26 @@ export class PageEventsComponent implements OnInit {
 
   public GetEventStatusText(eventId: number): string {
     return EventState[this.GetEventStatus(eventId)];
-  }
+  }*/
 
   ngOnInit() {
-    this.headerService.setTitle('Události');
+    this.getEvents();
+  }
+
+  getEvents(): void {
+    this.httpService.getEvents().subscribe(
+      (res: WTEvent[]) => {
+        this.events = res;
+        console.log(res);
+      },
+      (err) => {
+        this.error = err;
+      }
+    );
+  }
+
+  public signIn(){
+    throw new Error('Not implemented.');
   }
 
 }

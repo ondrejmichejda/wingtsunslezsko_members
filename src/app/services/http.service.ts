@@ -2,7 +2,8 @@ import { Injectable } from '@angular/core';
 import { HttpClient, HttpErrorResponse, HttpParams } from '@angular/common/http';
 import { Observable, throwError } from 'rxjs';
 import { map, catchError } from 'rxjs/operators';
-import { Notice } from '../class/Notice';
+import { WTNotice } from '../class/WTNotice';
+import {WTEvent} from '../class/WTEvent';
 
 @Injectable({
   providedIn: 'root'
@@ -19,13 +20,29 @@ export class HttpService {
     return throwError('Error! Něco se pokazilo.');
   }
 
-  getNotices(): Observable<Notice[]> {
-    let notices: Notice[];
+  /**
+   * Get notices from db.
+   */
+  getNotices(): Observable<WTNotice[]> {
+    let notices: WTNotice[];
     const data = 'data';
     return this.http.get(`${this.baseUrl}noticeboard_get.php`).pipe(
       map((res) => {
         notices = res[data];
         return notices;
+      }), catchError(this.handleError));
+  }
+
+  /**
+   * Get events from db.
+   */
+  getEvents(): Observable<WTEvent[]> {
+    let events: WTEvent[];
+    const data = 'data';
+    return this.http.get(`${this.baseUrl}events_get.php`).pipe(
+      map((res) => {
+        events = res[data];
+        return events;
       }), catchError(this.handleError));
   }
 }

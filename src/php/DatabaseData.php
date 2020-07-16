@@ -6,14 +6,30 @@ interface IDatabaseData
 
 abstract class DatabaseData implements IDatabaseData
 {
-  protected $connection = null;
   private $configPath = "../../../config/database.json";
   private $config = null;
+
+  protected $connection = null;
+  protected $schoolDictionary = array(
+    0 => "Vše",
+    1 => "Ostrava",
+    2 => "Třinec",
+    3 => "Český Těšín"
+  );
 
   function __construct()
   {
     if($this->ConfigInit())
       $this->Connect();
+  }
+
+  protected function GetDatabaseDT($db_datetime, $date_only = false)
+  {
+    $date = DateTime::createFromFormat('Y-m-d H:i:s',$db_datetime);
+    if ($date_only)
+      return date_format($date, 'd.m.Y');
+    else
+      return date_format($date, 'd.m.Y - H:i');
   }
 
   /*Requires config file in json format
@@ -60,31 +76,62 @@ abstract class DatabaseData implements IDatabaseData
 
 class Notice extends DatabaseData
 {
-
   public function GetData()
   {
-    $con = $this->connection;
-
-    $notices = [];
+    $data = [];
     $sql = "SELECT * FROM in_noticeboard ORDER BY id DESC";
 
-    if($result = mysqli_query($con,$sql))
+    if($result = mysqli_query($this->connection,$sql))
     {
       $cr = 0;
       while($row = mysqli_fetch_assoc($result))
       {
-        $notices[$cr]['id']    = $row['id'];
-
-        $date = DateTime::createFromFormat('Y-m-d H:i:s',$row['datetime']);
-        $notices[$cr]['datetime'] = date_format($date, 'd.m.Y');;
-
-        $notices[$cr]['school'] = $row['school'];
-        $notices[$cr]['text'] = $row['text'];
-        $notices[$cr]['color'] = $row['color'];
+        $data[$cr]['id']    = $row['id'];
+        $data[$cr]['datetime'] = $row['datetime'];
+        $data[$cr]['school'] = $row['school'];
+        $data[$cr]['text'] = $row['text'];
+        $data[$cr]['color'] = $row['color'];
         $cr++;
       }
 
-      echo json_encode(['data'=>$notices]);
+      echo json_encode(['data'=>$data]);
+    }
+    else
+    {
+      http_response_code(404);
+    }
+  }
+}
+
+class Event extends DatabaseData
+{
+  public function GetData()
+  {
+    $data = [];
+    $sql = "SELECT * FROM in_events ORDER BY datetime_start ASC";
+
+    if($result = mysqli_query($this->connection,$sql))
+    {
+      $cr = 0;
+      while($row = mysqli_fetch_assoc($result))
+      {
+        $data[$cr]['id'] = $row['id'];
+        $data[$cr]['datetime'] = $row['datetime'];
+        $data[$cr]['name'] = $row['name'];
+        $data[$cr]['school'] = $this->schoolDictionary[$row['school']];
+        $data[$cr]['location'] = $row['location'];
+        $data[$cr]['prize'] = $row['prize'];
+        $data[$cr]['description'] = $row['description'];
+        $data[$cr]['memberlimit'] = $row['memberlimit'];
+        $data[$cr]['memberlimitMin'] = $row['memberlimit_min'];
+        $data[$cr]['members'] = $row['members'];
+        $data[$cr]['datetimeStart'] = $row['datetime_start'];
+        $data[$cr]['datetimeDeadline'] = $row['datetime_deadline'];
+        $data[$cr]['datetimeEnd'] = $row['datetime_end'];
+        $cr++;
+      }
+
+      echo json_encode(['data'=>$data]);
     }
     else
     {

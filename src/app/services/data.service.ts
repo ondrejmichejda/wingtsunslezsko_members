@@ -4,13 +4,14 @@ import { User } from '../class/User';
 import { AlertService } from './alert.service';
 import { AlertTexts } from '../enum/AlertTexts';
 import { UserChat } from '../class/UserChat';
+import {HttpService} from './http.service';
 
 @Injectable({
   providedIn: 'root'
 })
 export class DataService {
 
-  constructor(private alertService: AlertService) {
+  constructor(private alertService: AlertService, private httpService: HttpService) {
   }
 
   /* old */
@@ -28,38 +29,6 @@ export class DataService {
         ' active county. Winding morning am shyness evident to. Garrets because elderly new manners however one' +
         ' village she.  ' + i);
     }
-
-    return testData;
-  }
-
-  public GetEventData(): DatabaseDataEvents {
-
-    // create test data
-    const testData = new DatabaseDataEvents();
-    const testDesc = 'Mr oh winding it enjoyed by between. The servants securing material goodness her. ' +
-        'Saw principles themselves ten are possession. So endeavor to continue cheerful doubtful we to. Turned ' +
-        'advice the set vanity why mutual. Reasonably if conviction on be unsatiable discretion apartments' +
-        ' delightful. Are melancholy appearance stimulated occasional entreaties end. Shy ham had esteem happen' +
-        ' active county. Winding morning am shyness evident to. Garrets because elderly new manners however one' +
-        ' village she.  ';
-    const date1: Date = new Date();
-    date1.setFullYear(2020, 1, 31);
-    const date2: Date = new Date();
-    date2.setFullYear(2020, 1, 31);
-    const date3: Date = new Date();
-    date3.setFullYear(2020, 1, 31);
-
-    const dl1: Date = new Date();
-    dl1.setFullYear(2020, 1, 1);
-    const dl2: Date = new Date();
-    dl2.setFullYear(2020, 1, 1);
-    const dl3: Date = new Date();
-    dl3.setFullYear(2020, 1, 20);
-
-
-    testData.AddData(0, 'Udalost 0', 0, 'Ostrava', '500 Kc', testDesc, 20, 10, 19, 11, date1, dl1, date1);
-    testData.AddData(1, 'Udalost 1', 1, 'Ostrava', '500 Kc', testDesc, 20, 10, 9, 11, date2, dl2, date2);
-    testData.AddData(2, 'Udalost 2', 2, 'Ostrava', '500 Kc', testDesc, 20, 10, 19, 11, date3, dl3, date3);
 
     return testData;
   }

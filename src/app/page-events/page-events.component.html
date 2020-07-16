@@ -1,46 +1,48 @@
 <div class="page-container">
     <p class="hint-text">Seznam událostí, na které se můžeš přihlásit.</p>
+    <div class="error-text" *ngIf="error">{{error}}</div>
     <mat-accordion multi>
-        <mat-expansion-panel
-                *ngFor="let event of events">
+        <mat-expansion-panel *ngFor="let event of events">
             <mat-expansion-panel-header>
                 <mat-panel-title>
-                    <mat-icon *ngIf="GetEventStatus(event.Id) == 2" color="primary">check_circle</mat-icon>
-                    <mat-icon *ngIf="GetEventStatus(event.Id) == 1" color="warn">error</mat-icon>
-                    <mat-icon *ngIf="GetEventStatus(event.Id) == 0" color="accent">panorama_fish_eye</mat-icon>
-                    <span class="event-name">{{ event.Datetime.toLocaleDateString('cs-CZ') + ' : ' + event.Name }}</span>
+                    <mat-icon *ngIf="false" color="primary">check_circle</mat-icon>
+                    <mat-icon *ngIf="true"  color="warn">error</mat-icon>
+                    <mat-icon *ngIf="false" color="accent">panorama_fish_eye</mat-icon>
+                    <span class="event-name">{{ event.datetimeStart + ' : ' + event.name }}</span>
                 </mat-panel-title>
                 <mat-panel-description>
-                    {{ event.Members + '/' + event.Memberlimit }}
+                    {{ event.members + '/' + event.memberlimit }}
                 </mat-panel-description>
             </mat-expansion-panel-header>
 
+          <ng-template matExpansionPanelContent>
             <table>
-                <tr><td class="row-name">Místo konání</td><td class="row-value">{{ event.Location }}</td></tr>
-                <tr><td class="row-name">Pro školu</td><td class="row-value">{{ event.School }}</td></tr>
-                <tr><td class="row-name">Cena</td><td class="row-value">{{ event.Prize }}</td></tr>
-                <tr><td class="row-name">Přihlašování do</td><td class="row-value">{{ event.DatetimeDeadline.toLocaleString('cs-CZ') }}</td></tr>
-                <tr><td class="row-name">Začátek</td><td class="row-value">{{ event.Datetime.toLocaleString('cs-CZ') }}</td></tr>
-                <tr><td class="row-name">Konec</td><td class="row-value">{{ event.DatetimeEnd.toLocaleString('cs-CZ') }}</td></tr>
-                <tr><td class="row-name">Min. účastníků</td><td class="row-value">{{ event.MemberlimitMin }}</td></tr>
-                <tr><td class="row-name">Stav</td><td class="row-value">{{GetEventStatusText(event.Id)}}</td></tr>
+                <tr><td class="row-name">Místo konání</td><td class="row-value">{{ event.location }}</td></tr>
+                <tr><td class="row-name">Pro školu</td><td class="row-value">{{ event.school }}</td></tr>
+                <tr><td class="row-name">Cena</td><td class="row-value">{{ event.prize }}</td></tr>
+                <tr><td class="row-name">Přihlašování do</td><td class="row-value">{{ event.datetimeDeadline }}</td></tr>
+                <tr><td class="row-name">Začátek</td><td class="row-value">{{ event.datetimeStart }}</td></tr>
+                <tr><td class="row-name">Konec</td><td class="row-value">{{ event.datetimeEnd }}</td></tr>
+                <tr><td class="row-name">Min. účastníků</td><td class="row-value">{{ event.memberlimitMin }}</td></tr>
+                <tr><td class="row-name">Stav</td><td class="row-value">{{"nutno doplnit"}}</td></tr>
             </table>
 
-            <p>{{ event.Description }}</p>
+            <p>{{ event.description }}</p>
 
             <button mat-raised-button
                     color="primary"
-                    (click)="dataService.SetSignInUserToEvent(1, 1) && (event.DatetimeDeadline > now)"
-                    [disabled]="GetEventStatus(event.Id) > 0">
+                    (click)="this.signIn()"
+                    [disabled]="true">
                 Přihlásit
             </button>
 
             <button mat-raised-button
                     color="primary"
-                    (click)="dataService.SetSignOutUserToEvent(1,1)"
-                    [disabled]="GetEventStatus(event.Id) == 0">
+                    (click)="this.signIn()"
+                    [disabled]="false">
                 Odhlásit
             </button>
+          </ng-template>
         </mat-expansion-panel>
     </mat-accordion>
 </div>
