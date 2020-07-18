@@ -43,7 +43,6 @@ export class PageEventsComponent implements OnInit {
     this.httpService.getEvents().subscribe(
       (res: WTEvent[]) => {
         this.events = res;
-        console.log(res);
       },
       (err) => {
         this.error = err;

@@ -1,5 +1,4 @@
-import { Component, OnInit } from '@angular/core';
-import { FormBuilder } from '@angular/forms';
+import {Component, OnInit, ViewChild} from '@angular/core';
 import { UserAuthenticationService } from '../services/user-authentication.service';
 
 @Component({
@@ -9,12 +8,17 @@ import { UserAuthenticationService } from '../services/user-authentication.servi
 })
 export class PageLoginComponent implements OnInit {
 
-  hide = true;
+  pwdHide = true;
+  formLogin = '';
+  formPwd = '';
 
-  constructor(private formBuilder: FormBuilder,
-              public userAuthService: UserAuthenticationService) { }
+  constructor(private userAuthService: UserAuthenticationService) {
+  }
 
   ngOnInit() {
   }
 
+  public _buttonClicked() {
+    this.userAuthService.login(this.formLogin);
+  }
 }

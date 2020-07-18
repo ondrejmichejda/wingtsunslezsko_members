@@ -3,7 +3,8 @@ import { HttpClient, HttpErrorResponse, HttpParams } from '@angular/common/http'
 import { Observable, throwError } from 'rxjs';
 import { map, catchError } from 'rxjs/operators';
 import { WTNotice } from '../class/WTNotice';
-import {WTEvent} from '../class/WTEvent';
+import { WTEvent } from '../class/WTEvent';
+import { WTMember } from '../class/WTMember';
 
 @Injectable({
   providedIn: 'root'
@@ -18,6 +19,19 @@ export class HttpService {
 
     // return an observable with a user friendly message
     return throwError('Error! Něco se pokazilo.');
+  }
+
+  /**
+   * Verify user login.
+   */
+  getMember(login: string): Observable<WTMember[]> {
+    let member: WTMember[];
+    const data = 'data';
+    return this.http.get(`${this.baseUrl}member_get.php?login=`+login).pipe(
+      map((res) => {
+        member = res[data];
+        return member;
+      }), catchError(this.handleError));
   }
 
   /**

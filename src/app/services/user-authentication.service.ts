@@ -1,17 +1,26 @@
-import { Injectable } from '@angular/core';
+import {Injectable} from '@angular/core';
 import {isNull} from 'util';
 import {Router} from '@angular/router';
 import {AlertService} from './alert.service';
-import { AlertTexts } from '../enum/AlertTexts';
+import {AlertTexts} from '../enum/AlertTexts';
 import {LocalStorage} from '../enum/LocalStorage';
+import {WTMember} from '../class/WTMember';
+import {HttpService} from './http.service';
+import {SnackType} from '../enum/SnackType';
+import {DatastorageService} from './datastorage.service';
 
 @Injectable({
   providedIn: 'root'
 })
 export class UserAuthenticationService {
 
+  Member: WTMember;
+
   constructor(private router: Router,
-              private alertService: AlertService) {
+              private alertService: AlertService,
+              private httpService: HttpService,
+              private dataStorage: DatastorageService) {
+
     if (localStorage.getItem(LocalStorage.user) === isNull) {
       localStorage.setItem(LocalStorage.user, '0');
     }
@@ -21,14 +30,23 @@ export class UserAuthenticationService {
     }
   }
 
-  private setUserName(name: string): void {
-    localStorage.setItem(LocalStorage.userName, name);
-  }
-
-  login(name: string): void {
-    localStorage.setItem(LocalStorage.user, '1');
-    this.setUserName(name);
-    this.systemAlert(AlertTexts.log_in);
+  login(login: string): void {
+    let _member: WTMember;
+    this.httpService.getMember(login).subscribe(
+      (res: WTMember[]) => {
+        _member = res[0];
+        // Logging in by setting up this.Member
+        if(_member === undefined){
+          this.alertService.alert(AlertTexts.log_in_failed, SnackType.error);
+        }
+        else{
+          this.dataStorage.Member = _member;
+        }
+      },
+      (err) => {
+        this.alertService.alert(AlertTexts.log_in_failed, SnackType.error);
+      }
+    );
   }
 
   loginAdmin() {
@@ -38,7 +56,7 @@ export class UserAuthenticationService {
   logout(): void {
     localStorage.setItem(LocalStorage.user, '0');
     this.router.navigate(['']);
-    this.systemAlert(AlertTexts.log_out);
+    this.alertService.alert(AlertTexts.log_out);
   }
 
   logoutAdmin(): void {
@@ -46,7 +64,7 @@ export class UserAuthenticationService {
   }
 
   isLogged(): boolean {
-    return localStorage.getItem(LocalStorage.user) === '1' ? true : false;
+    return this.dataStorage.Member !== null;
   }
 
   loggedUser(): string {
@@ -57,7 +75,8 @@ export class UserAuthenticationService {
     return localStorage.getItem(LocalStorage.admin) === '1' ? true : false;
   }
 
-  private systemAlert(msg: string): void {
-    this.alertService.alert(msg);
+  private setUserName(name: string): void {
+    localStorage.setItem(LocalStorage.userName, name);
   }
+
 }

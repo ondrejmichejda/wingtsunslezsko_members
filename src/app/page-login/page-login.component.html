@@ -1,32 +1,20 @@
-
-<!--form [formGroup]="loginForm" (ngSubmit)="userAuthService.login('Ondra')">
-    <label for="login_name">
-        Login: <input id="login_name" type="text" required formControlName="login_name">
-    </label>
-    <label for="login_pwd">
-        Heslo: <input id="login_pwd" type="password" required formControlName="login_pwd">
-    </label>
-    <button type="submit" [disabled]="!loginForm.valid" mat-raised-button>Přihlásit</button>
-</form>-->
-
 <mat-card>
 
     <mat-card-title>Členská sekce</mat-card-title>
     <mat-card-subtitle>Přihlášení</mat-card-subtitle>
 
     <mat-form-field>
-        <input matInput placeholder="Login">
+        <input matInput placeholder="Login" [(ngModel)]="formLogin">
     </mat-form-field>
 
     <mat-form-field>
-        <input matInput placeholder="Heslo" [type]="hide ? 'password' : 'text'">
-        <button mat-icon-button matSuffix (click)="hide = !hide">
-            <mat-icon>{{hide ? 'visibility_off' : 'visibility'}}</mat-icon>
+        <input matInput placeholder="Heslo" [type]="pwdHide ? 'password' : 'text'" [(ngModel)]="formPwd">
+        <button mat-icon-button matSuffix (click)="pwdHide = !pwdHide">
+            <mat-icon>{{pwdHide ? 'visibility_off' : 'visibility'}}</mat-icon>
         </button>
     </mat-form-field>
 
-    <button (click)="userAuthService.login('Ondra')"
+    <button (click)="_buttonClicked()"
             mat-raised-button
             color="primary">Přihlásit</button>
-
 </mat-card>

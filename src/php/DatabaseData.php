@@ -139,3 +139,39 @@ class Event extends DatabaseData
     }
   }
 }
+
+class Member extends DatabaseData
+{
+  public function GetData(){
+    //Not implemented
+  }
+
+  public function GetOne($login)
+  {
+    $data = [];
+    $sql = "SELECT * FROM in_members WHERE login = '".$login."'";
+
+    if($result = mysqli_query($this->connection,$sql))
+    {
+      $cr = 0;
+      while($row = mysqli_fetch_assoc($result))
+      {
+        $data[$cr]['id'] = $row['id'];
+        $data[$cr]['login'] = $row['login'];
+        $data[$cr]['pwd'] = $row['pwd'];
+        $data[$cr]['name'] = $row['name'];
+        $data[$cr]['surname'] = $row['surname'];
+        $data[$cr]['school'] = $this->schoolDictionary[$row['school']];
+        $data[$cr]['news'] = $row['news'];
+        $data[$cr]['admin'] = $row['admin'];
+        $cr++;
+      }
+
+      echo json_encode(['data'=>$data]);
+    }
+    else
+    {
+      http_response_code(404);
+    }
+  }
+}
