@@ -140,13 +140,56 @@ class Event extends DatabaseData
   }
 }
 
+class EventRegistration extends DatabaseData
+{
+  public function GetData(){
+    new ErrorException('Not implemented');
+  }
+
+  public function GetDataBy($id, $byMember)
+  {
+    $data = [];
+
+    if($byMember){
+      $sql = "SELECT * FROM in_events_registrations WHERE user_id='".$id."'";
+    }else{
+      $sql = "SELECT * FROM in_events_registrations WHERE event_id='".$id."'";
+    }
+
+
+    if($result = mysqli_query($this->connection,$sql))
+    {
+      $cr = 0;
+      while($row = mysqli_fetch_assoc($result))
+      {
+        $data[$cr]['id'] = $row['id'];
+        $data[$cr]['datetime'] = $row['datetime'];
+        $data[$cr]['eventId'] = $row['event_id'];
+        $data[$cr]['userId'] = $row['user_id'];
+        $data[$cr]['confirmed'] = $row['confirmed'];
+        $data[$cr]['notpresent'] = $row['notpresent'];
+        $data[$cr]['guest'] = $row['guest'];
+        $data[$cr]['guestName'] = $row['guest_name'];
+        $data[$cr]['guestSurname'] = $row['guest_surname'];
+        $cr++;
+      }
+
+      echo json_encode(['data'=>$data]);
+    }
+    else
+    {
+      http_response_code(404);
+    }
+  }
+}
+
 class Member extends DatabaseData
 {
   public function GetData(){
     //Not implemented
   }
 
-  public function GetOne($login)
+  public function GetOne($login, $password)
   {
     $data = [];
     $sql = "SELECT * FROM in_members WHERE login = '".$login."'";
@@ -167,7 +210,13 @@ class Member extends DatabaseData
         $cr++;
       }
 
-      echo json_encode(['data'=>$data]);
+      if(password_verify($password, $data[0]['pwd'])){
+        echo json_encode(['data'=>$data]);
+      }
+      else
+      {
+        http_response_code(404);
+      }
     }
     else
     {

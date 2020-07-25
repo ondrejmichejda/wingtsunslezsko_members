@@ -3,6 +3,11 @@ mat-expansion-panel{
 
 .event-name {
     margin-top: 3px;
+    width: 100%;
+}
+
+.event-members {
+  margin-top: 3px;
 }
 
 mat-icon{
@@ -26,6 +31,10 @@ td{
 button{
     float: right;
     margin-left: 5px;
+}
+
+.datetime{
+  width: 20px;
 }
 
 

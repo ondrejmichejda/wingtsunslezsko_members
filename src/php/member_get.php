@@ -1,4 +1,4 @@
 <?php
 require('DatabaseData.php');
 $member = new Member();
-$member->GetOne($_GET['login']);
+$member->GetOne($_GET['login'], $_GET['p']);

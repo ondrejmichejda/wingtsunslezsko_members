@@ -14,8 +14,6 @@ import {DatastorageService} from './datastorage.service';
 })
 export class UserAuthenticationService {
 
-  Member: WTMember;
-
   constructor(private router: Router,
               private alertService: AlertService,
               private httpService: HttpService,
@@ -30,17 +28,17 @@ export class UserAuthenticationService {
     }
   }
 
-  login(login: string): void {
+  login(login: string, password: string): void {
     let _member: WTMember;
-    this.httpService.getMember(login).subscribe(
+    this.httpService.getMember(login, password).subscribe(
       (res: WTMember[]) => {
         _member = res[0];
-        // Logging in by setting up this.Member
         if(_member === undefined){
           this.alertService.alert(AlertTexts.log_in_failed, SnackType.error);
         }
         else{
           this.dataStorage.Member = _member;
+          this.alertService.alert(AlertTexts.log_in, SnackType.info);
         }
       },
       (err) => {
@@ -54,8 +52,7 @@ export class UserAuthenticationService {
   }
 
   logout(): void {
-    localStorage.setItem(LocalStorage.user, '0');
-    this.router.navigate(['']);
+    this.dataStorage.Member = null;
     this.alertService.alert(AlertTexts.log_out);
   }
 
@@ -77,6 +74,12 @@ export class UserAuthenticationService {
 
   private setUserName(name: string): void {
     localStorage.setItem(LocalStorage.userName, name);
+  }
+
+  private _cryptPassword(password: string, hash: string): boolean{
+    let match: boolean;
+
+    return match;
   }
 
 }

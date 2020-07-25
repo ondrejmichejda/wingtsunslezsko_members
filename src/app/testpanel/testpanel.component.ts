@@ -11,7 +11,7 @@ export class TestpanelComponent implements OnInit {
 
   set login_cb(value) {
     if (value) {
-      this.userAuthService.login('Ondrej Michejda');
+      // this.userAuthService.login('Ondrej Michejda');
     } else {
       this.userAuthService.logout();
     }

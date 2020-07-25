@@ -19,6 +19,6 @@ export class PageLoginComponent implements OnInit {
   }
 
   public _buttonClicked() {
-    this.userAuthService.login(this.formLogin);
+    this.userAuthService.login(this.formLogin, this.formPwd);
   }
 }
