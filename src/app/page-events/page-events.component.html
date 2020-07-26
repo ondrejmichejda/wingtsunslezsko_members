@@ -2,7 +2,7 @@
     <p class="hint-text">Seznam událostí, na které se můžeš přihlásit.</p>
     <div class="error-text" *ngIf="error">{{error}}</div>
     <mat-accordion multi>
-        <mat-expansion-panel #thispanel hideToggle *ngFor="let event of events">
+        <mat-expansion-panel #thispanel hideToggle *ngFor="let event of events; trackBy: identifyer">
             <mat-expansion-panel-header>
                 <mat-panel-title class="datetime">
                     <mat-icon *ngIf="true" [color]="getRegStatus(event).Color">{{getRegStatus(event).Icon}}</mat-icon>
@@ -14,7 +14,6 @@
             <p></p>
             <table>
                 <tr><td class="row-name">Místo konání</td><td class="row-value">{{ event.location }}</td></tr>
-                <tr><td class="row-name">Pro školu</td><td class="row-value">{{ event.school }}</td></tr>
                 <tr><td class="row-name">Cena</td><td class="row-value">{{ event.prize }}</td></tr>
                 <tr><td class="row-name">Přihlašování do</td><td class="row-value">{{ GetDate(event.datetimeDeadline).toLocaleString('cs-CZ') }}</td></tr>
                 <tr><td class="row-name">Začátek</td><td class="row-value">{{ GetDate(event.datetimeStart).toLocaleString('cs-CZ') }}</td></tr>
@@ -25,18 +24,19 @@
 
             <p>{{ event.description }}</p>
 
-            <button mat-raised-button
-                    color="primary"
-                    (click)="this.signIn()"
-                    [disabled]="event.regStatus > 0 || dateTimeNow > GetDate(event.datetimeDeadline)">
-                Přihlásit
-            </button>
+
 
             <button mat-raised-button
                     color="primary"
-                    (click)="this.signIn()"
+                    (click)="this.signOut(event)"
                     [disabled]="event.regStatus === 0 || dateTimeNow > GetDate(event.datetimeDeadline)">
                 Odhlásit
+            </button>
+            <button mat-raised-button
+                    color="primary"
+                    (click)="this.signIn(event)"
+                    [disabled]="event.regStatus > 0 || dateTimeNow > GetDate(event.datetimeDeadline)">
+              Přihlásit
             </button>
           </ng-template>
         </mat-expansion-panel>

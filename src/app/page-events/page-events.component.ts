@@ -6,6 +6,9 @@ import {WTEventRegistration} from '../class/WTEventRegistration';
 import {DatastorageService} from '../services/datastorage.service';
 import {Convert} from '../class/Convert';
 import {DeviceService} from '../services/device.service';
+import {AlertService} from '../services/alert.service';
+import {SnackType} from '../enum/SnackType';
+import {AlertTexts} from '../enum/AlertTexts';
 
 @Component({
   selector: 'app-page-events',
@@ -19,11 +22,13 @@ export class PageEventsComponent implements OnInit {
   eventsRegistrations: WTEventRegistration[];
   error = '';
   dateTimeNow = new Date();
+  identifyer = (index:number, item: any) => item.name;
 
   constructor(private headerService: HeaderService,
               private httpService: HttpService,
               private dataStorage: DatastorageService,
-              private device: DeviceService) {
+              private device: DeviceService,
+              private alertService: AlertService) {
     this.headerService.setTitle('Události');
   }
 
@@ -32,7 +37,7 @@ export class PageEventsComponent implements OnInit {
   }
 
   getEvents(): void {
-    this.httpService.getEvents().subscribe(
+    this.httpService.getEvents(this.dataStorage.Member.school).subscribe(
       (events: WTEvent[]) => {
         this.events = events;
         this.httpService.getEventsRegistrations(this.dataStorage.Member.id, true).subscribe(
@@ -74,8 +79,28 @@ export class PageEventsComponent implements OnInit {
     return result;
   }
 
-  public signIn(){
-    throw new Error('Not implemented.');
+  public signIn(event: WTEvent){
+    this.httpService.signIn(event.id, this.dataStorage.Member.id).subscribe(
+      (res: boolean) => {
+        this.alertService.alert(AlertTexts.event_sign_in + event.name, SnackType.info);
+        this.getEvents();
+      },
+      (err) => {
+        this.alertService.alert(AlertTexts.fail, SnackType.error);
+      }
+    );
+  }
+
+  public signOut(event: WTEvent){
+    this.httpService.signOut(event.id, this.dataStorage.Member.id).subscribe(
+      (res: boolean) => {
+        this.alertService.alert(AlertTexts.event_sign_out + event.name, SnackType.info);
+        this.getEvents();
+      },
+      (err) => {
+        this.alertService.alert(AlertTexts.fail, SnackType.error);
+      }
+    );
   }
 
   public GetDate(date: string): Date{

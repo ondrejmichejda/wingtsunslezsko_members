@@ -51,13 +51,37 @@ export class HttpService {
   /**
    * Get events from db.
    */
-  getEvents(): Observable<WTEvent[]> {
+  getEvents(school: number): Observable<WTEvent[]> {
     let events: WTEvent[];
     const data = 'data';
-    return this.http.get(`${this.baseUrl}events_get.php`).pipe(
+    return this.http.get(`${this.baseUrl}events_get.php?school=`+school).pipe(
       map((res) => {
         events = res[data];
         return events;
+      }), catchError(this.handleError));
+  }
+
+  /**
+   * Sign in member to event
+   */
+  signIn(eventId: number, userId: number): Observable<boolean> {
+    let result: boolean;
+    return this.http.get(`${this.baseUrl}sign_in.php?eventId=`+eventId+`&userId=`+userId).pipe(
+      map((res) => {
+        result = Boolean(res);
+        return result;
+      }), catchError(this.handleError));
+  }
+
+  /**
+   * Sign out member from event
+   */
+  signOut(eventId: number, userId: number): Observable<boolean> {
+    let result: boolean;
+    return this.http.get(`${this.baseUrl}sign_out.php?eventId=`+eventId+`&userId=`+userId).pipe(
+      map((res) => {
+        result = Boolean(res);
+        return result;
       }), catchError(this.handleError));
   }
 

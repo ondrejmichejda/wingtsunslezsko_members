@@ -1,7 +1,7 @@
 <?php
 interface IDatabaseData
 {
-  public function GetData();
+
 }
 
 abstract class DatabaseData implements IDatabaseData
@@ -10,12 +10,6 @@ abstract class DatabaseData implements IDatabaseData
   private $config = null;
 
   protected $connection = null;
-  protected $schoolDictionary = array(
-    0 => "Vše",
-    1 => "Ostrava",
-    2 => "Třinec",
-    3 => "Český Těšín"
-  );
 
   function __construct()
   {
@@ -71,7 +65,51 @@ abstract class DatabaseData implements IDatabaseData
     $this->connection = conn();
   }
 
-  abstract public function GetData();
+  // Update signed members and not confirmed members for event
+  protected function UpdateEvent($eventId)
+  {
+    $updated = true;
+
+    // update members
+    $data = [];
+    $sql = "SELECT * FROM in_events_registrations WHERE event_id=".$eventId;
+    if($result = mysqli_query($this->connection,$sql))
+    {
+      $cr = 0;
+      while($row = mysqli_fetch_assoc($result))
+      {
+        $data[$cr]['event_id'] = $row['event_id'];
+        $data[$cr]['confirmed'] = $row['confirmed'];
+        $cr++;
+      }
+
+      $sql = "UPDATE `in_events` SET members=".count($data)." WHERE id=".$eventId;
+      if(!mysqli_query($this->connection,$sql))
+        $updated = false;
+    }
+    else
+    {
+      $updated = false;
+    }
+
+    // update members confirmed
+    // $sql = "SELECT * FROM in_events_registrations WHERE confirmed=true AND event_id=".$eventId;
+
+    $notconfirmedCount = 0;
+
+    foreach($data as $reg){
+      if(!$reg['confirmed'])
+      {
+        $notconfirmedCount++;
+      }
+    }
+
+    $sql = "UPDATE `in_events` SET notconfirmed=".$notconfirmedCount." WHERE id=".$eventId;
+    if(!mysqli_query($this->connection,$sql))
+      $updated = false;
+
+    return $updated;
+  }
 }
 
 class Notice extends DatabaseData
@@ -105,10 +143,11 @@ class Notice extends DatabaseData
 
 class Event extends DatabaseData
 {
-  public function GetData()
+  public function GetData($school)
   {
     $data = [];
-    $sql = "SELECT * FROM in_events ORDER BY datetime_start ASC";
+    $schoolCondition = $school == 0 ? '%' : $school;
+    $sql = "SELECT * FROM in_events WHERE datetime_end >= CURRENT_TIMESTAMP AND (school LIKE '".$schoolCondition."' or school=0) ORDER BY datetime_start ASC";
 
     if($result = mysqli_query($this->connection,$sql))
     {
@@ -118,7 +157,7 @@ class Event extends DatabaseData
         $data[$cr]['id'] = $row['id'];
         $data[$cr]['datetime'] = $row['datetime'];
         $data[$cr]['name'] = $row['name'];
-        $data[$cr]['school'] = $this->schoolDictionary[$row['school']];
+        $data[$cr]['school'] = $row['school'];
         $data[$cr]['location'] = $row['location'];
         $data[$cr]['prize'] = $row['prize'];
         $data[$cr]['description'] = $row['description'];
@@ -204,7 +243,7 @@ class Member extends DatabaseData
         $data[$cr]['pwd'] = $row['pwd'];
         $data[$cr]['name'] = $row['name'];
         $data[$cr]['surname'] = $row['surname'];
-        $data[$cr]['school'] = $this->schoolDictionary[$row['school']];
+        $data[$cr]['school'] = $row['school'];
         $data[$cr]['news'] = $row['news'];
         $data[$cr]['admin'] = $row['admin'];
         $cr++;
@@ -223,4 +262,36 @@ class Member extends DatabaseData
       http_response_code(404);
     }
   }
+}
+
+class Sign extends DatabaseData
+{
+  public function GetData(){
+    // not implemented
+  }
+
+  public function SignIn($eventId, $userId)
+  {
+    $result = true;
+
+    $sql = "INSERT INTO in_events_registrations(event_id, user_id) VALUES (".$eventId.", ".$userId.")";
+
+    $result = mysqli_query($this->connection,$sql);
+    $result = self::UpdateEvent($eventId);
+
+    echo $result;
+  }
+
+  public function SignOut($eventId, $userId)
+  {
+    $result = true;
+
+    $sql = "DELETE FROM in_events_registrations WHERE event_id=".$eventId." AND user_id=".$userId;
+
+    $result = mysqli_query($this->connection,$sql);
+    $result = self::UpdateEvent($eventId);
+
+    echo $result;
+  }
+
 }
