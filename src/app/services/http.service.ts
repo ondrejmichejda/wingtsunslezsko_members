@@ -62,6 +62,19 @@ export class HttpService {
   }
 
   /**
+   * Get all events from db. Admin purposes.
+   */
+  getEventsAll(): Observable<WTEvent[]> {
+    let events: WTEvent[];
+    const data = 'data';
+    return this.http.get(`${this.baseUrl}eventsall_get.php`).pipe(
+      map((res) => {
+        events = res[data];
+        return events;
+      }), catchError(this.handleError));
+  }
+
+  /**
    * Sign in member to event
    */
   signIn(eventId: number, userId: number): Observable<boolean> {

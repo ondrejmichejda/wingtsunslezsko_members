@@ -21,7 +21,6 @@ import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { PageLoginComponent } from './page-login/page-login.component';
 import { MatFormFieldModule} from '@angular/material/form-field';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { TestpanelComponent } from './testpanel/testpanel.component';
 import { MatDividerModule } from '@angular/material/divider';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { MatCheckboxModule } from '@angular/material/checkbox';
@@ -42,6 +41,7 @@ import { PageVideoComponent } from './page-video/page-video.component';
 import { MatSelectModule } from '@angular/material/select';
 import { HttpClientModule } from '@angular/common/http';
 import { PageNoticeboardComponent } from './page-noticeboard/page-noticeboard.component';
+import { PageAdmineventsComponent } from './page-adminevents/page-adminevents.component';
 
 
 @NgModule({
@@ -50,13 +50,13 @@ import { PageNoticeboardComponent } from './page-noticeboard/page-noticeboard.co
     NavigationComponent,
     PageEventsComponent,
     PageLoginComponent,
-    TestpanelComponent,
     PageArtiklComponent,
     DialogComponent,
     PageChatComponent,
     PageDashboardComponent,
     PageVideoComponent,
-    PageNoticeboardComponent
+    PageNoticeboardComponent,
+    PageAdmineventsComponent
   ],
   imports: [
     BrowserModule,

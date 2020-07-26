@@ -6,6 +6,7 @@ import { PageChatComponent } from './page-chat/page-chat.component';
 import { PageDashboardComponent } from './page-dashboard/page-dashboard.component';
 import { PageVideoComponent } from './page-video/page-video.component';
 import { PageNoticeboardComponent } from './page-noticeboard/page-noticeboard.component';
+import {PageAdmineventsComponent} from './page-adminevents/page-adminevents.component';
 
 
 
@@ -15,12 +16,12 @@ const routes: Routes = [
     component: PageDashboardComponent,
   },
   {
-    path: 'prehled',
-    component: PageDashboardComponent,
-  },
-  {
     path: 'nastenka',
     component: PageNoticeboardComponent,
+  },
+  {
+    path: 'prehled',
+    component: PageDashboardComponent,
   },
   {
     path: 'udalosti',
@@ -37,6 +38,10 @@ const routes: Routes = [
   {
     path: 'video',
     component: PageVideoComponent,
+  },
+  {
+    path: 'admin-udalosti',
+    component: PageAdmineventsComponent,
   },
 ];
 

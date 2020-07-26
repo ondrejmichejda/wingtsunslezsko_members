@@ -18,14 +18,6 @@ export class UserAuthenticationService {
               private alertService: AlertService,
               private httpService: HttpService,
               private dataStorage: DatastorageService) {
-
-    if (localStorage.getItem(LocalStorage.user) === isNull) {
-      localStorage.setItem(LocalStorage.user, '0');
-    }
-
-    if (localStorage.getItem(LocalStorage.admin) === isNull) {
-      localStorage.setItem(LocalStorage.admin, '0');
-    }
   }
 
   login(login: string, password: string): void {
@@ -47,39 +39,16 @@ export class UserAuthenticationService {
     );
   }
 
-  loginAdmin() {
-    localStorage.setItem(LocalStorage.admin, '1');
-  }
-
   logout(): void {
     this.dataStorage.Member = null;
     this.alertService.alert(AlertTexts.log_out);
-  }
-
-  logoutAdmin(): void {
-    localStorage.setItem(LocalStorage.admin, '0');
   }
 
   isLogged(): boolean {
     return this.dataStorage.Member !== null;
   }
 
-  loggedUser(): string {
-    return localStorage.getItem(LocalStorage.userName);
-  }
-
   isLoggedAdmin(): boolean {
-    return localStorage.getItem(LocalStorage.admin) === '1' ? true : false;
+    return this.dataStorage.Member.admin;
   }
-
-  private setUserName(name: string): void {
-    localStorage.setItem(LocalStorage.userName, name);
-  }
-
-  private _cryptPassword(password: string, hash: string): boolean{
-    let match: boolean;
-
-    return match;
-  }
-
 }

@@ -23,6 +23,7 @@ export class PageVideoComponent implements OnInit {
   constructor(private headerService: HeaderService,
               private sanitizer: DomSanitizer,
               private dataService: DataService) {
+    this.headerService.setTitle('Video');
   }
 
   videoText(id: number): string {
@@ -36,7 +37,7 @@ export class PageVideoComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.headerService.setTitle('Video');
+
   }
 
 }

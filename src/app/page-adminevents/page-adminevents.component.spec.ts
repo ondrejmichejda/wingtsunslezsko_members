@@ -1,20 +1,20 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { TestpanelComponent } from './testpanel.component';
+import { PageAdmineventsComponent } from './page-adminevents.component';
 
-describe('TestpanelComponent', () => {
-  let component: TestpanelComponent;
-  let fixture: ComponentFixture<TestpanelComponent>;
+describe('PageAdmineventsComponent', () => {
+  let component: PageAdmineventsComponent;
+  let fixture: ComponentFixture<PageAdmineventsComponent>;
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ TestpanelComponent ]
+      declarations: [ PageAdmineventsComponent ]
     })
     .compileComponents();
   }));
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(TestpanelComponent);
+    fixture = TestBed.createComponent(PageAdmineventsComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

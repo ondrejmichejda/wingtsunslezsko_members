@@ -16,11 +16,15 @@
   z-index: 1;
 }
 
-#logout-button{
+#buttons{
   position: absolute;
   top: 50%;
-  transform: translateY(-50%);
+  transform: translateY(-100%);
   right: 10px;
+}
+
+#buttons mat-icon{
+  margin-right: 0px;
 }
 
 .slide-toggle{
@@ -29,5 +33,13 @@
 
 mat-icon {
   margin-right: 10px;
+}
+
+.under-construction{
+  opacity: .3;
+}
+
+.admin-icon{
+  color: red;
 }
 

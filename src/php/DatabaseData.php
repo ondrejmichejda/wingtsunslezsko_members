@@ -177,6 +177,40 @@ class Event extends DatabaseData
       http_response_code(404);
     }
   }
+
+  public function GetDataAll()
+  {
+    $data = [];
+    $sql = "SELECT * FROM in_events ORDER BY datetime_start ASC";
+
+    if($result = mysqli_query($this->connection,$sql))
+    {
+      $cr = 0;
+      while($row = mysqli_fetch_assoc($result))
+      {
+        $data[$cr]['id'] = $row['id'];
+        $data[$cr]['datetime'] = $row['datetime'];
+        $data[$cr]['name'] = $row['name'];
+        $data[$cr]['school'] = $row['school'];
+        $data[$cr]['location'] = $row['location'];
+        $data[$cr]['prize'] = $row['prize'];
+        $data[$cr]['description'] = $row['description'];
+        $data[$cr]['memberlimit'] = $row['memberlimit'];
+        $data[$cr]['memberlimitMin'] = $row['memberlimit_min'];
+        $data[$cr]['members'] = $row['members'];
+        $data[$cr]['datetimeStart'] = $row['datetime_start'];
+        $data[$cr]['datetimeDeadline'] = $row['datetime_deadline'];
+        $data[$cr]['datetimeEnd'] = $row['datetime_end'];
+        $cr++;
+      }
+
+      echo json_encode(['data'=>$data]);
+    }
+    else
+    {
+      http_response_code(404);
+    }
+  }
 }
 
 class EventRegistration extends DatabaseData

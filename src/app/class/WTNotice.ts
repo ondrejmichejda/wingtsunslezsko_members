@@ -1,14 +1,14 @@
 export class WTNotice {
 
   public id: number;
-  public datetime: Date;
+  public datetime: string;
   public school: number;
   public text: string;
   public color: string;
 
   constructor(
     id: number,
-    datetime: Date,
+    datetime: string,
     school: number,
     text: string,
     color: string) {

@@ -4,7 +4,7 @@
   <div class="error-text" *ngIf="error">{{error}}</div>
   <mat-card *ngFor="let notice of notices">
     <mat-card-content [innerHTML]="notice.text"></mat-card-content>
-    <mat-card-footer [innerHTML]="notice.datetime"></mat-card-footer>
+    <mat-card-footer [innerHTML]="GetDate(notice.datetime).toLocaleDateString('cs-CZ')"></mat-card-footer>
   </mat-card>
 
 </div>
