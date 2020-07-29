@@ -18,9 +18,6 @@ export class WTEvent {
   datetimeEnd: string;
 
   regStatus = 0;
-  get dtDeadline(): Date{
-    return Convert.sqlToJsDate(this.datetimeDeadline);
-  }
 
   constructor(
     id: number,
