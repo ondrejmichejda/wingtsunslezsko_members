@@ -26,8 +26,9 @@ tr, .example-element-detail mat-icon:hover {
   cursor: pointer;
 }
 
-button {
-  margin-right: 10px;
+.bottomButton {
+  margin: 0px 16px 10px 0px;
+  float: right;
 }
 
 .mat-form-field {
@@ -38,4 +39,12 @@ button {
 mat-list-item {
   width: 100%;
   margin-top: 10px;
+}
+
+.half-size{
+  width: 49.5%;
+}
+
+.margin-2 {
+  margin-right: 1%;
 }

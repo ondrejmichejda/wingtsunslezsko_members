@@ -1,10 +1,17 @@
-import {Component, OnInit, ViewChild} from '@angular/core';
+import {ChangeDetectorRef, Component, OnInit, ViewChild} from '@angular/core';
 import {animate, state, style, transition, trigger} from '@angular/animations';
 import {HttpService} from '../services/http.service';
 import {WTEvent} from '../class/WTEvent';
 import {MatTableDataSource} from '@angular/material/table';
 import {MatSort} from '@angular/material/sort';
-import {Convert} from '../class/Convert';
+import {AlertTexts} from '../enum/AlertTexts';
+import {SnackType} from '../enum/SnackType';
+import {AlertService} from '../services/alert.service';
+import {DialogComponent} from '../dialog/dialog.component';
+import {MatDialog} from '@angular/material/dialog';
+import {DialogConfirmComponent} from '../dialog-confirm/dialog-confirm.component';
+import { Convert } from '../class/Convert';
+import {DeviceService} from '../services/device.service';
 
 @Component({
   selector: 'app-page-adminevents',
@@ -21,27 +28,60 @@ import {Convert} from '../class/Convert';
 
 export class PageAdmineventsComponent implements OnInit {
   dataSource;
-  columnsToDisplay = ['id', 'name', 'datetimeStart', 'members', 'memberlimit'];
+  columnsToDisplay = this.device.IsMobile() ? ['name', 'control'] : ['id', 'name', 'datetimeStart', 'control'];
   expandedElement: WTEvent | null;
   @ViewChild(MatSort, {static: true}) sort: MatSort;
+  history: boolean;
 
   events: WTEvent[];
   error = '';
 
   editor: Editor;
 
-  constructor(private httpService: HttpService) {
+  constructor(private httpService: HttpService,
+              private alertService: AlertService,
+              private dialog: MatDialog,
+              private changeDetectorRefs: ChangeDetectorRef,
+              public device: DeviceService){
     this.editor = new Editor();
+    this.history = false;
   }
 
   ngOnInit() {
     this.getEvents();
   }
 
+  formatDate(d: string): Date{
+    return Convert.sqlToJsDate(d);
+  }
+
+  historyChange(){
+    this.refresh();
+  }
+
+  openDialog(id: number): void {
+    const dialogRef = this.dialog.open(DialogConfirmComponent, {
+      width: '250px',
+      data: {text: 'Opravdu smazat?'}
+    });
+
+    dialogRef.afterClosed().subscribe(result => {
+      if (result !== undefined) {
+        this.deleteEvent(id);
+      }
+    });
+  }
+
   getEvents(): void {
     this.httpService.getEventsAll().subscribe(
       (events: WTEvent[]) => {
-        this.events = events;
+        if(this.history){
+          this.events = events;
+        }
+        else{
+          this.events = events.filter(
+            ev => this.formatDate(ev.datetimeEnd) >= new Date());
+          }
         this.dataSource = new MatTableDataSource(this.events);
         this.dataSource.sort = this.sort;
       },
@@ -51,21 +91,46 @@ export class PageAdmineventsComponent implements OnInit {
     );
   }
 
-  getDate(dt: string): Date{
-    return Convert.sqlToJsDate(dt);
-  }
-
   applyFilter(event: Event) {
     const filterValue = (event.target as HTMLInputElement).value;
     this.dataSource.filter = filterValue.trim().toLowerCase();
   }
 
-  saveBtn(event: WTEvent){
-    console.log(event);
+  updateEvent(event: WTEvent) {
+    this.httpService.setEvent_post(event).subscribe(data => {
+      this.alertService.alert(AlertTexts.event_udpated, SnackType.info);
+    },Error => {
+      this.alertService.alert(AlertTexts.fail, SnackType.error);
+    });
+    this.editor.ResetAll();
+    this.refresh();
+  }
+
+  copyEvent(id: number) {
+    this.httpService.copyEvent_post(id).subscribe(data => {
+      this.alertService.alert(AlertTexts.event_copied, SnackType.info);
+    },Error => {
+      this.alertService.alert(AlertTexts.fail, SnackType.error);
+    });
+    this.refresh();
+  }
+
+  deleteEvent(id: number){
+    this.httpService.deleteEvent_post(id).subscribe(data => {
+      this.alertService.alert(AlertTexts.event_deleted, SnackType.info);
+    },Error => {
+      this.alertService.alert(AlertTexts.fail, SnackType.error);
+    });
+    this.refresh();
   }
 
   Expanded(el: WTEvent){
     this.editor = new Editor(el);
+  }
+
+  refresh() {
+    this.getEvents();
+    this.changeDetectorRefs.detectChanges();
   }
 }
 
@@ -75,7 +140,7 @@ class Editor {
     return this._name;
   }
   set Name(input){
-    this._resetAll();
+    this.ResetAll();
     this._name = input;
   }
 
@@ -84,7 +149,7 @@ class Editor {
     return this._location;
   }
   set Location(input){
-    this._resetAll();
+    this.ResetAll();
     this._location = input;
   }
 
@@ -93,7 +158,7 @@ class Editor {
     return this._prize;
   }
   set Prize(input){
-    this._resetAll();
+    this.ResetAll();
     this._prize = input;
   }
 
@@ -102,7 +167,7 @@ class Editor {
     return this._memberLimit;
   }
   set MemberLimit(input){
-    this._resetAll();
+    this.ResetAll();
     this._memberLimit = input;
   }
 
@@ -111,7 +176,7 @@ class Editor {
     return this._minLimit;
   }
   set MinLimit(input){
-    this._resetAll();
+    this.ResetAll();
     this._minLimit = input;
   }
 
@@ -120,7 +185,7 @@ class Editor {
     return this._start;
   }
   set Start(input){
-    this._resetAll();
+    this.ResetAll();
     this._start = input;
   }
 
@@ -129,7 +194,7 @@ class Editor {
     return this._end;
   }
   set End(input){
-    this._resetAll();
+    this.ResetAll();
     this._end = input;
   }
 
@@ -138,7 +203,7 @@ class Editor {
     return this._deadline;
   }
   set Deadline(input){
-    this._resetAll();
+    this.ResetAll();
     this._deadline = input;
   }
 
@@ -147,7 +212,7 @@ class Editor {
     return this._description;
   }
   set Description(input){
-    this._resetAll();
+    this.ResetAll();
     this._description = input;
   }
 
@@ -156,7 +221,7 @@ class Editor {
     return this._school;
   }
   set School(input){
-    this._resetAll();
+    this.ResetAll();
     this._school = input;
   }
 
@@ -185,9 +250,8 @@ class Editor {
     if(event != null) {
       this._event = event;
       this._shadowCopyEvent();
-      this._resetAll();
+      this.ResetAll();
     }
-
   }
 
   public RevertChanges(){
@@ -203,7 +267,8 @@ class Editor {
     this._event.description = this._eventOrigin.description;
   }
 
-  private _resetAll(){
+  public ResetAll(){
+    this._shadowCopyEvent();
     this._name = true;
     this._location = true;
     this._prize = true;

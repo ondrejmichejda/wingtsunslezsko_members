@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { HttpClient, HttpErrorResponse, HttpParams } from '@angular/common/http';
+import {HttpClient, HttpErrorResponse, HttpHeaders, HttpParams} from '@angular/common/http';
 import { Observable, throwError } from 'rxjs';
 import { map, catchError } from 'rxjs/operators';
 import { WTNotice } from '../class/WTNotice';
@@ -21,6 +21,79 @@ export class HttpService {
     // return an observable with a user friendly message
     return throwError('Error! Něco se pokazilo.');
   }
+
+  /**************************
+   **** POST REQUESTS
+   **************************/
+
+  /**
+   * Verify user login.
+   */
+  getMember_post(login: string, password: string): Observable<WTMember[]>{
+    let member: WTMember[];
+    const data = 'data';
+    const body = new HttpParams()
+      .set('login', login.toString())
+      .set('p', password.toString());
+    return this.http.post(`${this.baseUrl}member_get.php`, body.toString(), {
+      headers: new HttpHeaders()
+        .set('Content-Type', 'application/x-www-form-urlencoded')
+    }).pipe( map((res) => {
+        member = res[data];
+        return member;
+      }), catchError(this.handleError));
+  }
+
+  /**
+   * Update event.
+   */
+  setEvent_post(event: WTEvent){
+    const body = new HttpParams()
+      .set('id', event.id.toString())
+      .set('name', event.name.toString())
+      .set('school', event.school.toString())
+      .set('location', event.location.toString())
+      .set('prize', event.prize.toString())
+      .set('description', event.description.toString())
+      .set('memberlimit', event.memberlimit.toString())
+      .set('memberlimitMin', event.memberlimitMin.toString())
+      .set('datetimeStart', event.datetimeStart.toString())
+      .set('datetimeEnd', event.datetimeEnd.toString())
+      .set('datetimeDeadline', event.datetimeDeadline.toString());
+
+    return this.http.post(`${this.baseUrl}event_set.php`, body.toString(), {
+      headers: new HttpHeaders()
+        .set('Content-Type', 'application/x-www-form-urlencoded')
+    });
+  }
+
+  /**
+   * Copy event by id.
+   */
+  copyEvent_post(id: number){
+    const body = new HttpParams()
+      .set('id', id.toString());
+    return this.http.post(`${this.baseUrl}event_copy.php`, body.toString(), {
+      headers: new HttpHeaders()
+        .set('Content-Type', 'application/x-www-form-urlencoded')
+    });
+  }
+
+  /**
+   * Delete event by id.
+   */
+  deleteEvent_post(id: number){
+    const body = new HttpParams()
+      .set('id', id.toString());
+    return this.http.post(`${this.baseUrl}event_delete.php`, body.toString(), {
+      headers: new HttpHeaders()
+        .set('Content-Type', 'application/x-www-form-urlencoded')
+    });
+  }
+
+  /**************************
+   **** GET REQUESTS
+   **************************/
 
   /**
    * Verify user login.
@@ -110,4 +183,7 @@ export class HttpService {
         return eventsRegs;
       }), catchError(this.handleError));
   }
+
+
+
 }

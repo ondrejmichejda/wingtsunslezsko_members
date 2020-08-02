@@ -1,141 +1,176 @@
-<div class="error-text" *ngIf="error">{{error}}</div>
+<div class="page-container">
+  <div class="error-text" *ngIf="error">{{error}}</div>
 
-<mat-form-field>
-  <mat-label>Filter</mat-label>
-  <input matInput (keyup)="applyFilter($event)" placeholder="Ex. ium" #input>
-</mat-form-field>
-<table mat-table
-       [dataSource]="dataSource"
-       matSort
-       multiTemplateDataRows
-       class="mat-elevation-z8">
-  <ng-container matColumnDef="{{column}}" *ngFor="let column of columnsToDisplay">
-    <th mat-header-cell *matHeaderCellDef mat-sort-header> {{column}} </th>
-    <td (click)="Expanded(element);"  mat-cell *matCellDef="let element"> {{element[column]}} </td>
-  </ng-container>
-
-  <!-- Expanded Content Column - The detail row is made up of this one column that spans across all columns -->
-  <ng-container matColumnDef="expandedDetail">
-    <td mat-cell *matCellDef="let element" [attr.colspan]="columnsToDisplay.length">
-      <div class="example-element-detail" [@detailExpand]="element == expandedElement ? 'expanded' : 'collapsed'">
-
-        <mat-list>
-          <!-- Name editor -->
-          <mat-list-item>
-            <mat-form-field class="edit-input" appearance="outline">
-              <mat-label>Jméno</mat-label>
-              <input matInput (keyup.enter)="editor.Name = true" [disabled]="editor.Name" [(ngModel)]="element.name">
-              <mat-icon matSuffix (click)="editor.Name = !editor.Name">create</mat-icon>
-            </mat-form-field>
-          </mat-list-item>
-
-          <!-- Location editor -->
-          <mat-list-item>
-            <mat-form-field class="edit-input" appearance="outline">
-              <mat-label>Místo konání</mat-label>
-              <input matInput (keyup.enter)="editor.Location = true" [disabled]="editor.Location" [(ngModel)]="element.location">
-              <mat-icon matSuffix (click)="editor.Location = !editor.Location">create</mat-icon>
-            </mat-form-field>
-          </mat-list-item>
-
-          <!-- Prize editor -->
-          <mat-list-item>
-            <mat-form-field class="edit-input" appearance="outline">
-              <mat-label>Cena</mat-label>
-              <input matInput (keyup.enter)="editor.Prize = true" [disabled]="editor.Prize" [(ngModel)]="element.prize">
-              <mat-icon matSuffix (click)="editor.Prize = !editor.Prize">create</mat-icon>
-            </mat-form-field>
-          </mat-list-item>
-
-          <!-- Member limit editor -->
-          <mat-list-item>
-            <mat-form-field class="edit-input" appearance="outline">
-              <mat-label>Limit účastníků</mat-label>
-              <input type="number" matInput (keyup.enter)="editor.MemberLimit = true" [disabled]="editor.MemberLimit" [(ngModel)]="element.memberlimit">
-              <mat-icon matSuffix (click)="editor.MemberLimit = !editor.MemberLimit">create</mat-icon>
-            </mat-form-field>
-          </mat-list-item>
-
-          <!-- Member limit min editor -->
-          <mat-list-item>
-            <mat-form-field class="edit-input" appearance="outline">
-              <mat-label>Min. účastníků</mat-label>
-              <input type="number" matInput (keyup.enter)="editor.MinLimit = true" [disabled]="editor.MinLimit" [(ngModel)]="element.memberlimitMin">
-              <mat-icon matSuffix (click)="editor.MinLimit = !editor.MinLimit">create</mat-icon>
-            </mat-form-field>
-          </mat-list-item>
-
-          <!-- Deadline editor -->
-          <mat-list-item>
-            <mat-form-field class="edit-input" appearance="outline">
-              <mat-label>Přihlašování do</mat-label>
-              <input matInput (keyup.enter)="editor.Deadline = true" [disabled]="editor.Deadline" [(ngModel)]="element.datetimeDeadline">
-              <mat-icon matSuffix (click)="editor.Deadline = !editor.Deadline">create</mat-icon>
-            </mat-form-field>
-          </mat-list-item>
-
-          <!-- Start editor -->
-          <mat-list-item>
-            <mat-form-field class="edit-input" appearance="outline">
-              <mat-label>Začátek</mat-label>
-              <input matInput (keyup.enter)="editor.Start = true" [disabled]="editor.Start" [(ngModel)]="element.datetimeStart">
-              <mat-icon matSuffix (click)="editor.Start = !editor.Start">create</mat-icon>
-            </mat-form-field>
-          </mat-list-item>
-
-          <!-- End editor -->
-          <mat-list-item>
-            <mat-form-field class="edit-input" appearance="outline">
-              <mat-label>Konec</mat-label>
-              <input matInput (keyup.enter)="editor.End = true" [disabled]="editor.End" [(ngModel)]="element.datetimeEnd">
-              <mat-icon matSuffix (click)="editor.End = !editor.End">create</mat-icon>
-            </mat-form-field>
-          </mat-list-item>
-
-          <!-- School editor -->
-          <mat-list-item>
-            <mat-form-field class="edit-input" appearance="outline">
-              <mat-label>Škola</mat-label>
-              <input matInput (keyup.enter)="editor.School = true" [disabled]="editor.School" [(ngModel)]="element.school">
-              <mat-icon matSuffix (click)="editor.School = !editor.School">create</mat-icon>
-            </mat-form-field>
-          </mat-list-item>
-
-          <!-- Description editor -->
-          <mat-list-item>
-            <mat-form-field class="edit-input" appearance="outline">
-              <mat-label>Popis</mat-label>
-              <input matInput (keyup.enter)="editor.Description = true" [disabled]="editor.Description" [(ngModel)]="element.description">
-              <mat-icon matSuffix (click)="editor.Description = !editor.Description">create</mat-icon>
-            </mat-form-field>
-          </mat-list-item>
-
-
-
-          <mat-list-item>
-            <button mat-raised-button
-                    color="basic"
-                    [disabled]="editor.Same"
-                    (click)="editor.RevertChanges()">
-              Zrušit
-            </button>
-            <button mat-raised-button
+  <mat-form-field>
+    <mat-label>Filter</mat-label>
+    <input matInput (keyup)="applyFilter($event)" placeholder="Ex. ium" #input>
+  </mat-form-field>
+  <mat-slide-toggle [(ngModel)]="this.history"
+                    (change)="historyChange()"
+                    style="margin-bottom: 10px;"
                     color="primary"
-                    [disabled]="editor.Same"
-                    (click)="saveBtn(element)">
-              Uložit
-            </button>
-          </mat-list-item>
-        </mat-list>
-      </div>
-    </td>
-  </ng-container>
+  >Historie</mat-slide-toggle>
+  <table mat-table
+         [dataSource]="dataSource"
+         matSort
+         multiTemplateDataRows
+         class="mat-elevation-z8">
 
-  <tr mat-header-row *matHeaderRowDef="columnsToDisplay"></tr>
-  <tr mat-row *matRowDef="let element; columns: columnsToDisplay;"
-      class="example-element-row"
-      [class.example-expanded-row]="expandedElement === element"
-      (click)="expandedElement = expandedElement === element ? null : element">
-  </tr>
-  <tr mat-row *matRowDef="let row; columns: ['expandedDetail']" class="example-detail-row"></tr>
-</table>
+    <ng-container matColumnDef="id">
+      <th mat-header-cell *matHeaderCellDef> ID </th>
+      <td (click)="Expanded(element);" mat-cell *matCellDef="let element"> {{element.id}} </td>
+    </ng-container>
+
+    <ng-container matColumnDef="name">
+      <th mat-header-cell *matHeaderCellDef> Jméno </th>
+      <td (click)="Expanded(element);" mat-cell *matCellDef="let element"> {{element.name}} </td>
+    </ng-container>
+
+    <ng-container *ngIf="!device.IsMobile()" matColumnDef="datetimeStart">
+      <th mat-header-cell *matHeaderCellDef> Začátek </th>
+      <td (click)="Expanded(element);" mat-cell *matCellDef="let element"> {{ formatDate(element.datetimeStart).toLocaleString('cs-CZ')}} </td>
+    </ng-container>
+
+    <ng-container matColumnDef="control">
+      <th mat-header-cell *matHeaderCellDef></th>
+      <td (click)="$event.stopPropagation();" mat-cell *matCellDef="let element">
+        <button mat-icon-button
+                color="warn"
+                [disabled]="!editor.Same"
+                (click)="openDialog(element.id)"
+                matTooltip="Smazat">
+          <mat-icon>delete</mat-icon>
+        </button>
+
+        <button mat-icon-button
+                color="accent"
+                (click)="copyEvent(element.id)"
+                matTooltip="Kopírovat">
+          <mat-icon>content_copy</mat-icon>
+        </button>
+      </td>
+    </ng-container>
+
+
+    <!-- Expanded Content Column - The detail row is made up of this one column that spans across all columns -->
+    <ng-container matColumnDef="expandedDetail">
+      <td mat-cell *matCellDef="let element" [attr.colspan]="columnsToDisplay.length">
+        <div class="example-element-detail" [@detailExpand]="element == expandedElement ? 'expanded' : 'collapsed'">
+
+          <mat-tab-group>
+            <mat-tab>
+              <ng-template mat-tab-label>
+                <mat-icon>assignment</mat-icon>
+              </ng-template>
+
+              <!-- Name editor -->
+              <mat-form-field class="edit-input" appearance="outline" style="margin-top: 10px;">
+                <mat-label>Jméno</mat-label>
+                <input matInput (keyup.enter)="editor.Name = true" [disabled]="editor.Name" [(ngModel)]="element.name">
+                <mat-icon matSuffix (click)="editor.Name = !editor.Name">create</mat-icon>
+              </mat-form-field>
+
+              <!-- Location editor -->
+              <mat-form-field class="edit-input" appearance="outline" class="half-size margin-2">
+                <mat-label>Místo konání</mat-label>
+                <input matInput (keyup.enter)="editor.Location = true" [disabled]="editor.Location" [(ngModel)]="element.location">
+                <mat-icon matSuffix (click)="editor.Location = !editor.Location">create</mat-icon>
+              </mat-form-field>
+
+              <!-- Prize editor -->
+              <mat-form-field class="edit-input" appearance="outline" class="half-size">
+                <mat-label>Cena</mat-label>
+                <input matInput (keyup.enter)="editor.Prize = true" [disabled]="editor.Prize" [(ngModel)]="element.prize">
+                <mat-icon matSuffix (click)="editor.Prize = !editor.Prize">create</mat-icon>
+              </mat-form-field>
+
+              <!-- Member limit editor -->
+              <mat-form-field class="edit-input" appearance="outline" class="half-size margin-2">
+                <mat-label>Limit účastníků</mat-label>
+                <input type="number" matInput (keyup.enter)="editor.MemberLimit = true" [disabled]="editor.MemberLimit" [(ngModel)]="element.memberlimit">
+                <mat-icon matSuffix (click)="editor.MemberLimit = !editor.MemberLimit">create</mat-icon>
+              </mat-form-field>
+
+              <!-- Member limit min editor -->
+              <mat-form-field class="edit-input" appearance="outline" class="half-size">
+                <mat-label>Min. účastníků</mat-label>
+                <input type="number" matInput (keyup.enter)="editor.MinLimit = true" [disabled]="editor.MinLimit" [(ngModel)]="element.memberlimitMin">
+                <mat-icon matSuffix (click)="editor.MinLimit = !editor.MinLimit">create</mat-icon>
+              </mat-form-field>
+
+              <!-- Deadline editor -->
+              <mat-form-field class="edit-input" appearance="outline" class="half-size margin-2">
+                <mat-label>Přihlašování do</mat-label>
+                <input matInput (keyup.enter)="editor.Deadline = true" [disabled]="editor.Deadline" [(ngModel)]="element.datetimeDeadline">
+                <mat-icon matSuffix (click)="editor.Deadline = !editor.Deadline">create</mat-icon>
+              </mat-form-field>
+
+              <!-- Start editor -->
+              <mat-form-field class="edit-input" appearance="outline" class="half-size">
+                <mat-label>Začátek</mat-label>
+                <input matInput (keyup.enter)="editor.Start = true" [disabled]="editor.Start" [(ngModel)]="element.datetimeStart">
+                <mat-icon matSuffix (click)="editor.Start = !editor.Start">create</mat-icon>
+              </mat-form-field>
+
+              <!-- End editor -->
+              <mat-form-field class="edit-input" appearance="outline" class="half-size margin-2">
+                <mat-label>Konec</mat-label>
+                <input matInput (keyup.enter)="editor.End = true" [disabled]="editor.End" [(ngModel)]="element.datetimeEnd">
+                <mat-icon matSuffix (click)="editor.End = !editor.End">create</mat-icon>
+              </mat-form-field>
+
+              <!-- School editor -->
+              <mat-form-field class="edit-input" appearance="outline" class="half-size">
+                <mat-label>Škola</mat-label>
+                <input matInput (keyup.enter)="editor.School = true" [disabled]="editor.School" [(ngModel)]="element.school">
+                <mat-icon matSuffix (click)="editor.School = !editor.School">create</mat-icon>
+              </mat-form-field>
+
+              <!-- Description editor -->
+              <mat-form-field appearance="outline">
+                <mat-label>Popis</mat-label>
+                <textarea matInput
+                          (keyup.enter)="editor.Description = true" [disabled]="editor.Description"
+                          cdkTextareaAutosize [(ngModel)]="element.description"></textarea>
+                <mat-icon matSuffix (click)="editor.Description = !editor.Description">create</mat-icon>
+              </mat-form-field>
+
+              <!-- Buttons area -->
+
+              <button mat-raised-button
+                      class="bottomButton"
+                      color="primary"
+                      [disabled]="editor.Same"
+                      (click)="updateEvent(element)">
+                Uložit
+              </button>
+              <button mat-raised-button
+                      class="bottomButton"
+                      color="basic"
+                      [disabled]="editor.Same"
+                      (click)="editor.RevertChanges()">
+                Zrušit
+              </button>
+            </mat-tab>
+            <mat-tab>
+              <ng-template mat-tab-label>
+                <mat-icon>group</mat-icon>
+              </ng-template>
+
+            </mat-tab>
+          </mat-tab-group>
+
+
+        </div>
+      </td>
+    </ng-container>
+
+    <tr mat-header-row *matHeaderRowDef="columnsToDisplay"></tr>
+    <tr mat-row *matRowDef="let element; columns: columnsToDisplay;"
+        class="example-element-row"
+        [class.example-expanded-row]="expandedElement === element"
+        (click)="expandedElement = expandedElement === element ? null : element">
+    </tr>
+    <tr mat-row *matRowDef="let row; columns: ['expandedDetail']" class="example-detail-row"></tr>
+  </table>
+</div>

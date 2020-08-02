@@ -42,6 +42,8 @@ import { MatSelectModule } from '@angular/material/select';
 import { HttpClientModule } from '@angular/common/http';
 import { PageNoticeboardComponent } from './page-noticeboard/page-noticeboard.component';
 import { PageAdmineventsComponent } from './page-adminevents/page-adminevents.component';
+import {MatButtonToggleModule} from '@angular/material/button-toggle';
+import { DialogConfirmComponent } from './dialog-confirm/dialog-confirm.component';
 
 
 @NgModule({
@@ -56,41 +58,43 @@ import { PageAdmineventsComponent } from './page-adminevents/page-adminevents.co
     PageDashboardComponent,
     PageVideoComponent,
     PageNoticeboardComponent,
-    PageAdmineventsComponent
+    PageAdmineventsComponent,
+    DialogConfirmComponent
   ],
-  imports: [
-    BrowserModule,
-    AppRoutingModule,
-    BrowserAnimationsModule,
-    MatSliderModule,
-    MatSidenavModule,
-    LayoutModule,
-    MatToolbarModule,
-    MatButtonModule,
-    MatIconModule,
-    MatListModule,
-    MatTableModule,
-    MatPaginatorModule,
-    MatSortModule,
-    MatSnackBarModule,
-    MatFormFieldModule,
-    FormsModule,
-    ReactiveFormsModule,
-    MatDividerModule,
-    MatSlideToggleModule,
-    MatCheckboxModule,
-    MatRadioModule,
-    MatCardModule,
-    MatTooltipModule,
-    MatExpansionModule,
-    MatMenuModule,
-    MatDialogModule,
-    MatInputModule,
-    MatTabsModule,
-    MatSelectModule,
-    BrowserModule,
-    HttpClientModule
-  ],
+    imports: [
+        BrowserModule,
+        AppRoutingModule,
+        BrowserAnimationsModule,
+        MatSliderModule,
+        MatSidenavModule,
+        LayoutModule,
+        MatToolbarModule,
+        MatButtonModule,
+        MatIconModule,
+        MatListModule,
+        MatTableModule,
+        MatPaginatorModule,
+        MatSortModule,
+        MatSnackBarModule,
+        MatFormFieldModule,
+        FormsModule,
+        ReactiveFormsModule,
+        MatDividerModule,
+        MatSlideToggleModule,
+        MatCheckboxModule,
+        MatRadioModule,
+        MatCardModule,
+        MatTooltipModule,
+        MatExpansionModule,
+        MatMenuModule,
+        MatDialogModule,
+        MatInputModule,
+        MatTabsModule,
+        MatSelectModule,
+        BrowserModule,
+        HttpClientModule,
+        MatButtonToggleModule
+    ],
   entryComponents: [DialogComponent],
   providers: [HeaderService],
   bootstrap: [AppComponent]

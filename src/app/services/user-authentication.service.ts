@@ -22,7 +22,7 @@ export class UserAuthenticationService {
 
   login(login: string, password: string): void {
     let _member: WTMember;
-    this.httpService.getMember(login, password).subscribe(
+    this.httpService.getMember_post(login, password).subscribe(
       (res: WTMember[]) => {
         _member = res[0];
         if(_member === undefined){

@@ -211,6 +211,59 @@ class Event extends DatabaseData
       http_response_code(404);
     }
   }
+
+  public function SetData($id, $name, $school, $location, $prize, $description, $memberlimit,
+                          $memberlimitMin, $datetimeStart, $datetimeEnd, $datetimeDeadline)
+  {
+    $sql = "UPDATE in_events SET
+            name='".$name."',
+            school=".$school.",
+            location='".$location."',
+            prize='".$prize."',
+            description='".$description."',
+            memberlimit=".$memberlimit.",
+            memberlimit_min=".$memberlimitMin.",
+            datetime_start='".$datetimeStart."',
+            datetime_end='".$datetimeEnd."',
+            datetime_deadline='".$datetimeDeadline."'
+            WHERE id=".$id;
+
+    $result = mysqli_query($this->connection,$sql);
+    echo $result;
+  }
+
+  public function CopyData($id)
+  {
+    $sql = "SELECT name, school, location, prize, description, memberlimit,memberlimit_min, datetime_start, datetime_deadline, datetime_end
+            FROM in_events
+            WHERE id=".$id;
+
+    $event = mysqli_fetch_array(mysqli_query($this->connection,$sql));
+
+    $sql = "INSERT INTO in_events (name, school, location, prize, description, memberlimit, memberlimit_min, datetime_start, datetime_deadline, datetime_end)
+            VALUES (
+            '".$event['name']." - Kopie',
+            ".$event['school'].",
+            '".$event['location']."',
+            '".$event['prize']."',
+            '".$event['description']."',
+            ".$event['memberlimit'].",
+            ".$event['memberlimit_min'].",
+            '".$event['datetime_start']."',
+            '".$event['datetime_deadline']."',
+            '".$event['datetime_end']."')";
+
+    $result = mysqli_query($this->connection,$sql);
+    echo $result;
+  }
+
+  public function DeleteData($id)
+  {
+    $sql = "DELETE FROM `in_events` WHERE id=".$id;
+
+    $result = mysqli_query($this->connection,$sql);
+    echo $result;
+  }
 }
 
 class EventRegistration extends DatabaseData

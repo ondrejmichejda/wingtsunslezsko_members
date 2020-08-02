@@ -9,4 +9,7 @@ export enum AlertTexts {
     artikl_sign_in = 'Objednán artikl  ',
     artikl_sign_out = 'Zrušena objednávka artiklu ',
     settings_saved = 'Nastavení uloženo',
+    event_udpated = 'Událost upravena',
+    event_copied = 'Událost zkopírována',
+    event_deleted = 'Událost smazána',
 }

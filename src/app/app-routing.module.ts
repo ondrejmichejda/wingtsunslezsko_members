@@ -13,7 +13,7 @@ import {PageAdmineventsComponent} from './page-adminevents/page-adminevents.comp
 const routes: Routes = [
   {
     path: '',
-    component: PageDashboardComponent,
+    component: PageNoticeboardComponent,
   },
   {
     path: 'nastenka',
