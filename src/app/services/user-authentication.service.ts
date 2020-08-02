@@ -4,7 +4,7 @@ import {Router} from '@angular/router';
 import {AlertService} from './alert.service';
 import {AlertTexts} from '../enum/AlertTexts';
 import {LocalStorage} from '../enum/LocalStorage';
-import {WTMember} from '../class/WTMember';
+import {WTMember} from '../class/data/WTMember';
 import {HttpService} from './http.service';
 import {SnackType} from '../enum/SnackType';
 import {DatastorageService} from './datastorage.service';

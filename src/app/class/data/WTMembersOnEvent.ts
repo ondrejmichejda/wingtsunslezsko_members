@@ -1,32 +1,33 @@
-export class WTEventRegistration {
+
+export class WTMembersOnEvent{
 
   id: number;
-  datetime: Date;
-  eventId: number;
-  userId: number;
+  datetime: string;
+  name: string;
+  surname: string;
   confirmed: boolean;
-  notpresent: boolean;
+  present: boolean;
   guest: boolean;
   guestName: string;
   guestSurname: string;
 
   constructor(
     id: number,
-    datetime: Date,
-    eventId: number,
-    userId: number,
+    datetime: string,
+    name: string,
+    surname: string,
     confirmed: boolean,
-    notpresent: boolean,
+    present: boolean,
     guest: boolean,
     guestName: string,
     guestSurname: string) {
 
     this.id = id;
     this.datetime = datetime;
-    this.eventId = eventId;
-    this.userId = userId;
+    this.name = name;
+    this.surname = surname;
     this.confirmed = confirmed;
-    this.notpresent = notpresent;
+    this.present = present;
     this.guest = guest;
     this.guestName = guestName;
     this.guestSurname = guestSurname;

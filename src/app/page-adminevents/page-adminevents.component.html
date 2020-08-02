@@ -11,8 +11,9 @@
                     color="primary"
   >Historie</mat-slide-toggle>
   <table mat-table
-         [dataSource]="dataSource"
          matSort
+         [dataSource]="dataSource"
+         #eventSort="matSort"
          multiTemplateDataRows
          class="mat-elevation-z8">
 
@@ -22,7 +23,7 @@
     </ng-container>
 
     <ng-container matColumnDef="name">
-      <th mat-header-cell *matHeaderCellDef> Jméno </th>
+      <th mat-header-cell *matHeaderCellDef mat-sort-header> Jméno </th>
       <td (click)="Expanded(element);" mat-cell *matCellDef="let element"> {{element.name}} </td>
     </ng-container>
 
@@ -35,6 +36,7 @@
       <th mat-header-cell *matHeaderCellDef></th>
       <td (click)="$event.stopPropagation();" mat-cell *matCellDef="let element">
         <button mat-icon-button
+                style="float: right;"
                 color="warn"
                 [disabled]="!editor.Same"
                 (click)="openDialog(element.id)"
@@ -43,10 +45,11 @@
         </button>
 
         <button mat-icon-button
-                color="accent"
+                style="float: right;"
+                color="primary"
                 (click)="copyEvent(element.id)"
                 matTooltip="Kopírovat">
-          <mat-icon>content_copy</mat-icon>
+          <mat-icon>file_copy</mat-icon>
         </button>
       </td>
     </ng-container>
@@ -57,7 +60,7 @@
       <td mat-cell *matCellDef="let element" [attr.colspan]="columnsToDisplay.length">
         <div class="example-element-detail" [@detailExpand]="element == expandedElement ? 'expanded' : 'collapsed'">
 
-          <mat-tab-group>
+          <mat-tab-group (focusChange)="tabChanged($event, element.id)">
             <mat-tab>
               <ng-template mat-tab-label>
                 <mat-icon>assignment</mat-icon>
@@ -120,9 +123,14 @@
               </mat-form-field>
 
               <!-- School editor -->
-              <mat-form-field class="edit-input" appearance="outline" class="half-size">
+              <mat-form-field appearance="outline" class="half-size">
                 <mat-label>Škola</mat-label>
-                <input matInput (keyup.enter)="editor.School = true" [disabled]="editor.School" [(ngModel)]="element.school">
+                <mat-select (keyup.enter)="editor.School = true" [disabled]="editor.School" [(value)]="element.school">
+                  <mat-option value="0">Všechny</mat-option>
+                  <mat-option value="1">Ostrava</mat-option>
+                  <mat-option value="2">Třinec</mat-option>
+                  <mat-option value="3">Český Těšín</mat-option>
+                </mat-select>
                 <mat-icon matSuffix (click)="editor.School = !editor.School">create</mat-icon>
               </mat-form-field>
 
@@ -156,6 +164,72 @@
               <ng-template mat-tab-label>
                 <mat-icon>group</mat-icon>
               </ng-template>
+
+              <mat-list>
+                <mat-list-item>Item1</mat-list-item>
+                <mat-list-item>Item 2</mat-list-item>
+                <mat-list-item>Item 3</mat-list-item>
+              </mat-list>
+
+              <table mat-table
+                     [dataSource]="dataSourceMembers"
+                     multiTemplateDataRows
+                     class="mat-elevation-z8">
+
+                <ng-container matColumnDef="name">
+                  <th mat-header-cell *matHeaderCellDef> Jméno </th>
+                  <td mat-cell *matCellDef="let element"> {{getName(element)}} </td>
+                </ng-container>
+
+                <ng-container matColumnDef="surname">
+                  <th mat-header-cell *matHeaderCellDef> Příjmení </th>
+                  <td mat-cell *matCellDef="let element"> {{getSurname(element)}} </td>
+                </ng-container>
+
+                <ng-container matColumnDef="status">
+                  <th mat-header-cell *matHeaderCellDef matTooltip="Potvrzeno + Dorazil"> Status </th>
+                  <td mat-cell *matCellDef="let element"><mat-icon>{{getStatus(element)}}</mat-icon></td>
+                </ng-container>
+
+                <ng-container matColumnDef="datetime">
+                  <th mat-header-cell *matHeaderCellDef> Přihlášen </th>
+                  <td mat-cell *matCellDef="let element"> {{ formatDate(element.datetime).toLocaleString('cs-CZ')}} </td>
+                </ng-container>
+
+                <ng-container matColumnDef="control">
+                  <th mat-header-cell *matHeaderCellDef></th>
+                  <td mat-cell *matCellDef="let element">
+                    <button mat-icon-button
+                            class="memberBtn"
+                            (click)="cancel(element.id)"
+                            [disabled]="!!!+element.present && !!!+element.confirmed"
+                            color="warn"
+                            matTooltip="Zrušit">
+                      <mat-icon>cancel</mat-icon>
+                    </button>
+                    <button mat-icon-button
+                            class="memberBtn"
+                            (click)="present(element.id)"
+                            [disabled]="!!+element.present || !!!+element.confirmed"
+                            color="primary"
+                            matTooltip="Přítomen">
+                      <mat-icon>check_circle</mat-icon>
+                    </button>
+                    <button mat-icon-button
+                            class="memberBtn"
+                            (click)="confirm(element.id)"
+                            [disabled]="!!+element.confirmed"
+                            color="primary"
+                            matTooltip="Potvrdit">
+                      <mat-icon>check_circle_outline</mat-icon>
+                    </button>
+                  </td>
+                </ng-container>
+
+                <tr mat-header-row *matHeaderRowDef="columnsToDisplayMembers"></tr>
+                <tr mat-row *matRowDef="let row; columns: columnsToDisplayMembers;"></tr>
+              </table>
+
 
             </mat-tab>
           </mat-tab-group>

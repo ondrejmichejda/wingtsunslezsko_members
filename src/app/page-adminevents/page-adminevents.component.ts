@@ -1,17 +1,19 @@
 import {ChangeDetectorRef, Component, OnInit, ViewChild} from '@angular/core';
 import {animate, state, style, transition, trigger} from '@angular/animations';
 import {HttpService} from '../services/http.service';
-import {WTEvent} from '../class/WTEvent';
+import {WTEvent} from '../class/data/WTEvent';
 import {MatTableDataSource} from '@angular/material/table';
 import {MatSort} from '@angular/material/sort';
 import {AlertTexts} from '../enum/AlertTexts';
 import {SnackType} from '../enum/SnackType';
 import {AlertService} from '../services/alert.service';
-import {DialogComponent} from '../dialog/dialog.component';
 import {MatDialog} from '@angular/material/dialog';
 import {DialogConfirmComponent} from '../dialog-confirm/dialog-confirm.component';
 import { Convert } from '../class/Convert';
 import {DeviceService} from '../services/device.service';
+import {WTMembersOnEvent} from '../class/data/WTMembersOnEvent';
+import {MatTabChangeEvent} from '@angular/material/tabs';
+import {HeaderService} from '../services/header-title-change.service';
 
 @Component({
   selector: 'app-page-adminevents',
@@ -28,23 +30,40 @@ import {DeviceService} from '../services/device.service';
 
 export class PageAdmineventsComponent implements OnInit {
   dataSource;
+  dataSourceMembers;
   columnsToDisplay = this.device.IsMobile() ? ['name', 'control'] : ['id', 'name', 'datetimeStart', 'control'];
+  columnsToDisplayMembers = this.device.IsMobile() ? ['surname', 'status', 'control'] :
+    ['name', 'surname', 'datetime', 'status', 'control'];
   expandedElement: WTEvent | null;
-  @ViewChild(MatSort, {static: true}) sort: MatSort;
+  @ViewChild('eventSort', {static: true}) eventSort: MatSort;
+
   history: boolean;
 
   events: WTEvent[];
+  members: WTMembersOnEvent[];
+  curEventId: number;
+
   error = '';
+  membersError = '';
 
   editor: Editor;
+
+  schools: School[] = [
+    {value: 0, name: 'Steak'},
+    {value: 1, name: 'Pizza'},
+    {value: 2, name: 'Tacos'},
+    {value: 3, name: 'neco'}
+  ];
 
   constructor(private httpService: HttpService,
               private alertService: AlertService,
               private dialog: MatDialog,
               private changeDetectorRefs: ChangeDetectorRef,
-              public device: DeviceService){
+              public device: DeviceService,
+              private headerService: HeaderService){
     this.editor = new Editor();
     this.history = false;
+    this.headerService.setTitle('Správa událostí');
   }
 
   ngOnInit() {
@@ -83,12 +102,51 @@ export class PageAdmineventsComponent implements OnInit {
             ev => this.formatDate(ev.datetimeEnd) >= new Date());
           }
         this.dataSource = new MatTableDataSource(this.events);
-        this.dataSource.sort = this.sort;
+        this.dataSource.sort = this.eventSort;
       },
       (err) => {
         this.error = err;
       }
     );
+  }
+
+  getMembers(eventId: number): void {
+    this.httpService.getMembersOnEvent(eventId).subscribe(
+      (members: WTMembersOnEvent[]) => {
+        this.members = members;
+        this.dataSourceMembers = new MatTableDataSource(this.members);
+      },
+      (err) => {
+        this.error = err;
+      }
+    );
+  }
+
+  getName(member: WTMembersOnEvent): string{
+    return member.name ?? member.guestName;
+  }
+
+  getSurname(member: WTMembersOnEvent): string{
+    return member.surname ?? member.guestSurname;
+  }
+
+  getStatus(member: WTMembersOnEvent): string{
+    let result = '';
+    if(!!+member.confirmed)
+      result = 'done';
+    if(!!+member.present)
+      result = 'done_all';
+    return result;
+  }
+
+  tabChanged(event: MatTabChangeEvent, eventId: number){
+    if(event.index === 1){
+      this.getMembers(eventId);
+      this.curEventId = eventId;
+    }
+    else{
+      this.dataSourceMembers.sort = null;
+    }
   }
 
   applyFilter(event: Event) {
@@ -103,6 +161,7 @@ export class PageAdmineventsComponent implements OnInit {
       this.alertService.alert(AlertTexts.fail, SnackType.error);
     });
     this.editor.ResetAll();
+    this.editor.shadowCopyEvent();
     this.refresh();
   }
 
@@ -124,13 +183,38 @@ export class PageAdmineventsComponent implements OnInit {
     this.refresh();
   }
 
+  confirm(id: number){
+    this._updateEventRegistration(id, true, false);
+  }
+
+  present(id: number){
+    this._updateEventRegistration(id, true, true);
+  }
+
+  cancel(id: number){
+    this._updateEventRegistration(id, false, false);
+  }
+
+  private _updateEventRegistration(id: number, confirmed: boolean, present: boolean){
+    this.httpService.updateRegistration_post(id, confirmed, present, this.curEventId).subscribe(data => {
+      this.alertService.alert(AlertTexts.event_reg_updated, SnackType.info);
+      this.refreshMembers(this.curEventId);
+    },Error => {
+      this.alertService.alert(AlertTexts.fail, SnackType.error);
+    });
+  }
+
   Expanded(el: WTEvent){
     this.editor = new Editor(el);
   }
 
   refresh() {
     this.getEvents();
-    this.changeDetectorRefs.detectChanges();
+    // this.changeDetectorRefs.detectChanges();
+  }
+
+  refreshMembers(id: number){
+    this.getMembers(id);
   }
 }
 
@@ -249,7 +333,7 @@ class Editor {
   constructor(event?: WTEvent){
     if(event != null) {
       this._event = event;
-      this._shadowCopyEvent();
+      this.shadowCopyEvent();
       this.ResetAll();
     }
   }
@@ -268,7 +352,6 @@ class Editor {
   }
 
   public ResetAll(){
-    this._shadowCopyEvent();
     this._name = true;
     this._location = true;
     this._prize = true;
@@ -281,7 +364,7 @@ class Editor {
     this._description = true;
   }
 
-  private _shadowCopyEvent(){
+  public shadowCopyEvent(){
     this._eventOrigin = new WTEvent(
       this._event.id,
       this._event.datetime,
@@ -298,4 +381,9 @@ class Editor {
       this._event.datetimeDeadline,
       this._event.datetimeEnd);
   }
+}
+
+interface School {
+  value: number;
+  name: string;
 }

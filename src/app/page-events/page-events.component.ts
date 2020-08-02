@@ -1,8 +1,8 @@
 import {Component, OnInit} from '@angular/core';
 import {HeaderService} from '../services/header-title-change.service';
 import {HttpService} from '../services/http.service';
-import {WTEvent} from '../class/WTEvent';
-import {WTEventRegistration} from '../class/WTEventRegistration';
+import {WTEvent} from '../class/data/WTEvent';
+import {WTEventRegistration} from '../class/data/WTEventRegistration';
 import {DatastorageService} from '../services/datastorage.service';
 import {Convert} from '../class/Convert';
 import {DeviceService} from '../services/device.service';

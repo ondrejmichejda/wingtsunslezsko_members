@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import {HeaderService} from '../services/header-title-change.service';
 import {HttpService} from '../services/http.service';
-import {WTNotice} from '../class/WTNotice';
+import {WTNotice} from '../class/data/WTNotice';
 import {Convert} from '../class/Convert';
 
 @Component({

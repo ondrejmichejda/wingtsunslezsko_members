@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import {WTMember} from '../class/WTMember';
+import {WTMember} from '../class/data/WTMember';
 
 @Injectable({
   providedIn: 'root'

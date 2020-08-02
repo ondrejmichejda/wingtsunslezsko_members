@@ -2,10 +2,11 @@ import { Injectable } from '@angular/core';
 import {HttpClient, HttpErrorResponse, HttpHeaders, HttpParams} from '@angular/common/http';
 import { Observable, throwError } from 'rxjs';
 import { map, catchError } from 'rxjs/operators';
-import { WTNotice } from '../class/WTNotice';
-import { WTEvent } from '../class/WTEvent';
-import { WTMember } from '../class/WTMember';
-import {WTEventRegistration} from '../class/WTEventRegistration';
+import { WTNotice } from '../class/data/WTNotice';
+import { WTEvent } from '../class/data/WTEvent';
+import { WTMember } from '../class/data/WTMember';
+import {WTEventRegistration} from '../class/data/WTEventRegistration';
+import {WTMembersOnEvent} from '../class/data/WTMembersOnEvent';
 
 @Injectable({
   providedIn: 'root'
@@ -91,6 +92,22 @@ export class HttpService {
     });
   }
 
+  /**
+   * Update event registration.
+   */
+  updateRegistration_post(id: number, confirmed: boolean, present: boolean, eventId: number){
+    const body = new HttpParams()
+      .set('id', id.toString())
+      .set('confirmed', confirmed.toString())
+      .set('present', present.toString())
+      .set('eventId', eventId.toString());
+
+    return this.http.post(`${this.baseUrl}event_registration_update.php`, body.toString(), {
+      headers: new HttpHeaders()
+        .set('Content-Type', 'application/x-www-form-urlencoded')
+    });
+  }
+
   /**************************
    **** GET REQUESTS
    **************************/
@@ -131,6 +148,19 @@ export class HttpService {
       map((res) => {
         events = res[data];
         return events;
+      }), catchError(this.handleError));
+  }
+
+  /**
+   * Get members on event from db.
+   */
+  getMembersOnEvent(eventId: number): Observable<WTMembersOnEvent[]> {
+    let members: WTMembersOnEvent[];
+    const data = 'data';
+    return this.http.get(`${this.baseUrl}members_on_event_get.php?eventId=`+eventId).pipe(
+      map((res) => {
+        members = res[data];
+        return members;
       }), catchError(this.handleError));
   }
 

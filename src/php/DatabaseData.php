@@ -72,7 +72,7 @@ abstract class DatabaseData implements IDatabaseData
 
     // update members
     $data = [];
-    $sql = "SELECT * FROM in_events_registrations WHERE event_id=".$eventId;
+    $sql = "SELECT * FROM in_events_registrations WHERE confirmed=true AND event_id=".$eventId;
     if($result = mysqli_query($this->connection,$sql))
     {
       $cr = 0;
@@ -83,7 +83,7 @@ abstract class DatabaseData implements IDatabaseData
         $cr++;
       }
 
-      $sql = "UPDATE `in_events` SET members=".count($data)." WHERE id=".$eventId;
+      $sql = "UPDATE in_events SET members=".count($data)." WHERE id=".$eventId;
       if(!mysqli_query($this->connection,$sql))
         $updated = false;
     }
@@ -110,6 +110,14 @@ abstract class DatabaseData implements IDatabaseData
 
     return $updated;
   }
+
+  protected function getISOtime($datetime){
+    return $datetime;
+  }
+
+  protected function getDBtime($datetime){
+    return $datetime;
+  }
 }
 
 class Notice extends DatabaseData
@@ -125,7 +133,7 @@ class Notice extends DatabaseData
       while($row = mysqli_fetch_assoc($result))
       {
         $data[$cr]['id']    = $row['id'];
-        $data[$cr]['datetime'] = $row['datetime'];
+        $data[$cr]['datetime'] = $this->getISOtime($row['datetime']);
         $data[$cr]['school'] = $row['school'];
         $data[$cr]['text'] = $row['text'];
         $data[$cr]['color'] = $row['color'];
@@ -164,9 +172,9 @@ class Event extends DatabaseData
         $data[$cr]['memberlimit'] = $row['memberlimit'];
         $data[$cr]['memberlimitMin'] = $row['memberlimit_min'];
         $data[$cr]['members'] = $row['members'];
-        $data[$cr]['datetimeStart'] = $row['datetime_start'];
-        $data[$cr]['datetimeDeadline'] = $row['datetime_deadline'];
-        $data[$cr]['datetimeEnd'] = $row['datetime_end'];
+        $data[$cr]['datetimeStart'] = $this->getISOtime($row['datetime_start']);
+        $data[$cr]['datetimeDeadline'] = $this->getISOtime($row['datetime_deadline']);
+        $data[$cr]['datetimeEnd'] = $this->getISOtime($row['datetime_end']);
         $cr++;
       }
 
@@ -198,9 +206,9 @@ class Event extends DatabaseData
         $data[$cr]['memberlimit'] = $row['memberlimit'];
         $data[$cr]['memberlimitMin'] = $row['memberlimit_min'];
         $data[$cr]['members'] = $row['members'];
-        $data[$cr]['datetimeStart'] = $row['datetime_start'];
-        $data[$cr]['datetimeDeadline'] = $row['datetime_deadline'];
-        $data[$cr]['datetimeEnd'] = $row['datetime_end'];
+        $data[$cr]['datetimeStart'] = $this->getISOtime($row['datetime_start']);
+        $data[$cr]['datetimeDeadline'] = $this->getISOtime($row['datetime_deadline']);
+        $data[$cr]['datetimeEnd'] = $this->getISOtime($row['datetime_end']);
         $cr++;
       }
 
@@ -223,9 +231,9 @@ class Event extends DatabaseData
             description='".$description."',
             memberlimit=".$memberlimit.",
             memberlimit_min=".$memberlimitMin.",
-            datetime_start='".$datetimeStart."',
-            datetime_end='".$datetimeEnd."',
-            datetime_deadline='".$datetimeDeadline."'
+            datetime_start='".$this->getDBtime($datetimeStart)."',
+            datetime_end='".$this->getDBtime($datetimeEnd)."',
+            datetime_deadline='".$this->getDBtime($datetimeDeadline)."'
             WHERE id=".$id;
 
     $result = mysqli_query($this->connection,$sql);
@@ -272,6 +280,20 @@ class EventRegistration extends DatabaseData
     new ErrorException('Not implemented');
   }
 
+  public function Update($id, $confirmed, $present, $eventId)
+  {
+    $result = true;
+
+    $sql = "UPDATE in_events_registrations
+            SET confirmed=".$confirmed.", present=".$present."
+            WHERE id=".$id;
+
+    $result = mysqli_query($this->connection,$sql);
+    $result = self::UpdateEvent($eventId);
+
+    echo $result;
+  }
+
   public function GetDataBy($id, $byMember)
   {
     $data = [];
@@ -289,11 +311,11 @@ class EventRegistration extends DatabaseData
       while($row = mysqli_fetch_assoc($result))
       {
         $data[$cr]['id'] = $row['id'];
-        $data[$cr]['datetime'] = $row['datetime'];
+        $data[$cr]['datetime'] = $this->getISOtime($row['datetime']);
         $data[$cr]['eventId'] = $row['event_id'];
         $data[$cr]['userId'] = $row['user_id'];
         $data[$cr]['confirmed'] = $row['confirmed'];
-        $data[$cr]['notpresent'] = $row['notpresent'];
+        $data[$cr]['present'] = $row['present'];
         $data[$cr]['guest'] = $row['guest'];
         $data[$cr]['guestName'] = $row['guest_name'];
         $data[$cr]['guestSurname'] = $row['guest_surname'];
@@ -313,6 +335,39 @@ class Member extends DatabaseData
 {
   public function GetData(){
     //Not implemented
+  }
+
+  public function GetAllOnEvent($eventId){
+    $data = [];
+    $sql = "SELECT in_events_registrations.id, in_events_registrations.datetime, in_members.name, in_members.surname, in_events_registrations.confirmed,
+            in_events_registrations.present, in_events_registrations.guest, in_events_registrations.guest_name, in_events_registrations.guest_surname
+            FROM in_events_registrations
+            LEFT JOIN in_members ON in_events_registrations.user_id=in_members.id
+            WHERE in_events_registrations.event_id = ".$eventId." ORDER BY datetime ASC";
+
+    if($result = mysqli_query($this->connection,$sql))
+    {
+      $cr = 0;
+      while($row = mysqli_fetch_assoc($result))
+      {
+        $data[$cr]['id'] = $row['id'];
+        $data[$cr]['datetime'] = $this->getISOtime($row['datetime']);
+        $data[$cr]['name'] = $row['name'];
+        $data[$cr]['surname'] = $row['surname'];
+        $data[$cr]['confirmed'] = $row['confirmed'];
+        $data[$cr]['present'] = $row['present'];
+        $data[$cr]['guest'] = $row['guest'];
+        $data[$cr]['guestName'] = $row['guest_name'];
+        $data[$cr]['guestSurname'] = $row['guest_surname'];
+        $cr++;
+      }
+
+      echo json_encode(['data'=>$data]);
+    }
+    else
+    {
+      http_response_code(404);
+    }
   }
 
   public function GetOne($login, $password)
