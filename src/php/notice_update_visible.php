@@ -1,4 +1,4 @@
 <?php
 require('DatabaseData.php');
 $notice = new Notice();
-$notice->GetData();
+$notice->UpdateVisible($_POST['id'], $_POST['visible']);

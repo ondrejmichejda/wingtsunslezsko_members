@@ -65,14 +65,14 @@ abstract class DatabaseData implements IDatabaseData
     $this->connection = conn();
   }
 
-  // Update signed members and not confirmed members for event
+  // Update members, confirmed and present
   protected function UpdateEvent($eventId)
   {
     $updated = true;
 
     // update members
     $data = [];
-    $sql = "SELECT * FROM in_events_registrations WHERE confirmed=true AND event_id=".$eventId;
+    $sql = "SELECT * FROM in_events_registrations WHERE event_id=".$eventId;
     if($result = mysqli_query($this->connection,$sql))
     {
       $cr = 0;
@@ -92,21 +92,49 @@ abstract class DatabaseData implements IDatabaseData
       $updated = false;
     }
 
-    // update members confirmed
-    // $sql = "SELECT * FROM in_events_registrations WHERE confirmed=true AND event_id=".$eventId;
-
-    $notconfirmedCount = 0;
-
-    foreach($data as $reg){
-      if(!$reg['confirmed'])
+    // update confirmed
+    $data = [];
+    $sql = "SELECT * FROM in_events_registrations WHERE confirmed=true AND event_id=".$eventId;
+    if($result = mysqli_query($this->connection,$sql))
+    {
+      $cr = 0;
+      while($row = mysqli_fetch_assoc($result))
       {
-        $notconfirmedCount++;
+        $data[$cr]['event_id'] = $row['event_id'];
+        $data[$cr]['confirmed'] = $row['confirmed'];
+        $cr++;
       }
+
+      $sql = "UPDATE in_events SET confirmed=".count($data)." WHERE id=".$eventId;
+      if(!mysqli_query($this->connection,$sql))
+        $updated = false;
+    }
+    else
+    {
+      $updated = false;
     }
 
-    $sql = "UPDATE `in_events` SET notconfirmed=".$notconfirmedCount." WHERE id=".$eventId;
-    if(!mysqli_query($this->connection,$sql))
+    // update present
+    $data = [];
+    $sql = "SELECT * FROM in_events_registrations WHERE present=true AND event_id=".$eventId;
+    if($result = mysqli_query($this->connection,$sql))
+    {
+      $cr = 0;
+      while($row = mysqli_fetch_assoc($result))
+      {
+        $data[$cr]['event_id'] = $row['event_id'];
+        $data[$cr]['confirmed'] = $row['confirmed'];
+        $cr++;
+      }
+
+      $sql = "UPDATE in_events SET present=".count($data)." WHERE id=".$eventId;
+      if(!mysqli_query($this->connection,$sql))
+        $updated = false;
+    }
+    else
+    {
       $updated = false;
+    }
 
     return $updated;
   }
@@ -122,10 +150,11 @@ abstract class DatabaseData implements IDatabaseData
 
 class Notice extends DatabaseData
 {
-  public function GetData()
+  public function GetData($school)
   {
     $data = [];
-    $sql = "SELECT * FROM in_noticeboard ORDER BY id DESC";
+    $schoolCondition = $school == 0 ? '%' : $school;
+    $sql = "SELECT * FROM in_noticeboard WHERE visible=true AND (school LIKE '".$schoolCondition."' or school=0) ORDER BY datetime DESC";
 
     if($result = mysqli_query($this->connection,$sql))
     {
@@ -135,8 +164,10 @@ class Notice extends DatabaseData
         $data[$cr]['id']    = $row['id'];
         $data[$cr]['datetime'] = $this->getISOtime($row['datetime']);
         $data[$cr]['school'] = $row['school'];
+        $data[$cr]['head'] = $row['head'];
         $data[$cr]['text'] = $row['text'];
         $data[$cr]['color'] = $row['color'];
+        $data[$cr]['visible'] = $row['visible'];
         $cr++;
       }
 
@@ -147,6 +178,58 @@ class Notice extends DatabaseData
       http_response_code(404);
     }
   }
+
+  public function GetDataAll()
+  {
+    $data = [];
+    $sql = "SELECT * FROM in_noticeboard ORDER BY datetime DESC";
+
+    if($result = mysqli_query($this->connection,$sql))
+    {
+      $cr = 0;
+      while($row = mysqli_fetch_assoc($result))
+      {
+        $data[$cr]['id']    = $row['id'];
+        $data[$cr]['datetime'] = $this->getISOtime($row['datetime']);
+        $data[$cr]['school'] = $row['school'];
+        $data[$cr]['head'] = $row['head'];
+        $data[$cr]['text'] = $row['text'];
+        $data[$cr]['color'] = $row['color'];
+        $data[$cr]['visible'] = $row['visible'];
+        $cr++;
+      }
+
+      echo json_encode(['data'=>$data]);
+    }
+    else
+    {
+      http_response_code(404);
+    }
+  }
+
+  public function CreateData($head, $school, $color, $text)
+  {
+    $sql = "INSERT INTO in_noticeboard (head, school, color, text) VALUES ('".$head."', ".$school.", '".$color."', '".$text."')";
+
+    $result = mysqli_query($this->connection,$sql);
+    echo $result;
+  }
+
+  public function DeleteData($id)
+  {
+    $sql = "DELETE FROM in_noticeboard WHERE id=".$id;
+
+    $result = mysqli_query($this->connection,$sql);
+    echo $result;
+  }
+
+  public function UpdateVisible($id, $visible)
+  {
+    $sql = "UPDATE in_noticeboard SET visible=".$visible." WHERE id=".$id;
+
+    $result = mysqli_query($this->connection,$sql);
+    echo $result;
+  }
 }
 
 class Event extends DatabaseData
@@ -155,7 +238,7 @@ class Event extends DatabaseData
   {
     $data = [];
     $schoolCondition = $school == 0 ? '%' : $school;
-    $sql = "SELECT * FROM in_events WHERE datetime_end >= CURRENT_TIMESTAMP AND (school LIKE '".$schoolCondition."' or school=0) ORDER BY datetime_start ASC";
+    $sql = "SELECT * FROM in_events WHERE visible=true AND datetime_end >= CURRENT_TIMESTAMP AND (school LIKE '".$schoolCondition."' or school=0) ORDER BY datetime_start ASC";
 
     if($result = mysqli_query($this->connection,$sql))
     {
@@ -172,9 +255,48 @@ class Event extends DatabaseData
         $data[$cr]['memberlimit'] = $row['memberlimit'];
         $data[$cr]['memberlimitMin'] = $row['memberlimit_min'];
         $data[$cr]['members'] = $row['members'];
+        $data[$cr]['confirmed'] = $row['confirmed'];
+        $data[$cr]['present'] = $row['present'];
         $data[$cr]['datetimeStart'] = $this->getISOtime($row['datetime_start']);
         $data[$cr]['datetimeDeadline'] = $this->getISOtime($row['datetime_deadline']);
         $data[$cr]['datetimeEnd'] = $this->getISOtime($row['datetime_end']);
+        $cr++;
+      }
+
+      echo json_encode(['data'=>$data]);
+    }
+    else
+    {
+      http_response_code(404);
+    }
+  }
+
+  public function GetOne($eventId)
+  {
+    $data = [];
+    $sql = "SELECT * FROM in_events WHERE id=".$eventId;
+
+    if($result = mysqli_query($this->connection,$sql))
+    {
+      $cr = 0;
+      while($row = mysqli_fetch_assoc($result))
+      {
+        $data[$cr]['id'] = $row['id'];
+        $data[$cr]['datetime'] = $row['datetime'];
+        $data[$cr]['name'] = $row['name'];
+        $data[$cr]['school'] = $row['school'];
+        $data[$cr]['location'] = $row['location'];
+        $data[$cr]['prize'] = $row['prize'];
+        $data[$cr]['description'] = $row['description'];
+        $data[$cr]['memberlimit'] = $row['memberlimit'];
+        $data[$cr]['memberlimitMin'] = $row['memberlimit_min'];
+        $data[$cr]['members'] = $row['members'];
+        $data[$cr]['confirmed'] = $row['confirmed'];
+        $data[$cr]['present'] = $row['present'];
+        $data[$cr]['datetimeStart'] = $this->getISOtime($row['datetime_start']);
+        $data[$cr]['datetimeDeadline'] = $this->getISOtime($row['datetime_deadline']);
+        $data[$cr]['datetimeEnd'] = $this->getISOtime($row['datetime_end']);
+        $data[$cr]['visible'] = $row['visible'];
         $cr++;
       }
 
@@ -206,9 +328,12 @@ class Event extends DatabaseData
         $data[$cr]['memberlimit'] = $row['memberlimit'];
         $data[$cr]['memberlimitMin'] = $row['memberlimit_min'];
         $data[$cr]['members'] = $row['members'];
+        $data[$cr]['confirmed'] = $row['confirmed'];
+        $data[$cr]['present'] = $row['present'];
         $data[$cr]['datetimeStart'] = $this->getISOtime($row['datetime_start']);
         $data[$cr]['datetimeDeadline'] = $this->getISOtime($row['datetime_deadline']);
         $data[$cr]['datetimeEnd'] = $this->getISOtime($row['datetime_end']);
+        $data[$cr]['visible'] = $row['visible'];
         $cr++;
       }
 
@@ -221,7 +346,7 @@ class Event extends DatabaseData
   }
 
   public function SetData($id, $name, $school, $location, $prize, $description, $memberlimit,
-                          $memberlimitMin, $datetimeStart, $datetimeEnd, $datetimeDeadline)
+                          $memberlimitMin, $datetimeStart, $datetimeEnd, $datetimeDeadline, $visible)
   {
     $sql = "UPDATE in_events SET
             name='".$name."',
@@ -233,7 +358,8 @@ class Event extends DatabaseData
             memberlimit_min=".$memberlimitMin.",
             datetime_start='".$this->getDBtime($datetimeStart)."',
             datetime_end='".$this->getDBtime($datetimeEnd)."',
-            datetime_deadline='".$this->getDBtime($datetimeDeadline)."'
+            datetime_deadline='".$this->getDBtime($datetimeDeadline)."',
+            visible=".$visible."
             WHERE id=".$id;
 
     $result = mysqli_query($this->connection,$sql);
@@ -265,6 +391,13 @@ class Event extends DatabaseData
     echo $result;
   }
 
+  public function CreateData()
+  {
+    $sql = "INSERT INTO in_events (name, datetime_end) VALUES ('Nová', '".date("Y-m-d H:i:s", strtotime("+1 hours"))."')";
+    $result = mysqli_query($this->connection,$sql);
+    echo $result;
+  }
+
   public function DeleteData($id)
   {
     $sql = "DELETE FROM `in_events` WHERE id=".$id;
@@ -287,6 +420,48 @@ class EventRegistration extends DatabaseData
     $sql = "UPDATE in_events_registrations
             SET confirmed=".$confirmed.", present=".$present."
             WHERE id=".$id;
+
+    $result = mysqli_query($this->connection,$sql);
+    $result = self::UpdateEvent($eventId);
+
+    echo $result;
+  }
+
+  public function ResetAll($eventId)
+  {
+    $result = true;
+
+    $sql = "UPDATE in_events_registrations
+            SET confirmed=false, present=false
+            WHERE event_id=".$eventId;
+
+    $result = mysqli_query($this->connection,$sql);
+    $result = self::UpdateEvent($eventId);
+
+    echo $result;
+  }
+
+  public function ConfirmedAll($eventId)
+  {
+    $result = true;
+
+    $sql = "UPDATE in_events_registrations
+            SET confirmed=true
+            WHERE event_id=".$eventId;
+
+    $result = mysqli_query($this->connection,$sql);
+    $result = self::UpdateEvent($eventId);
+
+    echo $result;
+  }
+
+  public function PresentAll($eventId)
+  {
+    $result = true;
+
+    $sql = "UPDATE in_events_registrations
+            SET present=true
+            WHERE confirmed=true AND event_id=".$eventId;
 
     $result = mysqli_query($this->connection,$sql);
     $result = self::UpdateEvent($eventId);

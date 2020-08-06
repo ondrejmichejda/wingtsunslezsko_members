@@ -1,0 +1,37 @@
+<div class="page-container">
+  <p class="hint-text">Aktuální informace ohledně tréninků, událostí a všeho co se v našich školách děje.</p>
+
+  <div class="error-text" *ngIf="error">{{error}}</div>
+  <mat-card *ngFor="let notice of notices">
+    <mat-card-header>
+      <mat-card-title>{{notice.head}}</mat-card-title>
+      <mat-card-subtitle>{{GetDate(notice.datetime).toLocaleDateString('cs-CZ')}}</mat-card-subtitle>
+      <mat-card-subtitle>Škola: {{getSchool(notice.school)}}</mat-card-subtitle>
+      <div class="control-btns">
+        <button mat-icon-button
+                class="memberBtn"
+                (click)="changeVisibility(notice)"
+                matTooltip="Viditelnost">
+          <mat-icon *ngIf="!!+notice.visible">visibility</mat-icon>
+          <mat-icon *ngIf="!!!+notice.visible">visibility_off</mat-icon>
+        </button>
+        <button mat-icon-button
+                class="memberBtn"
+                color="warn"
+                (click)="dialogDelete(notice.id)"
+                matTooltip="Smazat">
+          <mat-icon>delete</mat-icon>
+        </button>
+        <button mat-icon-button
+                class="memberBtn"
+                color="primary"
+                (click)="dialogCreate(notice.id)"
+                matTooltip="Vytvořit">
+          <mat-icon>note_add</mat-icon>
+        </button>
+      </div>
+    </mat-card-header>
+    <mat-card-content style="margin-left: 16px;"><p>{{notice.text}}</p></mat-card-content>
+  </mat-card>
+
+</div>

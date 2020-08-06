@@ -49,6 +49,6 @@ export class UserAuthenticationService {
   }
 
   isLoggedAdmin(): boolean {
-    return this.dataStorage.Member.admin;
+    return !!+this.dataStorage.Member.admin;
   }
 }

@@ -6,7 +6,7 @@
             <mat-expansion-panel-header>
                 <mat-panel-title class="datetime">
                     <mat-icon *ngIf="true" [color]="getRegStatus(event).Color">{{getRegStatus(event).Icon}}</mat-icon>
-                    <span class="event-name">{{ thispanel.expanded ? event.name : AdjustText(event.name)}}</span><span class="event-members">{{event.members + '/' + event.memberlimit}}</span>
+                    <span class="event-name">{{ thispanel.expanded ? event.name : AdjustText(event.name)}}</span><span class="event-members">{{event.confirmed + '/' + event.memberlimit}}</span>
                 </mat-panel-title>
             </mat-expansion-panel-header>
 

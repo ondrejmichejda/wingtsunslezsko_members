@@ -12,3 +12,13 @@ mat-card-footer{
   padding-right: 10px;
 }
 
+.control-btns {
+  position: absolute;
+  top: 0;
+  right: 0;
+}
+
+.memberBtn {
+  float: right;
+  width: 30px !important;
+}

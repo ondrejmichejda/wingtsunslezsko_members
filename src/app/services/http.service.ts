@@ -46,6 +46,16 @@ export class HttpService {
   }
 
   /**
+   * Create notice.
+   */
+  createEvent_post(){
+    return this.http.post(`${this.baseUrl}event_create.php`, null, {
+      headers: new HttpHeaders()
+        .set('Content-Type', 'application/x-www-form-urlencoded')
+    });
+  }
+
+  /**
    * Update event.
    */
   setEvent_post(event: WTEvent){
@@ -60,9 +70,51 @@ export class HttpService {
       .set('memberlimitMin', event.memberlimitMin.toString())
       .set('datetimeStart', event.datetimeStart.toString())
       .set('datetimeEnd', event.datetimeEnd.toString())
-      .set('datetimeDeadline', event.datetimeDeadline.toString());
+      .set('datetimeDeadline', event.datetimeDeadline.toString())
+      .set('visible', event.visible.toString());
 
     return this.http.post(`${this.baseUrl}event_set.php`, body.toString(), {
+      headers: new HttpHeaders()
+        .set('Content-Type', 'application/x-www-form-urlencoded')
+    });
+  }
+
+  /**
+   * Create notice.
+   */
+  createNotice_post(notice: WTNotice){
+    const body = new HttpParams()
+      .set('head', notice.head.toString())
+      .set('school', notice.school.toString())
+      .set('color', notice.color.toString())
+      .set('text', notice.text.toString());
+
+    return this.http.post(`${this.baseUrl}notice_create.php`, body.toString(), {
+      headers: new HttpHeaders()
+        .set('Content-Type', 'application/x-www-form-urlencoded')
+    });
+  }
+
+  /**
+   * Delete notice.
+   */
+  deleteNotice_post(id: number){
+    const body = new HttpParams()
+      .set('id', id.toString());
+    return this.http.post(`${this.baseUrl}notice_delete.php`, body.toString(), {
+      headers: new HttpHeaders()
+        .set('Content-Type', 'application/x-www-form-urlencoded')
+    });
+  }
+
+  /**
+   * Update visible notice.
+   */
+  updateVisibleNotice_post(id: number, visible: boolean){
+    const body = new HttpParams()
+      .set('id', id.toString())
+      .set('visible', visible.toString());
+    return this.http.post(`${this.baseUrl}notice_update_visible.php`, body.toString(), {
       headers: new HttpHeaders()
         .set('Content-Type', 'application/x-www-form-urlencoded')
     });
@@ -75,6 +127,42 @@ export class HttpService {
     const body = new HttpParams()
       .set('id', id.toString());
     return this.http.post(`${this.baseUrl}event_copy.php`, body.toString(), {
+      headers: new HttpHeaders()
+        .set('Content-Type', 'application/x-www-form-urlencoded')
+    });
+  }
+
+  /**
+   * Reset all on event
+   */
+  eventResetAll_post(eventId: number){
+    const body = new HttpParams()
+      .set('eventId', eventId.toString());
+    return this.http.post(`${this.baseUrl}event_registration_reset_all.php`, body.toString(), {
+      headers: new HttpHeaders()
+        .set('Content-Type', 'application/x-www-form-urlencoded')
+    });
+  }
+
+  /**
+   * Confirm all on event
+   */
+  eventConfirmedAll_post(eventId: number){
+    const body = new HttpParams()
+      .set('eventId', eventId.toString());
+    return this.http.post(`${this.baseUrl}event_registration_confirmed_all.php`, body.toString(), {
+      headers: new HttpHeaders()
+        .set('Content-Type', 'application/x-www-form-urlencoded')
+    });
+  }
+
+  /**
+   * Present all on event
+   */
+  eventPresentAll_post(eventId: number){
+    const body = new HttpParams()
+      .set('eventId', eventId.toString());
+    return this.http.post(`${this.baseUrl}event_registration_present_all.php`, body.toString(), {
       headers: new HttpHeaders()
         .set('Content-Type', 'application/x-www-form-urlencoded')
     });
@@ -128,10 +216,23 @@ export class HttpService {
   /**
    * Get notices from db.
    */
-  getNotices(): Observable<WTNotice[]> {
+  getNotices(school: number): Observable<WTNotice[]> {
     let notices: WTNotice[];
     const data = 'data';
-    return this.http.get(`${this.baseUrl}noticeboard_get.php`).pipe(
+    return this.http.get(`${this.baseUrl}notice_get.php?school=`+school).pipe(
+      map((res) => {
+        notices = res[data];
+        return notices;
+      }), catchError(this.handleError));
+  }
+
+  /**
+   * Get all notices from db.
+   */
+  getNoticesAll(): Observable<WTNotice[]> {
+    let notices: WTNotice[];
+    const data = 'data';
+    return this.http.get(`${this.baseUrl}noticeall_get.php`).pipe(
       map((res) => {
         notices = res[data];
         return notices;
@@ -145,6 +246,19 @@ export class HttpService {
     let events: WTEvent[];
     const data = 'data';
     return this.http.get(`${this.baseUrl}events_get.php?school=`+school).pipe(
+      map((res) => {
+        events = res[data];
+        return events;
+      }), catchError(this.handleError));
+  }
+
+  /**
+   * Get event from db.
+   */
+  getEvent(id: number): Observable<WTEvent[]> {
+    let events: WTEvent[];
+    const data = 'data';
+    return this.http.get(`${this.baseUrl}event_get.php?eventId=`+id).pipe(
       map((res) => {
         events = res[data];
         return events;

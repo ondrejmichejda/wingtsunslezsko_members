@@ -44,6 +44,10 @@ import { PageNoticeboardComponent } from './page-noticeboard/page-noticeboard.co
 import { PageAdmineventsComponent } from './page-adminevents/page-adminevents.component';
 import {MatButtonToggleModule} from '@angular/material/button-toggle';
 import { DialogConfirmComponent } from './dialog-confirm/dialog-confirm.component';
+import { PageAdminnoticesComponent } from './page-adminnotices/page-adminnotices.component';
+import { DialogComboboxComponent } from './dialog-combobox/dialog-combobox.component';
+import { DialogNewnoticeComponent } from './dialog-newnotice/dialog-newnotice.component';
+import { PageNewarticleComponent } from './page-newarticle/page-newarticle.component';
 
 
 @NgModule({
@@ -59,7 +63,11 @@ import { DialogConfirmComponent } from './dialog-confirm/dialog-confirm.componen
     PageVideoComponent,
     PageNoticeboardComponent,
     PageAdmineventsComponent,
-    DialogConfirmComponent
+    DialogConfirmComponent,
+    PageAdminnoticesComponent,
+    DialogComboboxComponent,
+    DialogNewnoticeComponent,
+    PageNewarticleComponent
   ],
     imports: [
         BrowserModule,

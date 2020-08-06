@@ -9,11 +9,12 @@ import {SnackType} from '../enum/SnackType';
 import {AlertService} from '../services/alert.service';
 import {MatDialog} from '@angular/material/dialog';
 import {DialogConfirmComponent} from '../dialog-confirm/dialog-confirm.component';
-import { Convert } from '../class/Convert';
+import {Convert} from '../class/Convert';
 import {DeviceService} from '../services/device.service';
 import {WTMembersOnEvent} from '../class/data/WTMembersOnEvent';
 import {MatTabChangeEvent} from '@angular/material/tabs';
 import {HeaderService} from '../services/header-title-change.service';
+import {WTNotice} from '../class/data/WTNotice';
 
 @Component({
   selector: 'app-page-adminevents',
@@ -40,6 +41,7 @@ export class PageAdmineventsComponent implements OnInit {
   history: boolean;
 
   events: WTEvent[];
+  event: WTEvent;
   members: WTMembersOnEvent[];
   curEventId: number;
 
@@ -47,13 +49,6 @@ export class PageAdmineventsComponent implements OnInit {
   membersError = '';
 
   editor: Editor;
-
-  schools: School[] = [
-    {value: 0, name: 'Steak'},
-    {value: 1, name: 'Pizza'},
-    {value: 2, name: 'Tacos'},
-    {value: 3, name: 'neco'}
-  ];
 
   constructor(private httpService: HttpService,
               private alertService: AlertService,
@@ -78,7 +73,7 @@ export class PageAdmineventsComponent implements OnInit {
     this.refresh();
   }
 
-  openDialog(id: number): void {
+  dialogDelete(id: number): void {
     const dialogRef = this.dialog.open(DialogConfirmComponent, {
       width: '250px',
       data: {text: 'Opravdu smazat?'}
@@ -87,6 +82,45 @@ export class PageAdmineventsComponent implements OnInit {
     dialogRef.afterClosed().subscribe(result => {
       if (result !== undefined) {
         this.deleteEvent(id);
+      }
+    });
+  }
+
+  dialogResetAll(eventId: number): void {
+    const dialogRef = this.dialog.open(DialogConfirmComponent, {
+      width: '250px',
+      data: {text: 'Opravdu všechny potvrdit?'}
+    });
+
+    dialogRef.afterClosed().subscribe(result => {
+      if (result !== undefined) {
+        this._resetAll(eventId);
+      }
+    });
+  }
+
+  dialogConfirmAll(eventId: number): void {
+    const dialogRef = this.dialog.open(DialogConfirmComponent, {
+      width: '250px',
+      data: {text: 'Opravdu všechny potvrdit?'}
+    });
+
+    dialogRef.afterClosed().subscribe(result => {
+      if (result !== undefined) {
+        this._confirmedAll(eventId);
+      }
+    });
+  }
+
+  dialogPresentAll(eventId: number): void {
+    const dialogRef = this.dialog.open(DialogConfirmComponent, {
+      width: '250px',
+      data: {text: 'Opravdu všichni dorazili?'}
+    });
+
+    dialogRef.afterClosed().subscribe(result => {
+      if (result !== undefined) {
+        this._presentAll(eventId);
       }
     });
   }
@@ -103,6 +137,7 @@ export class PageAdmineventsComponent implements OnInit {
           }
         this.dataSource = new MatTableDataSource(this.events);
         this.dataSource.sort = this.eventSort;
+        this.event = this.events[0];
       },
       (err) => {
         this.error = err;
@@ -118,6 +153,29 @@ export class PageAdmineventsComponent implements OnInit {
       },
       (err) => {
         this.error = err;
+      }
+    );
+  }
+
+  getEvent(eventId: number): void {
+    this.httpService.getEvent(eventId).subscribe(
+      (events: WTEvent[]) => {
+        this.event = events[0];
+      },
+      (err) => {
+        this.alertService.alert(AlertTexts.fail, SnackType.error);
+      }
+    );
+  }
+
+  createEvent(){
+    this.httpService.createEvent_post().subscribe(
+      (res: boolean) => {
+        this.alertService.alert(AlertTexts.event_created, SnackType.info);
+        this.getEvents();
+      },
+      (err) => {
+        this.alertService.alert(AlertTexts.fail, SnackType.error);
       }
     );
   }
@@ -139,14 +197,19 @@ export class PageAdmineventsComponent implements OnInit {
     return result;
   }
 
-  tabChanged(event: MatTabChangeEvent, eventId: number){
-    if(event.index === 1){
-      this.getMembers(eventId);
-      this.curEventId = eventId;
+  tabChanged(ev: MatTabChangeEvent, event: WTEvent){
+    if(ev.index === 1){
+      this.getMembers(event.id);
+      this.curEventId = event.id;
     }
     else{
       this.dataSourceMembers.sort = null;
     }
+  }
+
+  changeVisibility(event: WTEvent){
+    event.visible = !!!+event.visible;
+    this.updateEvent(event);
   }
 
   applyFilter(event: Event) {
@@ -157,30 +220,30 @@ export class PageAdmineventsComponent implements OnInit {
   updateEvent(event: WTEvent) {
     this.httpService.setEvent_post(event).subscribe(data => {
       this.alertService.alert(AlertTexts.event_udpated, SnackType.info);
+      this.editor.ResetAll();
+      this.editor.shadowCopyEvent();
+      this.refresh();
     },Error => {
       this.alertService.alert(AlertTexts.fail, SnackType.error);
     });
-    this.editor.ResetAll();
-    this.editor.shadowCopyEvent();
-    this.refresh();
   }
 
   copyEvent(id: number) {
     this.httpService.copyEvent_post(id).subscribe(data => {
       this.alertService.alert(AlertTexts.event_copied, SnackType.info);
+      this.refresh();
     },Error => {
       this.alertService.alert(AlertTexts.fail, SnackType.error);
     });
-    this.refresh();
   }
 
   deleteEvent(id: number){
     this.httpService.deleteEvent_post(id).subscribe(data => {
       this.alertService.alert(AlertTexts.event_deleted, SnackType.info);
+      this.refresh();
     },Error => {
       this.alertService.alert(AlertTexts.fail, SnackType.error);
     });
-    this.refresh();
   }
 
   confirm(id: number){
@@ -204,6 +267,33 @@ export class PageAdmineventsComponent implements OnInit {
     });
   }
 
+  private _resetAll(eventId: number){
+    this.httpService.eventResetAll_post(eventId).subscribe(data => {
+      this.refreshMembers(eventId);
+      this.alertService.alert(AlertTexts.event_reg_all, SnackType.info);
+    },Error => {
+      this.alertService.alert(AlertTexts.fail, SnackType.error);
+    });
+  }
+
+  private _confirmedAll(eventId: number){
+    this.httpService.eventConfirmedAll_post(eventId).subscribe(data => {
+      this.refreshMembers(eventId);
+      this.alertService.alert(AlertTexts.event_reg_all, SnackType.info);
+    },Error => {
+      this.alertService.alert(AlertTexts.fail, SnackType.error);
+    });
+  }
+
+  private _presentAll(eventId: number){
+    this.httpService.eventPresentAll_post(eventId).subscribe(data => {
+      this.refreshMembers(eventId);
+      this.alertService.alert(AlertTexts.event_reg_all, SnackType.info);
+    },Error => {
+      this.alertService.alert(AlertTexts.fail, SnackType.error);
+    });
+  }
+
   Expanded(el: WTEvent){
     this.editor = new Editor(el);
   }
@@ -215,6 +305,7 @@ export class PageAdmineventsComponent implements OnInit {
 
   refreshMembers(id: number){
     this.getMembers(id);
+    this.getEvent(this.curEventId);
   }
 }
 
@@ -365,25 +456,25 @@ class Editor {
   }
 
   public shadowCopyEvent(){
-    this._eventOrigin = new WTEvent(
-      this._event.id,
-      this._event.datetime,
-      this._event.name,
-      this._event.school,
-      this._event.location,
-      this._event.prize,
-      this._event.description,
-      this._event.memberlimit,
-      this._event.memberlimitMin,
-      this._event.members,
-      this._event.notconfirmed,
-      this._event.datetimeStart,
-      this._event.datetimeDeadline,
-      this._event.datetimeEnd);
-  }
-}
+    if(this._event !== undefined){
+      this._eventOrigin = new WTEvent(
+        this._event.id,
+        this._event.datetime,
+        this._event.name,
+        this._event.school,
+        this._event.location,
+        this._event.prize,
+        this._event.description,
+        this._event.memberlimit,
+        this._event.memberlimitMin,
+        this._event.members,
+        this._event.confirmed,
+        this._event.present,
+        this._event.datetimeStart,
+        this._event.datetimeDeadline,
+        this._event.datetimeEnd,
+        this._event.visible);
+    }
 
-interface School {
-  value: number;
-  name: string;
+  }
 }

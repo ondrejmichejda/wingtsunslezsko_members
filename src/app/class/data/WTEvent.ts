@@ -12,10 +12,12 @@ export class WTEvent {
   memberlimit: number;
   memberlimitMin: number;
   members: number;
-  notconfirmed: number;
+  confirmed: number;
+  present: number;
   datetimeStart: string;
   datetimeDeadline: string;
   datetimeEnd: string;
+  visible: boolean;
 
   regStatus = 0;
 
@@ -30,10 +32,12 @@ export class WTEvent {
     memberlimit: number,
     memberlimitMin: number,
     members: number,
-    notconfirmed: number,
+    confirmed: number,
+    present: number,
     datetimeStart: string,
     datetimeDeadline: string,
-    datetimeEnd: string) {
+    datetimeEnd: string,
+    visible: boolean) {
 
     this.id = id;
     this.datetime = datetime;
@@ -45,9 +49,10 @@ export class WTEvent {
     this.memberlimit = memberlimit;
     this.memberlimitMin = memberlimitMin;
     this.members = members;
-    this.notconfirmed = notconfirmed;
+    this.confirmed = confirmed;
     this.datetimeStart = datetimeStart;
     this.datetimeDeadline = datetimeDeadline;
     this.datetimeEnd = datetimeEnd;
+    this.visible = visible;
   }
 }

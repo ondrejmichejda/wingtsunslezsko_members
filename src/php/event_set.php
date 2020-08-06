@@ -12,4 +12,5 @@ $event->SetData(
   $_POST['memberlimitMin'],
   $_POST['datetimeStart'],
   $_POST['datetimeEnd'],
-  $_POST['datetimeDeadline']);
+  $_POST['datetimeDeadline'],
+  $_POST['visible']);

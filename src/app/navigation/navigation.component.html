@@ -5,16 +5,19 @@
                  [opened]="(isHandset$ | async) === false">
         <mat-toolbar>Menu</mat-toolbar>
         <mat-nav-list>
-            <!--<a mat-list-item href="prehled"><mat-icon>dashboard</mat-icon>Přehled</a>-->
-            <a mat-list-item href="nastenka"><mat-icon>assignment</mat-icon>Nástěnka</a>
-            <a mat-list-item href="udalosti"><mat-icon>group</mat-icon>Události</a>
-            <!--<a mat-list-item href="artikl"><mat-icon>shopping_cart</mat-icon>Artikl</a>-->
-            <!--<a mat-list-item href="chat"><mat-icon>textsms</mat-icon>Chat</a>-->
-            <!--<a mat-list-item href="video"><mat-icon>live_tv</mat-icon>Video</a>-->
+          <!--<a mat-list-item href="prehled"><mat-icon>dashboard</mat-icon>Přehled</a>-->
+          <a mat-list-item href="nastenka"><mat-icon>assignment</mat-icon>Nástěnka</a>
+          <a mat-list-item href="udalosti"><mat-icon>group</mat-icon>Události</a>
+          <!--<a mat-list-item href="artikl"><mat-icon>shopping_cart</mat-icon>Artikl</a>-->
+          <!--<a mat-list-item href="chat"><mat-icon>textsms</mat-icon>Chat</a>-->
+          <!--<a mat-list-item href="video"><mat-icon>live_tv</mat-icon>Video</a>-->
 
           <ng-container *ngIf="userAuthService.isLoggedAdmin()">
-              <mat-divider></mat-divider>
-              <a mat-list-item href="admin-udalosti"><mat-icon class="admin-icon">group</mat-icon>Správa událostí</a>
+            <mat-divider></mat-divider>
+            <a mat-list-item href="admin-nastenka"><mat-icon class="admin-icon">assignment</mat-icon>Správa nástěnky</a>
+            <a mat-list-item href="admin-udalosti"><mat-icon class="admin-icon">group</mat-icon>Správa událostí</a>
+            <a mat-list-item href="novy-clanek"><mat-icon class="admin-icon">article</mat-icon>Nový článek</a>
+
           </ng-container>
       </mat-nav-list>
   </mat-sidenav>

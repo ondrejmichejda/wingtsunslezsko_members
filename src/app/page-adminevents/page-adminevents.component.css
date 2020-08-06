@@ -53,3 +53,18 @@ mat-list-item {
   float: right;
   width: 30px !important;
 }
+
+.red {
+  background-color: #ffa1a1;
+}
+
+.green {
+  background-color: #a1ffa1;
+}
+
+.overview-card {
+  float: left;
+  margin: 10px;
+  padding: 5px;
+  text-align: center;
+}

@@ -10,6 +10,13 @@
                     style="margin-bottom: 10px;"
                     color="primary"
   >Historie</mat-slide-toggle>
+  <button mat-icon-button
+          class="memberBtn"
+          (click)="createEvent()"
+          color="primary"
+          matTooltip="Nový">
+    <mat-icon>note_add</mat-icon>
+  </button>
   <table mat-table
          matSort
          [dataSource]="dataSource"
@@ -37,9 +44,18 @@
       <td (click)="$event.stopPropagation();" mat-cell *matCellDef="let element">
         <button mat-icon-button
                 style="float: right;"
+                [disabled]="!editor.Same"
+                (click)="changeVisibility(element)"
+                matTooltip="Viditelnost">
+          <mat-icon *ngIf="!!+element.visible">visibility</mat-icon>
+          <mat-icon *ngIf="!!!+element.visible">visibility_off</mat-icon>
+        </button>
+
+        <button mat-icon-button
+                style="float: right;"
                 color="warn"
                 [disabled]="!editor.Same"
-                (click)="openDialog(element.id)"
+                (click)="dialogDelete(element.id)"
                 matTooltip="Smazat">
           <mat-icon>delete</mat-icon>
         </button>
@@ -60,7 +76,7 @@
       <td mat-cell *matCellDef="let element" [attr.colspan]="columnsToDisplay.length">
         <div class="example-element-detail" [@detailExpand]="element == expandedElement ? 'expanded' : 'collapsed'">
 
-          <mat-tab-group (focusChange)="tabChanged($event, element.id)">
+          <mat-tab-group (focusChange)="tabChanged($event, element)">
             <mat-tab>
               <ng-template mat-tab-label>
                 <mat-icon>assignment</mat-icon>
@@ -165,11 +181,35 @@
                 <mat-icon>group</mat-icon>
               </ng-template>
 
-              <mat-list>
-                <mat-list-item>Item1</mat-list-item>
-                <mat-list-item>Item 2</mat-list-item>
-                <mat-list-item>Item 3</mat-list-item>
-              </mat-list>
+              <mat-card class="overview-card"
+                        style="background-color: #e6e6e6;"
+                        matTooltip="Klikni pro reset všech"
+                        (click)="dialogResetAll(event.id)">
+                <mat-card-header>
+                  <mat-card-title>{{event.members}}</mat-card-title>
+                  <mat-card-subtitle>Přihlášených</mat-card-subtitle>
+                </mat-card-header>
+              </mat-card>
+
+              <mat-card class="overview-card"
+                        [ngClass]="(event.members-event.confirmed > 0)?'red':'green'"
+                        matTooltip="Klikni pro potvrzení všech"
+                        (click)="dialogConfirmAll(event.id)">
+                <mat-card-header>
+                  <mat-card-title>{{event.members-event.confirmed}}</mat-card-title>
+                  <mat-card-subtitle>Nepotvrzených</mat-card-subtitle>
+                </mat-card-header>
+              </mat-card>
+
+              <mat-card class="overview-card"
+                        [ngClass]="(event.confirmed-event.present > 0)?'red':'green'"
+                        matTooltip="Klikni pro přítomnost všech"
+                        (click)="dialogPresentAll(event.id)">
+                <mat-card-header>
+                  <mat-card-title>{{event.confirmed-event.present}}</mat-card-title>
+                  <mat-card-subtitle>Nepřítomných</mat-card-subtitle>
+                </mat-card-header>
+              </mat-card>
 
               <table mat-table
                      [dataSource]="dataSourceMembers"
