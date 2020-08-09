@@ -612,3 +612,73 @@ class Sign extends DatabaseData
   }
 
 }
+
+class Article extends DatabaseData{
+  public function UpdateSitemap()
+  {
+    //location of sitemap.xml
+    $file = '../../sitemap.xml';
+
+    //heading if xml file
+    $xml = new DOMDocument('1.0', 'UTF-8');
+    $xml_urlset = $xml->createElement("urlset");
+
+    $xml_urlset->setAttribute('xmlns', 'http://www.sitemaps.org/schemas/sitemap/0.9');
+
+    $staticSites = array(
+      'https://wingtsunslezsko.cz/',
+      'https://wingtsunslezsko.cz/domu',
+      'https://wingtsunslezsko.cz/nabor',
+      'https://wingtsunslezsko.cz/wingtsun',
+      'https://wingtsunslezsko.cz/zakladni-principy',
+      'https://wingtsunslezsko.cz/silove-principy',
+      'https://wingtsunslezsko.cz/wingtsunslezsko',
+      'https://wingtsunslezsko.cz/nasi-instruktori',
+      'https://wingtsunslezsko.cz/od-koho-se-ucime',
+      'https://wingtsunslezsko.cz/ostrava',
+      'https://wingtsunslezsko.cz/trinec',
+      'https://wingtsunslezsko.cz/dalsi-skoly-hkwta',
+      'https://wingtsunslezsko.cz/vyuka-wingtsun',
+      'https://wingtsunslezsko.cz/kurzy-seminare',
+      'https://wingtsunslezsko.cz/deti',
+      'https://wingtsunslezsko.cz/clanky',
+      'https://wingtsunslezsko.cz/clanky-wingtsun',
+      'https://wingtsunslezsko.cz/clanky-deti',
+      'https://wingtsunslezsko.cz/clanky-prevence',
+      'https://wingtsunslezsko.cz/aktuality');
+
+//fill xml with static sites
+    foreach ($staticSites as $site) {
+      $xml_url = $xml->createElement("url");
+      $xml_loc = $xml->createElement("loc");
+
+      $xml_loc->nodeValue = $site;
+
+      $xml_url->appendChild($xml_loc);
+      $xml_urlset->appendChild($xml_url);
+    }
+
+    $topics = array(
+      'actuality',
+      'article',
+      'action'
+    );
+
+    //fill xml with all articles
+    $sql = "SELECT * FROM ex_articles WHERE release_datetime <= NOW() AND visible=true";
+
+    if($result = mysqli_query($this->connection,$sql)) {
+      while($row = mysqli_fetch_assoc($result)) {
+        $xml_url = $xml->createElement("url");
+        $xml_loc = $xml->createElement("loc");
+        $xml_loc->nodeValue = 'https://wingtsunslezsko.cz/clanky/'.$row['url'];
+
+        $xml_url->appendChild($xml_loc);
+        $xml_urlset->appendChild($xml_url);
+      }
+    }
+
+    $xml->appendChild($xml_urlset);
+    $xml->save($file);
+  }
+}
