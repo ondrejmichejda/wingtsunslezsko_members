@@ -48,6 +48,9 @@ import { PageAdminnoticesComponent } from './page-adminnotices/page-adminnotices
 import { DialogComboboxComponent } from './dialog-combobox/dialog-combobox.component';
 import { DialogNewnoticeComponent } from './dialog-newnotice/dialog-newnotice.component';
 import { PageNewarticleComponent } from './page-newarticle/page-newarticle.component';
+import { QuillModule } from 'ngx-quill';
+import {MatChipsModule} from '@angular/material/chips';
+import {MatAutocompleteModule} from '@angular/material/autocomplete';
 
 
 @NgModule({
@@ -69,40 +72,43 @@ import { PageNewarticleComponent } from './page-newarticle/page-newarticle.compo
     DialogNewnoticeComponent,
     PageNewarticleComponent
   ],
-    imports: [
-        BrowserModule,
-        AppRoutingModule,
-        BrowserAnimationsModule,
-        MatSliderModule,
-        MatSidenavModule,
-        LayoutModule,
-        MatToolbarModule,
-        MatButtonModule,
-        MatIconModule,
-        MatListModule,
-        MatTableModule,
-        MatPaginatorModule,
-        MatSortModule,
-        MatSnackBarModule,
-        MatFormFieldModule,
-        FormsModule,
-        ReactiveFormsModule,
-        MatDividerModule,
-        MatSlideToggleModule,
-        MatCheckboxModule,
-        MatRadioModule,
-        MatCardModule,
-        MatTooltipModule,
-        MatExpansionModule,
-        MatMenuModule,
-        MatDialogModule,
-        MatInputModule,
-        MatTabsModule,
-        MatSelectModule,
-        BrowserModule,
-        HttpClientModule,
-        MatButtonToggleModule
-    ],
+  imports: [
+    BrowserModule,
+    AppRoutingModule,
+    BrowserAnimationsModule,
+    MatSliderModule,
+    MatSidenavModule,
+    LayoutModule,
+    MatToolbarModule,
+    MatButtonModule,
+    MatIconModule,
+    MatListModule,
+    MatTableModule,
+    MatPaginatorModule,
+    MatSortModule,
+    MatSnackBarModule,
+    MatFormFieldModule,
+    FormsModule,
+    ReactiveFormsModule,
+    MatDividerModule,
+    MatSlideToggleModule,
+    MatCheckboxModule,
+    MatRadioModule,
+    MatCardModule,
+    MatTooltipModule,
+    MatExpansionModule,
+    MatMenuModule,
+    MatDialogModule,
+    MatInputModule,
+    MatTabsModule,
+    MatSelectModule,
+    BrowserModule,
+    HttpClientModule,
+    MatButtonToggleModule,
+    QuillModule.forRoot(),
+    MatChipsModule,
+    MatAutocompleteModule
+  ],
   entryComponents: [DialogComponent],
   providers: [HeaderService],
   bootstrap: [AppComponent]
