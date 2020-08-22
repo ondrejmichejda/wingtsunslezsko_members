@@ -7,6 +7,7 @@ import { WTEvent } from '../class/data/WTEvent';
 import { WTMember } from '../class/data/WTMember';
 import {WTEventRegistration} from '../class/data/WTEventRegistration';
 import {WTMembersOnEvent} from '../class/data/WTMembersOnEvent';
+import {WTArticle} from '../class/data/WTArticle';
 
 @Injectable({
   providedIn: 'root'
@@ -210,6 +211,19 @@ export class HttpService {
       map((res) => {
         member = res[data];
         return member;
+      }), catchError(this.handleError));
+  }
+
+  /**
+   * Get articles from db.
+   */
+  getArticles(): Observable<WTArticle[]> {
+    let articles: WTArticle[];
+    const data = 'data';
+    return this.http.get(`${this.baseUrl}article_get_all.php`).pipe(
+      map((res) => {
+        articles = res[data];
+        return articles;
       }), catchError(this.handleError));
   }
 

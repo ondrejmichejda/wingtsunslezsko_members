@@ -1,20 +1,31 @@
 <mat-card>
+  <mat-card-title>Členská sekce</mat-card-title>
+  <mat-card-subtitle>Přihlášení</mat-card-subtitle>
 
-    <mat-card-title>Členská sekce</mat-card-title>
-    <mat-card-subtitle>Přihlášení</mat-card-subtitle>
+  <mat-form-field>
+      <input (keyup.enter)="_buttonClicked()" matInput placeholder="Login" [(ngModel)]="formLogin">
+  </mat-form-field>
 
-    <mat-form-field>
-        <input (keyup.enter)="_buttonClicked()" matInput placeholder="Login" [(ngModel)]="formLogin">
-    </mat-form-field>
+  <mat-form-field>
+      <input (keyup.enter)="_buttonClicked()" matInput placeholder="Heslo" [type]="pwdHide ? 'password' : 'text'" [(ngModel)]="formPwd">
+      <button mat-icon-button matSuffix (click)="pwdHide = !pwdHide">
+          <mat-icon>{{pwdHide ? 'visibility_off' : 'visibility'}}</mat-icon>
+      </button>
+  </mat-form-field>
 
-    <mat-form-field>
-        <input (keyup.enter)="_buttonClicked()" matInput placeholder="Heslo" [type]="pwdHide ? 'password' : 'text'" [(ngModel)]="formPwd">
-        <button mat-icon-button matSuffix (click)="pwdHide = !pwdHide">
-            <mat-icon>{{pwdHide ? 'visibility_off' : 'visibility'}}</mat-icon>
-        </button>
-    </mat-form-field>
+  <a href="https://www.wingtsunslezsko.cz">
+    <button
+      color="primary"
+      style="float:left;"
+      mat-button
+      matTooltip="www.wingtsunslezsko.cz">
+      <mat-icon>language</mat-icon>
+    </button>
+  </a>
 
-    <button (click)="_buttonClicked()"
-            mat-raised-button
-            color="primary">Přihlásit</button>
+  <button (click)="_buttonClicked()"
+          style="float: right;"
+          mat-raised-button
+          color="primary">Přihlásit</button>
+
 </mat-card>

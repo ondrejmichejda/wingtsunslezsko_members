@@ -76,7 +76,7 @@
       <td mat-cell *matCellDef="let element" [attr.colspan]="columnsToDisplay.length">
         <div class="example-element-detail" [@detailExpand]="element == expandedElement ? 'expanded' : 'collapsed'">
 
-          <mat-tab-group (focusChange)="tabChanged($event, element)">
+          <mat-tab-group (focusChange)="tabChanged(element)">
             <mat-tab>
               <ng-template mat-tab-label>
                 <mat-icon>assignment</mat-icon>
@@ -283,7 +283,7 @@
     <tr mat-row *matRowDef="let element; columns: columnsToDisplay;"
         class="example-element-row"
         [class.example-expanded-row]="expandedElement === element"
-        (click)="expandedElement = expandedElement === element ? null : element">
+        (click)="expandedElement = expandedElement === element ? null : element; tabChanged(element);">
     </tr>
     <tr mat-row *matRowDef="let row; columns: ['expandedDetail']" class="example-detail-row"></tr>
   </table>

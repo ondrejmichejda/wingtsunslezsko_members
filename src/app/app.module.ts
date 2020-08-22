@@ -51,6 +51,7 @@ import { PageNewarticleComponent } from './page-newarticle/page-newarticle.compo
 import { QuillModule } from 'ngx-quill';
 import {MatChipsModule} from '@angular/material/chips';
 import {MatAutocompleteModule} from '@angular/material/autocomplete';
+import { PageAdminarticlesComponent } from './page-adminarticles/page-adminarticles.component';
 
 
 @NgModule({
@@ -70,7 +71,8 @@ import {MatAutocompleteModule} from '@angular/material/autocomplete';
     PageAdminnoticesComponent,
     DialogComboboxComponent,
     DialogNewnoticeComponent,
-    PageNewarticleComponent
+    PageNewarticleComponent,
+    PageAdminarticlesComponent
   ],
   imports: [
     BrowserModule,

@@ -1,0 +1,63 @@
+table {
+  width: 100%;
+}
+
+tr.example-detail-row {
+  height: 0;
+}
+
+tr.example-element-row:not(.example-expanded-row):hover {
+  background: whitesmoke;
+}
+
+tr.example-element-row:not(.example-expanded-row):active {
+  background: #efefef;
+}
+
+.example-element-row td {
+  border-bottom-width: 0;
+}
+
+.example-element-detail {
+  overflow: hidden;
+}
+
+tr, .example-element-detail mat-icon:hover {
+  cursor: pointer;
+}
+
+.bottomButton {
+  margin: 0px 16px 10px 0px;
+  float: right;
+}
+
+.mat-form-field {
+  font-size: 14px;
+  width: 100%;
+}
+
+mat-list-item {
+  width: 100%;
+  margin-top: 10px;
+}
+
+.top-space {
+  margin-top: 10px !important;
+}
+
+.preview {
+  max-width: 960px;
+  margin: auto;
+  height: 500px;
+}
+
+.editor {
+  max-width: 960px;
+  margin: auto;
+  height: 500px;
+}
+
+#tab-group {
+  height: 600px;
+}
+

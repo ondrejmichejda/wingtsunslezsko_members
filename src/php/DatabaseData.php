@@ -400,9 +400,14 @@ class Event extends DatabaseData
 
   public function DeleteData($id)
   {
+    // delete event
     $sql = "DELETE FROM `in_events` WHERE id=".$id;
-
     $result = mysqli_query($this->connection,$sql);
+
+    // delete event registrations
+    $sql = "DELETE FROM `in_events_registrations` WHERE event_id = ".$id;
+    $result = mysqli_query($this->connection,$sql);
+
     echo $result;
   }
 }
@@ -503,6 +508,15 @@ class EventRegistration extends DatabaseData
     {
       http_response_code(404);
     }
+  }
+
+  public function DeleteAll($eventId){
+    $result = true;
+
+    $sql = "DELETE FROM in_events_registrations WHERE event_id = ".$eventId;
+    $result = mysqli_query($this->connection,$sql);
+
+    echo $result;
   }
 }
 
@@ -634,9 +648,19 @@ class Article extends DatabaseData{
       'https://wingtsunslezsko.cz/silove-principy',
       'https://wingtsunslezsko.cz/wingtsunslezsko',
       'https://wingtsunslezsko.cz/nasi-instruktori',
+      'https://wingtsunslezsko.cz/petr-walaski',
+      'https://wingtsunslezsko.cz/ondrej-michejda',
+      'https://wingtsunslezsko.cz/denis-sarkozi',
+      'https://wingtsunslezsko.cz/oldrich-kosarek',
+      'https://wingtsunslezsko.cz/adam-majtner',
       'https://wingtsunslezsko.cz/od-koho-se-ucime',
+      'https://wingtsunslezsko.cz/zdenek-kobrle',
+      'https://wingtsunslezsko.cz/chris-collins',
+      'https://wingtsunslezsko.cz/kontakty',
       'https://wingtsunslezsko.cz/ostrava',
       'https://wingtsunslezsko.cz/trinec',
+      'https://wingtsunslezsko.cz/cesky-tesin',
+      'https://wingtsunslezsko.cz/terlicko',
       'https://wingtsunslezsko.cz/dalsi-skoly-hkwta',
       'https://wingtsunslezsko.cz/vyuka-wingtsun',
       'https://wingtsunslezsko.cz/kurzy-seminare',
@@ -680,5 +704,38 @@ class Article extends DatabaseData{
 
     $xml->appendChild($xml_urlset);
     $xml->save($file);
+  }
+
+  public function GetData()
+  {
+    $data = [];
+    $sql = "SELECT * FROM ex_articles ORDER BY datetime DESC";
+
+    if($result = mysqli_query($this->connection,$sql))
+    {
+      $cr = 0;
+      while($row = mysqli_fetch_assoc($result))
+      {
+        $data[$cr]['id'] = $row['id'];
+        $data[$cr]['datetime'] = $row['datetime'];
+        $data[$cr]['topic'] = $row['topic'];
+        $data[$cr]['url'] = $row['url'];
+        $data[$cr]['keywords'] = $row['keywords'];
+        $data[$cr]['metadesc'] = $row['metadesc'];
+        $data[$cr]['name'] = $row['name'];
+        $data[$cr]['short'] = $row['short'];
+        $data[$cr]['pic'] = $row['pic'];
+        $data[$cr]['text'] = $row['text'];
+        $data[$cr]['releaseDatetime'] = $row['release_datetime'];
+        $data[$cr]['visible'] = $row['visible'];
+        $cr++;
+      }
+
+      echo json_encode(['data'=>$data]);
+    }
+    else
+    {
+      http_response_code(404);
+    }
   }
 }

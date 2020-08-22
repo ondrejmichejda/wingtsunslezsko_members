@@ -14,9 +14,10 @@
 
           <ng-container *ngIf="userAuthService.isLoggedAdmin()">
             <mat-divider></mat-divider>
-            <a mat-list-item href="admin-nastenka"><mat-icon class="admin-icon">assignment</mat-icon>Správa nástěnky</a>
-            <a mat-list-item href="admin-udalosti"><mat-icon class="admin-icon">group</mat-icon>Správa událostí</a>
-            <a mat-list-item href="novy-clanek"><mat-icon class="admin-icon">article</mat-icon>Nový článek</a>
+            <a mat-list-item ><b>Administrace</b></a>
+            <a mat-list-item href="admin-nastenka"><mat-icon class="admin-icon">assignment</mat-icon>Nástěnka</a>
+            <a mat-list-item href="admin-udalosti"><mat-icon class="admin-icon">group</mat-icon>Události</a>
+            <a mat-list-item href="admin-clanky"><mat-icon class="admin-icon">article</mat-icon>Články</a>
 
           </ng-container>
       </mat-nav-list>
@@ -33,7 +34,7 @@
           </button>
           <span>{{title}}</span>
           <p id="buttons">
-            <a href="www.wingtsunslezsko.cz">
+            <a href="https://www.wingtsunslezsko.cz">
               <button
               mat-button
               matTooltip="www.wingtsunslezsko.cz">

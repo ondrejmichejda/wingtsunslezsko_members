@@ -12,9 +12,7 @@ import {DialogConfirmComponent} from '../dialog-confirm/dialog-confirm.component
 import {Convert} from '../class/Convert';
 import {DeviceService} from '../services/device.service';
 import {WTMembersOnEvent} from '../class/data/WTMembersOnEvent';
-import {MatTabChangeEvent} from '@angular/material/tabs';
 import {HeaderService} from '../services/header-title-change.service';
-import {WTNotice} from '../class/data/WTNotice';
 
 @Component({
   selector: 'app-page-adminevents',
@@ -197,14 +195,10 @@ export class PageAdmineventsComponent implements OnInit {
     return result;
   }
 
-  tabChanged(ev: MatTabChangeEvent, event: WTEvent){
-    if(ev.index === 1){
-      this.getMembers(event.id);
-      this.curEventId = event.id;
-    }
-    else{
-      this.dataSourceMembers.sort = null;
-    }
+  tabChanged(event: WTEvent){
+    this.getMembers(event.id);
+    this.curEventId = event.id;
+    this.getEvent(event.id);
   }
 
   changeVisibility(event: WTEvent){

@@ -10,6 +10,7 @@ import {PageAdmineventsComponent} from './page-adminevents/page-adminevents.comp
 import {PageAdminnoticesComponent} from './page-adminnotices/page-adminnotices.component';
 import {AuthGuardService} from './services/auth-guard.service';
 import {PageNewarticleComponent} from './page-newarticle/page-newarticle.component';
+import {PageAdminarticlesComponent} from './page-adminarticles/page-adminarticles.component';
 
 
 
@@ -53,8 +54,8 @@ const routes: Routes = [
     canActivate: [AuthGuardService],
   },
   {
-    path: 'novy-clanek',
-    component: PageNewarticleComponent,
+    path: 'admin-clanky',
+    component: PageAdminarticlesComponent,
     canActivate: [AuthGuardService],
   },
 ];
