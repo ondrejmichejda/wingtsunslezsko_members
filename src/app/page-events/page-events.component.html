@@ -22,7 +22,7 @@
                 <tr><td class="row-name">Stav</td><td class="row-value">{{getRegStatus(event).Text}}</td></tr>
             </table>
 
-            <p>{{ event.description }}</p>
+            <div [innerHTML]="event.description"></div>
 
 
 

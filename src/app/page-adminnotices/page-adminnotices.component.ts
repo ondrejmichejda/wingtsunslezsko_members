@@ -85,7 +85,7 @@ export class PageAdminnoticesComponent implements OnInit {
     );
   }
 
-  dialogCreate(id: number): void {
+  dialogCreate(): void {
     const dialogRef = this.dialog.open(DialogNewnoticeComponent, {width: '90%'});
     dialogRef.afterClosed().subscribe(result => {
       if (result !== undefined) {

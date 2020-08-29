@@ -5,6 +5,11 @@
     <mat-label>Filter</mat-label>
     <input matInput (keyup)="applyFilter($event)" placeholder="Ex. ium" #input>
   </mat-form-field>
+  <mat-slide-toggle [(ngModel)]="this.history"
+                    (change)="getArticles()"
+                    style="margin-bottom: 10px;"
+                    color="primary"
+  >Historie (Články vytvořeny 24 hodin zpět)</mat-slide-toggle>
 
   <button mat-icon-button
           style="float: right;"
@@ -28,7 +33,7 @@
 
     <ng-container *ngIf="!device.IsMobile()" matColumnDef="topic">
       <th mat-header-cell *matHeaderCellDef mat-sort-header> Téma </th>
-      <td (click)="expanded(element);" mat-cell *matCellDef="let element"> {{getTopic(element.topic)}} </td>
+      <td (click)="expanded(element);" mat-cell *matCellDef="let element" [class.red]="element.topic === '0'"> {{getTopic(element.topic)}} </td>
     </ng-container>
 
     <ng-container matColumnDef="name">
@@ -106,12 +111,6 @@
                 </mat-select>
               </mat-form-field>
 
-              <!-- Pic editor -->
-              <mat-form-field appearance="outline">
-                <mat-label>Obrázek</mat-label>
-                <input matInput [(ngModel)]="element.pic">
-              </mat-form-field>
-
               <!-- Keywords editor -->
               <mat-form-field appearance="outline">
                 <mat-label>Meta klíčová slova</mat-label>
@@ -134,12 +133,35 @@
               </mat-form-field>
 
             </mat-tab>
-            <mat-tab style="min-height: 600px;">
+            <mat-tab>
+              <!-- Gallery -->
+              <ng-template mat-tab-label>
+                <mat-icon>insert_photo</mat-icon>
+              </ng-template>
+
+              <!-- Pic editor -->
+              <mat-card class="pic-editor">
+                <mat-card-subtitle>Úvodní foto</mat-card-subtitle>
+                <img class="pic-image"  mat-card-image [src]="picPath">
+                <mat-card-actions>
+                  <input type="file" id="file" (change)="handleFileInput($event.target.files, element)">
+                </mat-card-actions>
+              </mat-card>
+
+              <mat-card class="gallery">
+                <mat-card-subtitle>Galerie</mat-card-subtitle>
+                <input type="file" multiple id="galery" (change)="multipleFileInput($event.target.files, element)">
+              </mat-card>
+
+
+
+            </mat-tab>
+            <mat-tab>
+              <!-- Text editor -->
               <ng-template mat-tab-label>
                 <mat-icon>edit</mat-icon>
               </ng-template>
 
-              <!-- Text editor -->
               <br>
               <div class="editor">
                 <quill-editor
@@ -152,6 +174,7 @@
 
             </mat-tab>
             <mat-tab>
+              <!-- Preview -->
               <ng-template mat-tab-label>
                 <mat-icon>preview</mat-icon>
               </ng-template>
@@ -170,7 +193,7 @@
           <button mat-raised-button
                   class="bottomButton top-space"
                   color="primary"
-                  (click)="updateEvent(element)">
+                  (click)="updateArticle(element)">
             Uložit
           </button>
 

@@ -738,4 +738,38 @@ class Article extends DatabaseData{
       http_response_code(404);
     }
   }
+
+  public function CreateData()
+  {
+    $sql = "INSERT INTO ex_articles (name, release_datetime) VALUES ('Nový článek', '".date("Y-m-d H:i:s", strtotime("+1 days"))."')";
+    $result = mysqli_query($this->connection,$sql);
+    echo $result;
+  }
+
+  public function UpdateVisible($id, $visible)
+  {
+    $sql = "UPDATE ex_articles SET visible=".$visible." WHERE id=".$id;
+
+    $result = mysqli_query($this->connection,$sql);
+    echo $result;
+  }
+
+  public function SetData($id, $topic, $url, $keywords, $metadesc, $name, $short,
+                          $pic, $text, $releaseDatetime)
+  {
+    $sql = "UPDATE ex_articles SET
+            topic='".$topic."',
+            url='".$url."',
+            keywords='".$keywords."',
+            metadesc='".$metadesc."',
+            name='".$name."',
+            short='".$short."',
+            pic='".$pic."',
+            text='".$text."',
+            release_datetime='".$this->getDBtime($releaseDatetime)." '
+            WHERE id=".$id;
+
+    $result = mysqli_query($this->connection,$sql);
+    echo $result;
+  }
 }

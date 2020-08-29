@@ -14,6 +14,7 @@ import {WTArticle} from '../class/data/WTArticle';
 })
 export class HttpService {
   baseUrl = 'php/';
+  pictureUrl = '../temp/'
 
   constructor(private http: HttpClient) { }
 
@@ -57,6 +58,38 @@ export class HttpService {
   }
 
   /**
+   * File upload pic.
+   */
+  postFilePic(fileToUpload: File, articleId: number){
+    const endpoint = `${this.baseUrl}file_upload_pic.php`;
+    const formData: FormData = new FormData();
+
+    const headers = new HttpHeaders();
+    /** In Angular 5, including the header Content-Type can invalidate your request */
+    headers.append('Content-Type', 'multipart/form-data');
+    headers.append('Accept', 'application/json');
+
+    formData.append('file', fileToUpload, articleId.toString());
+    return this.http.post(endpoint, formData, { headers});
+  }
+
+  /**
+   * File upload gallery.
+   */
+  postFileGallery(fileToUpload: File, articleId: number){
+    const endpoint = `${this.baseUrl}file_upload_gallery.php`;
+    const formData: FormData = new FormData();
+
+    const headers = new HttpHeaders();
+    /** In Angular 5, including the header Content-Type can invalidate your request */
+    headers.append('Content-Type', 'multipart/form-data');
+    headers.append('Accept', 'application/json');
+
+    formData.append('file', fileToUpload, articleId.toString() + ':' + fileToUpload.name);
+    return this.http.post(endpoint, formData, { headers});
+  }
+
+  /**
    * Update event.
    */
   setEvent_post(event: WTEvent){
@@ -81,6 +114,28 @@ export class HttpService {
   }
 
   /**
+   * Update article.
+   */
+  setArticle_post(article: WTArticle){
+    const body = new HttpParams()
+      .set('id', article.id.toString())
+      .set('topic', article.topic.toString())
+      .set('url', article.url.toString())
+      .set('keywords', article.keywords.toString())
+      .set('metadesc', article.metadesc.toString())
+      .set('name', article.name.toString())
+      .set('short', article.short.toString())
+      .set('pic', article.pic.toString())
+      .set('text', article.text.toString())
+      .set('releaseDatetime', article.releaseDatetime.toString());
+
+    return this.http.post(`${this.baseUrl}article_set.php`, body.toString(), {
+      headers: new HttpHeaders()
+        .set('Content-Type', 'application/x-www-form-urlencoded')
+    });
+  }
+
+  /**
    * Create notice.
    */
   createNotice_post(notice: WTNotice){
@@ -91,6 +146,16 @@ export class HttpService {
       .set('text', notice.text.toString());
 
     return this.http.post(`${this.baseUrl}notice_create.php`, body.toString(), {
+      headers: new HttpHeaders()
+        .set('Content-Type', 'application/x-www-form-urlencoded')
+    });
+  }
+
+  /**
+   * Create article.
+   */
+  createArticle_post(){
+    return this.http.post(`${this.baseUrl}article_create.php`, null, {
       headers: new HttpHeaders()
         .set('Content-Type', 'application/x-www-form-urlencoded')
     });
@@ -116,6 +181,19 @@ export class HttpService {
       .set('id', id.toString())
       .set('visible', visible.toString());
     return this.http.post(`${this.baseUrl}notice_update_visible.php`, body.toString(), {
+      headers: new HttpHeaders()
+        .set('Content-Type', 'application/x-www-form-urlencoded')
+    });
+  }
+
+  /**
+   * Update visible article.
+   */
+  updateVisibleArticle_post(id: number, visible: boolean){
+    const body = new HttpParams()
+      .set('id', id.toString())
+      .set('visible', visible.toString());
+    return this.http.post(`${this.baseUrl}article_update_visible.php`, body.toString(), {
       headers: new HttpHeaders()
         .set('Content-Type', 'application/x-www-form-urlencoded')
     });
@@ -341,7 +419,4 @@ export class HttpService {
         return eventsRegs;
       }), catchError(this.handleError));
   }
-
-
-
 }

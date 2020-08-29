@@ -1,4 +1,4 @@
-import {Component, OnInit, ViewChild} from '@angular/core';
+import {ChangeDetectorRef, Component, OnInit, ViewChild} from '@angular/core';
 import {animate, state, style, transition, trigger} from '@angular/animations';
 import {DeviceService} from '../services/device.service';
 import {WTArticle} from '../class/data/WTArticle';
@@ -9,6 +9,10 @@ import {HttpService} from '../services/http.service';
 import {HeaderService} from '../services/header-title-change.service';
 import Quill from 'quill';
 import BlotFormatter from 'quill-blot-formatter';
+import {ExceptionsService} from '../services/exceptions.service';
+import {AlertTexts} from '../enum/AlertTexts';
+import {SnackType} from '../enum/SnackType';
+import {AlertService} from '../services/alert.service';
 
 @Component({
   selector: 'app-page-adminarticles',
@@ -30,7 +34,10 @@ export class PageAdminarticlesComponent implements OnInit {
   @ViewChild('articleSort', {static: true}) articleSort: MatSort;
   articles: WTArticle[];
   article: WTArticle;
+  picPath = '';
   error = '';
+  history = false;
+
 
   // Quill wysiwyg editor
   modules = {
@@ -39,12 +46,22 @@ export class PageAdminarticlesComponent implements OnInit {
 
   constructor(private headerService: HeaderService,
               public device: DeviceService,
-              public httpService: HttpService) {
+              private httpService: HttpService,
+              private exceptions: ExceptionsService,
+              private alertService: AlertService,
+              private cdRef: ChangeDetectorRef) {
     this.headerService.setTitle('Správa článků');
   }
 
   ngOnInit(): void {
     this.getArticles();
+  }
+
+  updatePic() {
+    this.picPath = '';
+    setTimeout(() => {
+      this.picPath = '../gallery/' + this.article.id + '/pic.png?' + new Date() }
+      , 100);
   }
 
   applyFilter(event: Event) {
@@ -53,7 +70,8 @@ export class PageAdminarticlesComponent implements OnInit {
   }
 
   expanded(article: WTArticle){
-    // this.article = article;
+    this.article = article;
+    this.updatePic();
   }
 
   formatDate(d: string): Date{
@@ -64,7 +82,14 @@ export class PageAdminarticlesComponent implements OnInit {
   getArticles(): void {
     this.httpService.getArticles().subscribe(
       (articles: WTArticle[]) => {
-        this.articles = articles;
+        if(this.history){
+          this.articles = articles;
+        }
+        else {
+          const actDate = new Date();
+          actDate.setHours(actDate.getHours() - 24);
+          this.articles = articles.filter(art => this.formatDate(art.datetime) >= actDate);
+        }
         this.dataSource = new MatTableDataSource(this.articles);
         this.dataSource.sort = this.articleSort;
         this.article = this.articles[0];
@@ -76,23 +101,48 @@ export class PageAdminarticlesComponent implements OnInit {
   }
 
   createArticle(){
-    throw new Error('not implemented');
+    this.httpService.createArticle_post().subscribe(
+      (res: boolean) => {
+        this.alertService.alert(AlertTexts.article_created, SnackType.info);
+        this.getArticles();
+      },
+      (err) => {
+        this.alertService.alert(AlertTexts.fail, SnackType.error);
+      }
+    );
   }
 
-  updateEvent(article: WTArticle){
-    throw new Error('not implemented');
+  updateArticle(article: WTArticle){
+    // set url
+    article.url = this.slugify(article.name);
+    console.log(article);
+    this.httpService.setArticle_post(article).subscribe(data => {
+      this.alertService.alert(AlertTexts.article_updated, SnackType.info);
+      this.getArticles();
+    },Error => {
+      console.log(Error);
+      this.alertService.alert(AlertTexts.fail, SnackType.error);
+    });
   }
 
   changeVisibility(article: WTArticle){
-    throw new Error('not implemented');
+    this.httpService.updateVisibleArticle_post(article.id, !!!+article.visible).subscribe(
+      (res: WTArticle[]) => {
+        this.alertService.alert(AlertTexts.article_updated, SnackType.info);
+        this.getArticles();
+      },
+      (err) => {
+        this.alertService.alert(AlertTexts.fail, SnackType.error);
+      }
+    );
   }
 
   dialogDelete(article: WTArticle){
-    throw new Error('not implemented');
+    this.exceptions.NotImplemented();
   }
 
   copyEvent(article: WTArticle){
-    throw new Error('not implemented');
+    this.exceptions.NotImplemented();
   }
 
   // Help functions
@@ -115,8 +165,61 @@ export class PageAdminarticlesComponent implements OnInit {
       case 5:
         return 'Děti';
       default:
-        return 'chyba';
+        return 'NUTNO DOPLNIT!';
     }
   }
+
+  slugify(str: string): string {
+    const a = 'àáâäæãåāăąçćčđďèéêëēėęěğǵḧîïíīįìłḿñńǹňôöòóœøōõőṕŕřßśšşșťțûüùúūǘůűųẃẍÿýžźż·/_,:;'
+    const b = 'aaaaaaaaaacccddeeeeeeeegghiiiiiilmnnnnoooooooooprrsssssttuuuuuuuuuwxyyzzz------'
+    const p = new RegExp(a.split('').join('|'), 'g')
+
+    return str.toString().toLowerCase()
+      .replace(/\s+/g, '-') // Replace spaces with -
+      .replace(p, c => b.charAt(a.indexOf(c))) // Replace special characters
+      .replace(/&/g, '-and-') // Replace & with 'and'
+      .replace(/[^\w\-]+/g, '') // Remove all non-word characters
+      .replace(/\-\-+/g, '-') // Replace multiple - with single -
+      .replace(/^-+/, '') // Trim - from start of text
+      .replace(/-+$/, '') // Trim - from end of text
+  }
+
+  // file upload
+
+  multipleFileInput(files: FileList, article: WTArticle) {
+    Array.from(files).forEach(file => {
+      this.photoUpload(file, article);
+    });
+  }
+
+  photoUpload(file: File, article: WTArticle) {
+    if(file.size < 1000000 && file.type ==='image/png') {
+      this.httpService.postFileGallery(file, article.id).subscribe(data => {
+      }, error => {
+        console.log('error:');
+        console.log(error);
+      });
+    }
+    else
+      this.alertService.alert(AlertTexts.pic_format_fail + ': ' + file.name, SnackType.error);
+  }
+
+  // pic
+  handleFileInput(files: FileList, article: WTArticle) {
+    const file = files.item(0);
+    if(file.size < 1000000 && file.type ==='image/png')
+      this.uploadFileToActivity(file, article.id);
+    else
+      this.alertService.alert(AlertTexts.pic_format_fail + ': ' + file.name, SnackType.error);
+  }
+  uploadFileToActivity(file: File, articleId: number) {
+    this.httpService.postFilePic(file, articleId).subscribe(data => {
+      this.updatePic();
+    }, error => {
+      console.log('error:');
+      console.log(error);
+    });
+  }
+
 
 }

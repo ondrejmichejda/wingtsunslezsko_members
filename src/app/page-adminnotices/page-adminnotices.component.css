@@ -22,3 +22,8 @@ mat-card-footer{
   float: right;
   width: 30px !important;
 }
+
+.control-pane {
+  width: 100%;
+  height: 3rem;
+}

@@ -49,8 +49,6 @@ import { DialogComboboxComponent } from './dialog-combobox/dialog-combobox.compo
 import { DialogNewnoticeComponent } from './dialog-newnotice/dialog-newnotice.component';
 import { PageNewarticleComponent } from './page-newarticle/page-newarticle.component';
 import { QuillModule } from 'ngx-quill';
-import {MatChipsModule} from '@angular/material/chips';
-import {MatAutocompleteModule} from '@angular/material/autocomplete';
 import { PageAdminarticlesComponent } from './page-adminarticles/page-adminarticles.component';
 
 
@@ -107,9 +105,7 @@ import { PageAdminarticlesComponent } from './page-adminarticles/page-adminartic
     BrowserModule,
     HttpClientModule,
     MatButtonToggleModule,
-    QuillModule.forRoot(),
-    MatChipsModule,
-    MatAutocompleteModule
+    QuillModule.forRoot()
   ],
   entryComponents: [DialogComponent],
   providers: [HeaderService],

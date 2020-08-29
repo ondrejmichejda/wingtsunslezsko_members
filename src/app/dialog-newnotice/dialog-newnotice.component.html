@@ -15,10 +15,24 @@
     </mat-select>
   </mat-form-field>
   <br>
-  <mat-form-field appearance="outline" style="width: 100%;">
-    <mat-label>Text</mat-label>
-    <textarea matInput [(ngModel)]="notice.text"></textarea>
-  </mat-form-field>
+
+  <mat-label>Text</mat-label>
+  <quill-editor
+    id="quill"
+    style="min-height: 600px;"
+    [(ngModel)]="notice.text"
+  ></quill-editor>
+  <br>
+
+  <mat-label>Náhled</mat-label>
+  <mat-card style="margin: 1rem;">
+    <mat-card-header>
+      <mat-card-title>{{notice.head}}</mat-card-title>
+      <mat-card-subtitle>{{ActualDate().toLocaleDateString('cs-CZ')}}</mat-card-subtitle>
+    </mat-card-header>
+    <mat-card-content style="margin-left: 16px;"[innerHTML]="notice.text"></mat-card-content>
+  </mat-card>
+
 
 
 </div>

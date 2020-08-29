@@ -151,13 +151,28 @@
               </mat-form-field>
 
               <!-- Description editor -->
-              <mat-form-field appearance="outline">
+              <!--<mat-form-field appearance="outline">
                 <mat-label>Popis</mat-label>
                 <textarea matInput
                           (keyup.enter)="editor.Description = true" [disabled]="editor.Description"
                           cdkTextareaAutosize [(ngModel)]="element.description"></textarea>
                 <mat-icon matSuffix (click)="editor.Description = !editor.Description">create</mat-icon>
-              </mat-form-field>
+              </mat-form-field>-->
+
+              <br>
+              <mat-label>Text</mat-label>
+              <div>
+                <quill-editor
+                  id="quill"
+                  [(ngModel)]="element.description"
+                ></quill-editor>
+              </div>
+              <br>
+
+              <mat-label>Náhled</mat-label>
+              <mat-card style="margin: 1rem;">
+                <mat-card-content [innerHTML]="element.description"></mat-card-content>
+              </mat-card>
 
               <!-- Buttons area -->
 

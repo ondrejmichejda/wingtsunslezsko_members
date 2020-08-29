@@ -61,3 +61,18 @@ mat-list-item {
   height: 600px;
 }
 
+.red {
+  color: #f44336;
+}
+
+.pic-editor {
+  width: 200px;
+  height: 250px;
+  margin: 10px;
+}
+
+.pic-image {
+  height: 162px;
+  object-fit: cover;
+}
+

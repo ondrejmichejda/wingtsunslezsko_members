@@ -22,6 +22,10 @@ export class DialogNewnoticeComponent implements OnInit {
 
   ngOnInit() {
   }
+
+  ActualDate(): Date {
+    return new Date();
+  }
 }
 
 export interface DialogData {

@@ -15,4 +15,8 @@ export enum AlertTexts {
   notice_created = 'Příspěvek vytvořen',
   notice_deleted = 'Příspěvek smazán',
   notice_updated = 'Příspěvek upraven',
+  article_created = 'Článek vytvořen',
+  article_deleted = 'Článek smazán',
+  article_updated = 'Článek upraven',
+  pic_format_fail = 'Špatný formát obrázku'
 }
