@@ -1,0 +1,17 @@
+<h1 mat-dialog-title>Galerie</h1>
+<div mat-dialog-content [mat-dialog-close]="pictureUrl" >
+ahoj
+</div>
+<div mat-dialog-actions style="float: right;">
+  <button mat-raised-button (click)="onNoClick()">Zrušit</button>
+  <button mat-raised-button
+          (click)="setAndClose('test1')"
+          >Ok</button>
+  <button mat-raised-button
+          (click)="setAndClose('test1')"
+          >Ok</button>
+  <button mat-raised-button
+          (click)="setAndClose('test1')"
+          >Ok</button>
+</div>
+

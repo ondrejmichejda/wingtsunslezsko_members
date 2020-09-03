@@ -13,6 +13,11 @@ import {ExceptionsService} from '../services/exceptions.service';
 import {AlertTexts} from '../enum/AlertTexts';
 import {SnackType} from '../enum/SnackType';
 import {AlertService} from '../services/alert.service';
+import {WTImage} from '../class/data/WTImage';
+import {DialogConfirmComponent} from '../dialog-confirm/dialog-confirm.component';
+import {MatDialog} from '@angular/material/dialog';
+import {DomSanitizer, SafeHtml} from '@angular/platform-browser';
+import { Pipe, PipeTransform } from '@angular/core';
 
 @Component({
   selector: 'app-page-adminarticles',
@@ -26,7 +31,17 @@ import {AlertService} from '../services/alert.service';
     ]),
   ],
 })
-export class PageAdminarticlesComponent implements OnInit {
+export class PageAdminarticlesComponent implements OnInit, PipeTransform {
+
+  constructor(private headerService: HeaderService,
+              public device: DeviceService,
+              private httpService: HttpService,
+              private exceptions: ExceptionsService,
+              private alertService: AlertService,
+              private dialog: MatDialog,
+              private domSanitizer: DomSanitizer) {
+    this.headerService.setTitle('Správa článků');
+  }
 
   dataSource;
   columnsToDisplay = this.device.IsMobile() ? ['name', 'control'] : ['id', 'topic', 'name', 'release', 'control'];
@@ -34,27 +49,90 @@ export class PageAdminarticlesComponent implements OnInit {
   @ViewChild('articleSort', {static: true}) articleSort: MatSort;
   articles: WTArticle[];
   article: WTArticle;
-  picPath = '';
+  images: WTImage[];
+  picPath = '../img/empty_pic.svg';
   error = '';
   history = false;
+  fileUploadProgress = 0;
+  fileUploadProgressStep = 0;
+  showPG = false;   // pickup gallery show
+  editorInstance;
 
+  toolbarOptions = [
+    ['bold', 'italic', 'underline'],
+    [{ header: 1 }, { header: 2 }],
+    [{ list: 'ordered'}, { list: 'bullet' }],
+    [{ indent: '-1'}, { indent: '+1' }],
+    [{ size: ['small', false, 'large', 'huge'] }],
+    [{ header: [1, 2, 3, 4, 5, 6, false] }],
+    [{ align: [] }],
+    ['link', 'video']
+  ];
 
   // Quill wysiwyg editor
   modules = {
+    toolbar: {
+      container: this.toolbarOptions,
+      handlers: {
+        image: this.imageHandler.bind(this)
+      }
+    },
     blotFormatter: {}
   };
 
-  constructor(private headerService: HeaderService,
-              public device: DeviceService,
-              private httpService: HttpService,
-              private exceptions: ExceptionsService,
-              private alertService: AlertService,
-              private cdRef: ChangeDetectorRef) {
-    this.headerService.setTitle('Správa článků');
+  onEditorCreated(quillInstance) {
+    this.editorInstance = quillInstance
+  }
+
+  imageHandler(this: any) {
+    this.togglePickupGallery();
+    return;
+    const value = 'test';
+    const range = this.quill.getSelection(true);
+    this.quill.insertEmbed(range.index, 'image', value, 'user');
+    console.log(value);
+  }
+
+  transform(html: string): SafeHtml {
+    return this.domSanitizer.bypassSecurityTrustHtml(html);
+  }
+
+  addImg(article: WTArticle, img: WTImage){
+    const value = '..' + img.url;
+    const range = this.editorInstance.getSelection(true);
+    this.editorInstance.insertEmbed(range.index, 'image', value, 'user');
+  }
+
+  togglePickupGallery() {
+    this.showPG = !this.showPG;
+  }
+
+  resetProgress(){
+    this.fileUploadProgress = 0;
   }
 
   ngOnInit(): void {
     this.getArticles();
+  }
+
+  getImgPath(url: string): string {
+    return '..' + url;
+  }
+
+  imgUpdateVisibility(img: WTImage) {
+    this.httpService.updateVisibleArticlePic_post(img.id, !!!+img.visible).subscribe(
+      (res: WTImage[]) => {
+        this.alertService.alert(AlertTexts.article_updated, SnackType.info);
+        this.getArticleImages(img.articleId);
+      },
+      (err) => {
+        this.alertService.alert(AlertTexts.fail, SnackType.error);
+      }
+    );
+  }
+
+  imgDelete(img: WTImage) {
+    this.exceptions.NotImplemented();
   }
 
   updatePic() {
@@ -72,6 +150,8 @@ export class PageAdminarticlesComponent implements OnInit {
   expanded(article: WTArticle){
     this.article = article;
     this.updatePic();
+    this.getArticleImages(this.article.id);
+    this.resetProgress();
   }
 
   formatDate(d: string): Date{
@@ -96,6 +176,18 @@ export class PageAdminarticlesComponent implements OnInit {
       },
       (err) => {
         this.error = err;
+        this.alertService.alert(AlertTexts.fail, SnackType.error);
+      }
+    );
+  }
+
+  getArticleImages(id: number): void {
+    this.httpService.getArticleImages(id).subscribe(
+      (images: WTImage[]) => {
+          this.images = images;
+      },
+      (err) => {
+        this.alertService.alert(AlertTexts.fail, SnackType.error);
       }
     );
   }
@@ -115,7 +207,6 @@ export class PageAdminarticlesComponent implements OnInit {
   updateArticle(article: WTArticle){
     // set url
     article.url = this.slugify(article.name);
-    console.log(article);
     this.httpService.setArticle_post(article).subscribe(data => {
       this.alertService.alert(AlertTexts.article_updated, SnackType.info);
       this.getArticles();
@@ -138,7 +229,29 @@ export class PageAdminarticlesComponent implements OnInit {
   }
 
   dialogDelete(article: WTArticle){
-    this.exceptions.NotImplemented();
+    const dialogRef = this.dialog.open(DialogConfirmComponent, {
+      width: '250px',
+      data: {text: 'Opravdu smazat?'}
+    });
+
+    dialogRef.afterClosed().subscribe(result => {
+      if (result !== undefined) {
+        this.deleteArticle(article);
+      }
+    });
+  }
+
+
+
+  deleteArticle(article: WTArticle){
+    this.httpService.deleteArticle_post(article.id).subscribe(data => {
+      this.alertService.alert(AlertTexts.event_deleted, SnackType.info);
+      this.getArticles();
+    },Error => {
+      console.log(Error);
+      this.alertService.alert(AlertTexts.event_deleted, SnackType.info);
+      this.getArticles();
+    });
   }
 
   copyEvent(article: WTArticle){
@@ -187,9 +300,15 @@ export class PageAdminarticlesComponent implements OnInit {
   // file upload
 
   multipleFileInput(files: FileList, article: WTArticle) {
+    this.fileUploadProgressStep = 100 / files.length;
+    this.resetProgress();
     Array.from(files).forEach(file => {
       this.photoUpload(file, article);
+      this.fileUploadProgress += this.fileUploadProgressStep;
     });
+    setTimeout(() =>{
+      this.getArticleImages(article.id);
+    }, 1000);
   }
 
   photoUpload(file: File, article: WTArticle) {
@@ -198,6 +317,7 @@ export class PageAdminarticlesComponent implements OnInit {
       }, error => {
         console.log('error:');
         console.log(error);
+        this.alertService.alert(AlertTexts.fail_check_console, SnackType.error);
       });
     }
     else
@@ -218,6 +338,7 @@ export class PageAdminarticlesComponent implements OnInit {
     }, error => {
       console.log('error:');
       console.log(error);
+      this.alertService.alert(AlertTexts.fail_check_console, SnackType.error);
     });
   }
 

@@ -142,21 +142,58 @@
               <!-- Pic editor -->
               <mat-card class="pic-editor">
                 <mat-card-subtitle>Úvodní foto</mat-card-subtitle>
-                <img class="pic-image"  mat-card-image [src]="picPath">
+                <img class="pic-image" mat-card-image [src]="picPath">
                 <mat-card-actions>
                   <input type="file" id="file" (change)="handleFileInput($event.target.files, element)">
                 </mat-card-actions>
               </mat-card>
 
-              <mat-card class="gallery">
+              <div style="margin: 1rem;">
                 <mat-card-subtitle>Galerie</mat-card-subtitle>
-                <input type="file" multiple id="galery" (change)="multipleFileInput($event.target.files, element)">
-              </mat-card>
+                <input type="file" multiple id="galery" (change)="multipleFileInput($event.target.files, element)" (click)="resetProgress()">
+              </div>
+
+              <mat-progress-bar mode="determinate" [value]="fileUploadProgress"></mat-progress-bar>
+
+              <div class="mini-gallery">
+                <mat-card *ngFor="let img of images" class="thumbnail">
+                  <img class="pic-image" mat-card-image [src]="getImgPath(img.url)">
+                  <mat-card-actions>
+                    <button mat-icon-button
+                            class="memberBtn"
+                            (click)="imgUpdateVisibility(img)"
+                            matTooltip="Viditelnost v galerii">
+                      <mat-icon *ngIf="!!+img.visible">visibility</mat-icon>
+                      <mat-icon *ngIf="!!!+img.visible">visibility_off</mat-icon>
+                    </button>
+                    <button mat-icon-button
+                            class="memberBtn"
+                            color="warn"
+                            (click)="imgDelete(img)"
+                            matTooltip="Smazat">
+                      <mat-icon>delete</mat-icon>
+                    </button>
+                  </mat-card-actions>
+                </mat-card>
+              </div>
 
 
 
             </mat-tab>
             <mat-tab>
+              <div style="max-width: 960px; margin: auto; margin-top: 1rem;">
+                <button mat-raised-button
+                        color="primary"
+                        (click)="togglePickupGallery()">
+                  Galerie
+                </button>
+              </div>
+              <div class="pickup-gallery"
+                        [class.pickup-gallery-colapsed]="!showPG"
+                        [class.pickup-gallery-extended]="showPG">
+                <div *ngFor="let img of images"><img (dblclick)="addImg(element, img)" [src]="'..'+img.url" /></div>
+              </div>
+
               <!-- Text editor -->
               <ng-template mat-tab-label>
                 <mat-icon>edit</mat-icon>
@@ -169,6 +206,7 @@
                   style="min-height: 600px;"
                   [modules]="modules"
                   [(ngModel)]="element.text"
+                  (onEditorCreated)="onEditorCreated($event)"
                 ></quill-editor>
               </div>
 

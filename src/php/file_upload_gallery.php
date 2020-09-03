@@ -1,4 +1,7 @@
 <?php
+require('DatabaseData.php');
+$art = new Article();
+
 $base = "../../gallery/";
 
 $folder = explode(":", $_FILES["file"]["name"])[0];
@@ -15,7 +18,8 @@ if (!file_exists($articleFolder)){
 /** Check file */
 $target_file = $articleFolder . '/' . $file;
 
-if (move_uploaded_file($_FILES["file"]["tmp_name"], $target_file))
-{
-  echo false;
+if(!file_exists($target_file)){
+  $art->AddImage($folder, "/gallery/" . $folder . "/" . $file);
 }
+
+move_uploaded_file($_FILES["file"]["tmp_name"], $target_file);

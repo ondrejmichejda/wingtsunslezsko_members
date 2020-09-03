@@ -13,6 +13,7 @@ import {Convert} from '../class/Convert';
 import {DeviceService} from '../services/device.service';
 import {WTMembersOnEvent} from '../class/data/WTMembersOnEvent';
 import {HeaderService} from '../services/header-title-change.service';
+import {QuilloptionsService} from '../services/quilloptions.service';
 
 @Component({
   selector: 'app-page-adminevents',
@@ -48,12 +49,17 @@ export class PageAdmineventsComponent implements OnInit {
 
   editor: Editor;
 
+  modules = {
+    toolbar: this.quillService.basicToolbar
+  };
+
   constructor(private httpService: HttpService,
               private alertService: AlertService,
               private dialog: MatDialog,
               private changeDetectorRefs: ChangeDetectorRef,
               public device: DeviceService,
-              private headerService: HeaderService){
+              private headerService: HeaderService,
+              private quillService: QuilloptionsService){
     this.editor = new Editor();
     this.history = false;
     this.headerService.setTitle('Správa událostí');

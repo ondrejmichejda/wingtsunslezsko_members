@@ -19,7 +19,7 @@
   <mat-label>Text</mat-label>
   <quill-editor
     id="quill"
-    style="min-height: 600px;"
+    [modules]="modules"
     [(ngModel)]="notice.text"
   ></quill-editor>
   <br>

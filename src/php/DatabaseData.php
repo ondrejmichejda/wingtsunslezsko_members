@@ -772,4 +772,58 @@ class Article extends DatabaseData{
     $result = mysqli_query($this->connection,$sql);
     echo $result;
   }
+
+  public function AddImage($id, $url)
+  {
+    $sql = "INSERT INTO ex_article_img
+            (article_id, url)
+            VALUES
+            (".$id.", '".$url."')";
+
+    return mysqli_query($this->connection,$sql);
+  }
+
+  public function GetImages($id)
+  {
+    $data = [];
+    $sql = "SELECT * FROM ex_article_img WHERE article_id=" . $id;
+
+    if($result = mysqli_query($this->connection,$sql))
+    {
+      $cr = 0;
+      while($row = mysqli_fetch_assoc($result))
+      {
+        $data[$cr]['id'] = $row['id'];
+        $data[$cr]['articleId'] = $row['article_id'];
+        $data[$cr]['url'] = $row['url'];
+        $data[$cr]['visible'] = $row['visible'];
+        $cr++;
+      }
+
+      echo json_encode(['data'=>$data]);
+    }
+    else
+    {
+      http_response_code(404);
+    }
+  }
+
+  public function UpdateGalleryImage($id, $visible)
+  {
+    $sql = "UPDATE ex_article_img SET visible=".$visible." WHERE id=".$id;
+
+    $result = mysqli_query($this->connection,$sql);
+    echo $result;
+  }
+
+  public function DeleteData($id)
+  {
+    $sql = "DELETE FROM ex_articles WHERE id=".$id;
+    $result = mysqli_query($this->connection,$sql);
+
+    $sql = "DELETE FROM ex_article_img WHERE article_id=".$id;
+    $result = mysqli_query($this->connection,$sql);
+
+    echo $result;
+  }
 }

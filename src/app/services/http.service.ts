@@ -8,6 +8,7 @@ import { WTMember } from '../class/data/WTMember';
 import {WTEventRegistration} from '../class/data/WTEventRegistration';
 import {WTMembersOnEvent} from '../class/data/WTMembersOnEvent';
 import {WTArticle} from '../class/data/WTArticle';
+import {WTImage} from '../class/data/WTImage';
 
 @Injectable({
   providedIn: 'root'
@@ -200,6 +201,31 @@ export class HttpService {
   }
 
   /**
+   * Update visible image.
+   */
+  updateVisibleArticlePic_post(id: number, visible: boolean){
+    const body = new HttpParams()
+      .set('id', id.toString())
+      .set('visible', visible.toString());
+    return this.http.post(`${this.baseUrl}articleimage_update_visible.php`, body.toString(), {
+      headers: new HttpHeaders()
+        .set('Content-Type', 'application/x-www-form-urlencoded')
+    });
+  }
+
+  /**
+   * Delete article.
+   */
+  deleteArticle_post(id: number){
+    const body = new HttpParams()
+      .set('id', id.toString());
+    return this.http.post(`${this.baseUrl}article_delete.php`, body.toString(), {
+      headers: new HttpHeaders()
+        .set('Content-Type', 'application/x-www-form-urlencoded')
+    });
+  }
+
+  /**
    * Copy event by id.
    */
   copyEvent_post(id: number){
@@ -302,6 +328,19 @@ export class HttpService {
       map((res) => {
         articles = res[data];
         return articles;
+      }), catchError(this.handleError));
+  }
+
+  /**
+   * Get article images from db.
+   */
+  getArticleImages(id: number): Observable<WTImage[]> {
+    let images: WTImage[];
+    const data = 'data';
+    return this.http.get(`${this.baseUrl}articleimage_get.php?id=`+id).pipe(
+      map((res) => {
+        images = res[data];
+        return images;
       }), catchError(this.handleError));
   }
 

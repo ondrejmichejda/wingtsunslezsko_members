@@ -42,7 +42,7 @@ import { MatSelectModule } from '@angular/material/select';
 import { HttpClientModule } from '@angular/common/http';
 import { PageNoticeboardComponent } from './page-noticeboard/page-noticeboard.component';
 import { PageAdmineventsComponent } from './page-adminevents/page-adminevents.component';
-import {MatButtonToggleModule} from '@angular/material/button-toggle';
+import { MatButtonToggleModule } from '@angular/material/button-toggle';
 import { DialogConfirmComponent } from './dialog-confirm/dialog-confirm.component';
 import { PageAdminnoticesComponent } from './page-adminnotices/page-adminnotices.component';
 import { DialogComboboxComponent } from './dialog-combobox/dialog-combobox.component';
@@ -50,6 +50,8 @@ import { DialogNewnoticeComponent } from './dialog-newnotice/dialog-newnotice.co
 import { PageNewarticleComponent } from './page-newarticle/page-newarticle.component';
 import { QuillModule } from 'ngx-quill';
 import { PageAdminarticlesComponent } from './page-adminarticles/page-adminarticles.component';
+import { MatProgressBarModule } from '@angular/material/progress-bar';
+import { DialogGalleryComponent } from './dialog-gallery/dialog-gallery.component';
 
 
 @NgModule({
@@ -70,7 +72,8 @@ import { PageAdminarticlesComponent } from './page-adminarticles/page-adminartic
     DialogComboboxComponent,
     DialogNewnoticeComponent,
     PageNewarticleComponent,
-    PageAdminarticlesComponent
+    PageAdminarticlesComponent,
+    DialogGalleryComponent
   ],
   imports: [
     BrowserModule,
@@ -105,7 +108,8 @@ import { PageAdminarticlesComponent } from './page-adminarticles/page-adminartic
     BrowserModule,
     HttpClientModule,
     MatButtonToggleModule,
-    QuillModule.forRoot()
+    QuillModule.forRoot(),
+    MatProgressBarModule
   ],
   entryComponents: [DialogComponent],
   providers: [HeaderService],
