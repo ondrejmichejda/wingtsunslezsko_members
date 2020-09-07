@@ -19,6 +19,8 @@ import {MatDialog} from '@angular/material/dialog';
 import {DomSanitizer, SafeHtml} from '@angular/platform-browser';
 import { Pipe, PipeTransform } from '@angular/core';
 
+Udelat editaci clanku v dialogovem okne abych mel vzdy jen 1 instanci Quill editoru
+
 @Component({
   selector: 'app-page-adminarticles',
   templateUrl: './page-adminarticles.component.html',
@@ -57,6 +59,7 @@ export class PageAdminarticlesComponent implements OnInit, PipeTransform {
   fileUploadProgressStep = 0;
   showPG = false;   // pickup gallery show
   editorInstance;
+  exp = false;
 
   toolbarOptions = [
     ['bold', 'italic', 'underline'],
@@ -72,10 +75,7 @@ export class PageAdminarticlesComponent implements OnInit, PipeTransform {
   // Quill wysiwyg editor
   modules = {
     toolbar: {
-      container: this.toolbarOptions,
-      handlers: {
-        image: this.imageHandler.bind(this)
-      }
+      container: this.toolbarOptions
     },
     blotFormatter: {}
   };
@@ -84,21 +84,14 @@ export class PageAdminarticlesComponent implements OnInit, PipeTransform {
     this.editorInstance = quillInstance
   }
 
-  imageHandler(this: any) {
-    this.togglePickupGallery();
-    return;
-    const value = 'test';
-    const range = this.quill.getSelection(true);
-    this.quill.insertEmbed(range.index, 'image', value, 'user');
-    console.log(value);
-  }
-
   transform(html: string): SafeHtml {
     return this.domSanitizer.bypassSecurityTrustHtml(html);
   }
 
   addImg(article: WTArticle, img: WTImage){
     const value = '..' + img.url;
+    console.log(this.editorInstance);
+    this.editorInstance.focus();
     const range = this.editorInstance.getSelection(true);
     this.editorInstance.insertEmbed(range.index, 'image', value, 'user');
   }
@@ -147,11 +140,24 @@ export class PageAdminarticlesComponent implements OnInit, PipeTransform {
     this.dataSource.filter = filterValue.trim().toLowerCase();
   }
 
+  filterID(article: WTArticle) {
+    this.dataSource.filter = article.id;
+  }
+
+  clearFilter() {
+    this.dataSource.filter = '';
+  }
+
   expanded(article: WTArticle){
+    this.expandedTest();
     this.article = article;
     this.updatePic();
     this.getArticleImages(this.article.id);
     this.resetProgress();
+  }
+
+  expandedTest(){
+    console.log('exp');
   }
 
   formatDate(d: string): Date{
@@ -172,6 +178,7 @@ export class PageAdminarticlesComponent implements OnInit, PipeTransform {
         }
         this.dataSource = new MatTableDataSource(this.articles);
         this.dataSource.sort = this.articleSort;
+        this.dataSource.filterPredicate = (data, filter: string): boolean => data.id.toLowerCase().includes(filter);
         this.article = this.articles[0];
       },
       (err) => {
