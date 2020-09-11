@@ -1,0 +1,30 @@
+<h1 mat-dialog-title>{{data.name}}</h1>
+<div mat-dialog-content>
+  <div style="max-width: 960px; margin: auto; margin-top: 1rem;">
+    <button mat-raised-button
+            color="primary"
+            (click)="togglePickupGallery()">
+      Galerie
+    </button>
+  </div>
+  <div class="pickup-gallery"
+       [class.pickup-gallery-colapsed]="!showPG"
+       [class.pickup-gallery-extended]="showPG">
+    <div *ngFor="let img of images"><img (dblclick)="addImg(img)" [src]="'..'+img.url" /></div>
+  </div>
+  <br>
+  <mat-label>Text</mat-label>
+  <div class="quill">
+    <quill-editor
+      id="quill"
+      [modules]="modules"
+      [(ngModel)]="data.text"
+      (onEditorCreated)="onEditorCreated($event)"
+    ></quill-editor>
+  </div>
+</div>
+<div mat-dialog-actions style="float: right;">
+  <button mat-raised-button (click)="onNoClick()">Zrušit</button>
+  <button mat-raised-button
+          [mat-dialog-close]="data">Ok</button>
+</div>

@@ -18,8 +18,7 @@ import {DialogConfirmComponent} from '../dialog-confirm/dialog-confirm.component
 import {MatDialog} from '@angular/material/dialog';
 import {DomSanitizer, SafeHtml} from '@angular/platform-browser';
 import { Pipe, PipeTransform } from '@angular/core';
-
-Udelat editaci clanku v dialogovem okne abych mel vzdy jen 1 instanci Quill editoru
+import {DialogArticleComponent} from '../dialog-article/dialog-article.component';
 
 @Component({
   selector: 'app-page-adminarticles',
@@ -33,15 +32,14 @@ Udelat editaci clanku v dialogovem okne abych mel vzdy jen 1 instanci Quill edit
     ]),
   ],
 })
-export class PageAdminarticlesComponent implements OnInit, PipeTransform {
+export class PageAdminarticlesComponent implements OnInit {
 
   constructor(private headerService: HeaderService,
               public device: DeviceService,
               private httpService: HttpService,
               private exceptions: ExceptionsService,
               private alertService: AlertService,
-              private dialog: MatDialog,
-              private domSanitizer: DomSanitizer) {
+              private dialog: MatDialog) {
     this.headerService.setTitle('Správa článků');
   }
 
@@ -57,48 +55,6 @@ export class PageAdminarticlesComponent implements OnInit, PipeTransform {
   history = false;
   fileUploadProgress = 0;
   fileUploadProgressStep = 0;
-  showPG = false;   // pickup gallery show
-  editorInstance;
-  exp = false;
-
-  toolbarOptions = [
-    ['bold', 'italic', 'underline'],
-    [{ header: 1 }, { header: 2 }],
-    [{ list: 'ordered'}, { list: 'bullet' }],
-    [{ indent: '-1'}, { indent: '+1' }],
-    [{ size: ['small', false, 'large', 'huge'] }],
-    [{ header: [1, 2, 3, 4, 5, 6, false] }],
-    [{ align: [] }],
-    ['link', 'video']
-  ];
-
-  // Quill wysiwyg editor
-  modules = {
-    toolbar: {
-      container: this.toolbarOptions
-    },
-    blotFormatter: {}
-  };
-
-  onEditorCreated(quillInstance) {
-    this.editorInstance = quillInstance
-  }
-
-  transform(html: string): SafeHtml {
-    return this.domSanitizer.bypassSecurityTrustHtml(html);
-  }
-
-  addImg(article: WTArticle, img: WTImage){
-    const value = '..' + img.url;
-    console.log(this.editorInstance);
-    this.editorInstance.focus();
-    const range = this.editorInstance.getSelection(true);
-    this.editorInstance.insertEmbed(range.index, 'image', value, 'user');
-  }
-
-  togglePickupGallery() {
-    this.showPG = !this.showPG;
-  }
 
   resetProgress(){
     this.fileUploadProgress = 0;
@@ -110,6 +66,18 @@ export class PageAdminarticlesComponent implements OnInit, PipeTransform {
 
   getImgPath(url: string): string {
     return '..' + url;
+  }
+
+  dialogEdit(article: WTArticle): void {
+    const dialogRef = this.dialog.open(DialogArticleComponent, {
+      width: '90vw',
+      data: { text: article.text, name: article.name, id: article.id }
+    });
+
+    dialogRef.afterClosed().subscribe(result => {
+      article.text = result.text;
+      this.updateArticle(article, false);
+    });
   }
 
   imgUpdateVisibility(img: WTImage) {
@@ -157,7 +125,7 @@ export class PageAdminarticlesComponent implements OnInit, PipeTransform {
   }
 
   expandedTest(){
-    console.log('exp');
+
   }
 
   formatDate(d: string): Date{
@@ -211,12 +179,13 @@ export class PageAdminarticlesComponent implements OnInit, PipeTransform {
     );
   }
 
-  updateArticle(article: WTArticle){
+  updateArticle(article: WTArticle, refresh: boolean){
     // set url
     article.url = this.slugify(article.name);
     this.httpService.setArticle_post(article).subscribe(data => {
       this.alertService.alert(AlertTexts.article_updated, SnackType.info);
-      this.getArticles();
+      if(refresh)
+        this.getArticles();
     },Error => {
       console.log(Error);
       this.alertService.alert(AlertTexts.fail, SnackType.error);

@@ -51,7 +51,7 @@ import { PageNewarticleComponent } from './page-newarticle/page-newarticle.compo
 import { QuillModule } from 'ngx-quill';
 import { PageAdminarticlesComponent } from './page-adminarticles/page-adminarticles.component';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
-import { DialogGalleryComponent } from './dialog-gallery/dialog-gallery.component';
+import { DialogArticleComponent } from './dialog-article/dialog-article.component';
 
 
 @NgModule({
@@ -73,7 +73,7 @@ import { DialogGalleryComponent } from './dialog-gallery/dialog-gallery.componen
     DialogNewnoticeComponent,
     PageNewarticleComponent,
     PageAdminarticlesComponent,
-    DialogGalleryComponent
+    DialogArticleComponent
   ],
   imports: [
     BrowserModule,

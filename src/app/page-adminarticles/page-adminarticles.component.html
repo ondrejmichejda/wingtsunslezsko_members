@@ -72,6 +72,13 @@
                 matTooltip="Kopírovat">
           <mat-icon>file_copy</mat-icon>
         </button>
+        <button mat-icon-button
+                style="float: right;"
+                color="primary"
+                (click)="dialogEdit(element)"
+                matTooltip="Upravit text">
+          <mat-icon>article</mat-icon>
+        </button>
       </td>
     </ng-container>
 
@@ -82,6 +89,7 @@
         <div class="example-element-detail" [@detailExpand]="element == expandedElement ? 'expanded' : 'collapsed'">
 
           <mat-tab-group id="tab-group" (focusChange)="expanded(element)">
+            <!-- Metadata -->
             <mat-tab>
               <ng-template mat-tab-label>
                 <mat-icon>assignment</mat-icon>
@@ -133,6 +141,7 @@
               </mat-form-field>
 
             </mat-tab>
+            <!-- Gallery -->
             <mat-tab>
               <!-- Gallery -->
               <ng-template mat-tab-label>
@@ -140,6 +149,7 @@
               </ng-template>
 
               <!-- Pic editor -->
+              <p class="hint-text" style="margin-left: 20px;">Nahrávej pouze PNG formát obrázků.</p>
               <mat-card class="pic-editor">
                 <mat-card-subtitle>Úvodní foto</mat-card-subtitle>
                 <img class="pic-image" mat-card-image [src]="picPath">
@@ -176,40 +186,6 @@
                   </mat-card-actions>
                 </mat-card>
               </div>
-
-
-
-            </mat-tab>
-            <mat-tab>
-              <div style="max-width: 960px; margin: auto; margin-top: 1rem;">
-                <button mat-raised-button
-                        color="primary"
-                        (click)="togglePickupGallery()">
-                  Galerie
-                </button>
-              </div>
-              <div class="pickup-gallery"
-                        [class.pickup-gallery-colapsed]="!showPG"
-                        [class.pickup-gallery-extended]="showPG">
-                <div *ngFor="let img of images"><img (dblclick)="addImg(element, img)" [src]="'..'+img.url" /></div>
-              </div>
-
-              <!-- Text editor -->
-              <ng-template mat-tab-label>
-                <mat-icon>edit</mat-icon>
-              </ng-template>
-
-              <br>
-              <div class="editor">
-                <quill-editor
-                  id="quill"
-                  style="min-height: 600px;"
-                  [modules]="modules"
-                  [(ngModel)]="element.text"
-                  (onEditorCreated)="onEditorCreated($event)"
-                ></quill-editor>
-              </div>
-
             </mat-tab>
             <mat-tab>
               <!-- Preview -->
@@ -231,7 +207,7 @@
           <button mat-raised-button
                   class="bottomButton top-space"
                   color="primary"
-                  (click)="updateArticle(element)">
+                  (click)="updateArticle(element, true)">
             Uložit
           </button>
 
