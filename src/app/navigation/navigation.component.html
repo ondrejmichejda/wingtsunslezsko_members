@@ -14,10 +14,11 @@
 
           <ng-container *ngIf="userAuthService.isLoggedAdmin()">
             <mat-divider></mat-divider>
-            <a mat-list-item ><b>Administrace</b></a>
+            <mat-toolbar>Admin</mat-toolbar>
             <a mat-list-item href="admin-nastenka"><mat-icon class="admin-icon">assignment</mat-icon>Nástěnka</a>
             <a mat-list-item href="admin-udalosti"><mat-icon class="admin-icon">group</mat-icon>Události</a>
             <a mat-list-item href="admin-clanky"><mat-icon class="admin-icon">article</mat-icon>Články</a>
+            <a mat-list-item href="admin-clenove"><mat-icon class="admin-icon">face</mat-icon>Členové</a>
 
           </ng-container>
       </mat-nav-list>

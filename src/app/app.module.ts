@@ -29,11 +29,9 @@ import { MatCardModule } from '@angular/material/card';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatExpansionModule } from '@angular/material/expansion';
 import { MatMenuModule } from '@angular/material/menu';
-import { PageArtiklComponent } from './page-artikl/page-artikl.component';
 import { MatDialogModule } from '@angular/material/dialog';
 import { DialogComponent } from './dialog/dialog.component';
 import { MatInputModule } from '@angular/material/input';
-import { PageChatComponent } from './page-chat/page-chat.component';
 import { PageDashboardComponent } from './page-dashboard/page-dashboard.component';
 import { MatTabsModule } from '@angular/material/tabs';
 import { HeaderService } from './services/header-title-change.service';
@@ -47,11 +45,11 @@ import { DialogConfirmComponent } from './dialog-confirm/dialog-confirm.componen
 import { PageAdminnoticesComponent } from './page-adminnotices/page-adminnotices.component';
 import { DialogComboboxComponent } from './dialog-combobox/dialog-combobox.component';
 import { DialogNewnoticeComponent } from './dialog-newnotice/dialog-newnotice.component';
-import { PageNewarticleComponent } from './page-newarticle/page-newarticle.component';
 import { QuillModule } from 'ngx-quill';
 import { PageAdminarticlesComponent } from './page-adminarticles/page-adminarticles.component';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { DialogArticleComponent } from './dialog-article/dialog-article.component';
+import { PageAdminmembersComponent } from './page-adminmembers/page-adminmembers.component';
 
 
 @NgModule({
@@ -60,9 +58,7 @@ import { DialogArticleComponent } from './dialog-article/dialog-article.componen
     NavigationComponent,
     PageEventsComponent,
     PageLoginComponent,
-    PageArtiklComponent,
     DialogComponent,
-    PageChatComponent,
     PageDashboardComponent,
     PageVideoComponent,
     PageNoticeboardComponent,
@@ -71,9 +67,9 @@ import { DialogArticleComponent } from './dialog-article/dialog-article.componen
     PageAdminnoticesComponent,
     DialogComboboxComponent,
     DialogNewnoticeComponent,
-    PageNewarticleComponent,
     PageAdminarticlesComponent,
-    DialogArticleComponent
+    DialogArticleComponent,
+    PageAdminmembersComponent
   ],
   imports: [
     BrowserModule,

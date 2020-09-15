@@ -1,0 +1,50 @@
+<div class="page-container">
+
+  <div class="member-form">
+    <mat-form-field appearance="outline">
+      <mat-label>Jméno</mat-label>
+      <input matInput [(ngModel)]="member.name">
+    </mat-form-field>
+
+    <mat-form-field appearance="outline">
+      <mat-label>Příjmení</mat-label>
+      <input matInput [(ngModel)]="member.surname">
+    </mat-form-field>
+
+    <mat-form-field appearance="outline">
+      <mat-label>Login</mat-label>
+      <input matInput [(ngModel)]="member.login">
+    </mat-form-field>
+
+    <mat-form-field appearance="outline">
+      <mat-label>Heslo</mat-label>
+      <input matInput [(ngModel)]="member.pwd">
+    </mat-form-field>
+
+    <!-- School editor -->
+    <mat-form-field appearance="outline">
+      <mat-label>Škola</mat-label>
+      <mat-select [(value)]="member.school">
+        <mat-option value="0">Všechny</mat-option>
+        <mat-option value="1">Ostrava</mat-option>
+        <mat-option value="2">Třinec</mat-option>
+        <mat-option value="3">Český Těšín</mat-option>
+      </mat-select>
+    </mat-form-field>
+    <br>
+    <!-- Buttons area -->
+
+    <button mat-raised-button
+            class="bottomButton"
+            color="primary"
+            (click)="addMember()">
+      Uložit
+    </button>
+    <button mat-raised-button
+            class="bottomButton"
+            color="basic"
+            (click)="initMember()">
+      Zrušit
+    </button>
+  </div>
+</div>

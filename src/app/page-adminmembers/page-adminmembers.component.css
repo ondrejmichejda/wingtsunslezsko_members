@@ -1,0 +1,11 @@
+.member-form {
+  width: 300px;
+}
+
+mat-form-field {
+  width: 100%;
+}
+
+.bottomButton {
+  margin: 5px;
+}

@@ -2,6 +2,7 @@
 export class WTMember{
 
   id: number;
+  datetime: string;
   login: string;
   pwd: string;
   name: string;
@@ -12,6 +13,7 @@ export class WTMember{
 
   constructor(
     id: number,
+    datetime: string,
     login: string,
     pwd: string,
     name: string,
@@ -21,6 +23,7 @@ export class WTMember{
     admin: boolean) {
 
     this.id = id;
+    this.datetime = datetime;
     this.login = login;
     this.pwd = pwd;
     this.name = name;

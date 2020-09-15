@@ -49,10 +49,27 @@ export class HttpService {
   }
 
   /**
-   * Create notice.
+   * Create event.
    */
   createEvent_post(){
     return this.http.post(`${this.baseUrl}event_create.php`, null, {
+      headers: new HttpHeaders()
+        .set('Content-Type', 'application/x-www-form-urlencoded')
+    });
+  }
+
+  /**
+   * Create member.
+   */
+  createMember_post(member: WTMember){
+    const body = new HttpParams()
+      .set('name', member.name.toString())
+      .set('surname', member.surname.toString())
+      .set('school', member.school.toString())
+      .set('login', member.login.toString())
+      .set('pwd', member.pwd.toString());
+
+    return this.http.post(`${this.baseUrl}member_create.php`, body.toString(), {
       headers: new HttpHeaders()
         .set('Content-Type', 'application/x-www-form-urlencoded')
     });
