@@ -76,7 +76,6 @@ export class PageAdminarticlesComponent implements OnInit {
 
     dialogRef.afterClosed().subscribe(result => {
       article.text = result.text;
-      this.updateArticle(article, false);
     });
   }
 
@@ -108,11 +107,24 @@ export class PageAdminarticlesComponent implements OnInit {
     this.dataSource.filter = filterValue.trim().toLowerCase();
   }
 
+  filterID(article: WTArticle) {
+    this.dataSource.filter = article.id;
+  }
+
+  clearFilter() {
+    this.dataSource.filter = '';
+  }
+
   expanded(article: WTArticle){
+    this.expandedTest();
     this.article = article;
     this.updatePic();
     this.getArticleImages(this.article.id);
     this.resetProgress();
+  }
+
+  expandedTest(){
+
   }
 
   formatDate(d: string): Date{
@@ -133,6 +145,7 @@ export class PageAdminarticlesComponent implements OnInit {
         }
         this.dataSource = new MatTableDataSource(this.articles);
         this.dataSource.sort = this.articleSort;
+        this.dataSource.filterPredicate = (data, filter: string): boolean => data.id.toLowerCase().includes(filter);
         this.article = this.articles[0];
       },
       (err) => {
@@ -165,13 +178,12 @@ export class PageAdminarticlesComponent implements OnInit {
     );
   }
 
-  updateArticle(article: WTArticle, refresh: boolean){
+  updateArticle(article: WTArticle){
     // set url
     article.url = this.slugify(article.name);
     this.httpService.setArticle_post(article).subscribe(data => {
       this.alertService.alert(AlertTexts.article_updated, SnackType.info);
-      if(refresh)
-        this.getArticles();
+      this.getArticles();
     },Error => {
       console.log(Error);
       this.alertService.alert(AlertTexts.fail, SnackType.error);
@@ -274,7 +286,7 @@ export class PageAdminarticlesComponent implements OnInit {
   }
 
   photoUpload(file: File, article: WTArticle) {
-    if(file.size < 3000000 && file.type ==='image/png') {
+    if(file.size < 1000000 && file.type ==='image/png') {
       this.httpService.postFileGallery(file, article.id).subscribe(data => {
       }, error => {
         console.log('error:');
@@ -289,7 +301,7 @@ export class PageAdminarticlesComponent implements OnInit {
   // pic
   handleFileInput(files: FileList, article: WTArticle) {
     const file = files.item(0);
-    if(file.size < 3000000 && file.type ==='image/png')
+    if(file.size < 1000000 && file.type ==='image/png')
       this.uploadFileToActivity(file, article.id);
     else
       this.alertService.alert(AlertTexts.pic_format_fail + ': ' + file.name, SnackType.error);

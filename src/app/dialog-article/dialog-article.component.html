@@ -13,8 +13,8 @@
     <div *ngFor="let img of images"><img (dblclick)="addImg(img)" [src]="'..'+img.url" /></div>
   </div>
   <br>
-  <mat-label>Text</mat-label>
-  <div class="quill">
+  <div style="max-width: 960px; margin: auto;">
+    <mat-label>Text</mat-label>
     <quill-editor
       id="quill"
       [modules]="modules"

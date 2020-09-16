@@ -523,42 +523,7 @@ class EventRegistration extends DatabaseData
 class Member extends DatabaseData
 {
   public function GetData(){
-    $data = [];
-    $sql = "SELECT * FROM in_members ORDER BY id DESC";
-
-    if($result = mysqli_query($this->connection,$sql))
-    {
-      $cr = 0;
-      while($row = mysqli_fetch_assoc($result))
-      {
-        $data[$cr]['id'] = $row['id'];
-        $data[$cr]['datetime'] = $row['datetime'];
-        $data[$cr]['login'] = $row['login'];
-        $data[$cr]['pwd'] = $row['pwd'];
-        $data[$cr]['name'] = $row['name'];
-        $data[$cr]['surname'] = $row['surname'];
-        $data[$cr]['school'] = $row['school'];
-        $data[$cr]['news'] = $row['news'];
-        $data[$cr]['admin'] = $row['admin'];
-
-        $cr++;
-      }
-
-      echo json_encode(['data'=>$data]);
-    }
-    else
-    {
-      http_response_code(404);
-    }
-  }
-
-  public function CreateData($name, $surname, $school, $login, $pwd)
-  {
-    $pwd_hashed = password_hash($pwd, PASSWORD_DEFAULT);
-    $sql = "INSERT INTO in_members (name, surname, school, login, pwd) VALUES ('".$name."', '".$surname."', ".$school.", '".$login."', '".$pwd_hashed."')";
-
-    $result = mysqli_query($this->connection,$sql);
-    echo $result;
+    //Not implemented
   }
 
   public function GetAllOnEvent($eventId){
@@ -594,6 +559,15 @@ class Member extends DatabaseData
     }
   }
 
+  public function CreateData($name, $surname, $school, $login, $pwd)
+  {
+    $pwd_hashed = password_hash($pwd, PASSWORD_DEFAULT);
+    $sql = "INSERT INTO in_members (name, surname, school, login, pwd) VALUES ('".$name."', '".$surname."', ".$school.", '".$login."', '".$pwd_hashed."')";
+
+    $result = mysqli_query($this->connection,$sql);
+    echo $result;
+  }
+
   public function GetOne($login, $password)
   {
     $data = [];
@@ -605,7 +579,6 @@ class Member extends DatabaseData
       while($row = mysqli_fetch_assoc($result))
       {
         $data[$cr]['id'] = $row['id'];
-        $data[$cr]['datetime'] = $row['datetime'];
         $data[$cr]['login'] = $row['login'];
         $data[$cr]['pwd'] = $row['pwd'];
         $data[$cr]['name'] = $row['name'];
@@ -628,6 +601,20 @@ class Member extends DatabaseData
     {
       http_response_code(404);
     }
+  }
+
+  public function SendMail($mail, $text)
+  {
+    $head = 'From:info@wingtsunslezsko.cz';
+    $head .= "\nMIME-Version: 1.0\n";
+    $head .= "Content-Type: text/html; charset=\"utf-8\"\n";
+
+    $address = $mail;
+
+    $subject = 'Wing Tsun Slezsko - Přihlašovací údaje';
+    $done = mb_send_mail($address, $subject, $text, $head);
+
+    echo $done;
   }
 }
 

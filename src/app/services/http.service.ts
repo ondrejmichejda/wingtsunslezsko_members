@@ -49,7 +49,7 @@ export class HttpService {
   }
 
   /**
-   * Create event.
+   * Create notice.
    */
   createEvent_post(){
     return this.http.post(`${this.baseUrl}event_create.php`, null, {
@@ -70,6 +70,20 @@ export class HttpService {
       .set('pwd', member.pwd.toString());
 
     return this.http.post(`${this.baseUrl}member_create.php`, body.toString(), {
+      headers: new HttpHeaders()
+        .set('Content-Type', 'application/x-www-form-urlencoded')
+    });
+  }
+
+  /**
+   * Send mail after create member.
+   */
+  sendMail_post(mail: string, text: string){
+    const body = new HttpParams()
+      .set('mail', mail.toString())
+      .set('text', text.toString());
+
+    return this.http.post(`${this.baseUrl}member_sendmail.php`, body.toString(), {
       headers: new HttpHeaders()
         .set('Content-Type', 'application/x-www-form-urlencoded')
     });
