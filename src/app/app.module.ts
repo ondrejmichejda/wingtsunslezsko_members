@@ -53,6 +53,8 @@ import { PageAdminarticlesComponent } from './page-adminarticles/page-adminartic
 import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { DialogArticleComponent } from './dialog-article/dialog-article.component';
 import { PageAdminmembersComponent } from './page-adminmembers/page-adminmembers.component';
+import { DialogResetpwdComponent } from './dialog-resetpwd/dialog-resetpwd.component';
+import { DialogUpdatememberComponent } from './dialog-updatemember/dialog-updatemember.component';
 
 
 @NgModule({
@@ -75,7 +77,9 @@ import { PageAdminmembersComponent } from './page-adminmembers/page-adminmembers
     PageNewarticleComponent,
     PageAdminarticlesComponent,
     DialogArticleComponent,
-    PageAdminmembersComponent
+    PageAdminmembersComponent,
+    DialogResetpwdComponent,
+    DialogUpdatememberComponent
   ],
   imports: [
     BrowserModule,

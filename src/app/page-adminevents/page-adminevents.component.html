@@ -85,79 +85,62 @@
               <!-- Name editor -->
               <mat-form-field class="edit-input" appearance="outline" style="margin-top: 10px;">
                 <mat-label>Jméno</mat-label>
-                <input matInput (keyup.enter)="editor.Name = true" [disabled]="editor.Name" [(ngModel)]="element.name">
-                <mat-icon matSuffix (click)="editor.Name = !editor.Name">create</mat-icon>
+                <input matInput (keyup.enter)="editor.Name = true" [(ngModel)]="element.name">
               </mat-form-field>
 
               <!-- Location editor -->
               <mat-form-field class="edit-input" appearance="outline" class="half-size margin-2">
                 <mat-label>Místo konání</mat-label>
-                <input matInput (keyup.enter)="editor.Location = true" [disabled]="editor.Location" [(ngModel)]="element.location">
-                <mat-icon matSuffix (click)="editor.Location = !editor.Location">create</mat-icon>
+                <input matInput (keyup.enter)="editor.Location = true" [(ngModel)]="element.location">
               </mat-form-field>
 
               <!-- Prize editor -->
               <mat-form-field class="edit-input" appearance="outline" class="half-size">
                 <mat-label>Cena</mat-label>
-                <input matInput (keyup.enter)="editor.Prize = true" [disabled]="editor.Prize" [(ngModel)]="element.prize">
-                <mat-icon matSuffix (click)="editor.Prize = !editor.Prize">create</mat-icon>
+                <input matInput (keyup.enter)="editor.Prize = true" [(ngModel)]="element.prize">
               </mat-form-field>
 
               <!-- Member limit editor -->
               <mat-form-field class="edit-input" appearance="outline" class="half-size margin-2">
                 <mat-label>Limit účastníků</mat-label>
-                <input type="number" matInput (keyup.enter)="editor.MemberLimit = true" [disabled]="editor.MemberLimit" [(ngModel)]="element.memberlimit">
-                <mat-icon matSuffix (click)="editor.MemberLimit = !editor.MemberLimit">create</mat-icon>
+                <input type="number" matInput (keyup.enter)="editor.MemberLimit = true" [(ngModel)]="element.memberlimit">
               </mat-form-field>
 
               <!-- Member limit min editor -->
               <mat-form-field class="edit-input" appearance="outline" class="half-size">
                 <mat-label>Min. účastníků</mat-label>
-                <input type="number" matInput (keyup.enter)="editor.MinLimit = true" [disabled]="editor.MinLimit" [(ngModel)]="element.memberlimitMin">
-                <mat-icon matSuffix (click)="editor.MinLimit = !editor.MinLimit">create</mat-icon>
+                <input type="number" matInput (keyup.enter)="editor.MinLimit = true" [(ngModel)]="element.memberlimitMin">
               </mat-form-field>
 
               <!-- Deadline editor -->
               <mat-form-field class="edit-input" appearance="outline" class="half-size margin-2">
                 <mat-label>Přihlašování do</mat-label>
-                <input matInput (keyup.enter)="editor.Deadline = true" [disabled]="editor.Deadline" [(ngModel)]="element.datetimeDeadline">
-                <mat-icon matSuffix (click)="editor.Deadline = !editor.Deadline">create</mat-icon>
+                <input matInput (keyup.enter)="editor.Deadline = true" [(ngModel)]="element.datetimeDeadline">
               </mat-form-field>
 
               <!-- Start editor -->
               <mat-form-field class="edit-input" appearance="outline" class="half-size">
                 <mat-label>Začátek</mat-label>
-                <input matInput (keyup.enter)="editor.Start = true" [disabled]="editor.Start" [(ngModel)]="element.datetimeStart">
-                <mat-icon matSuffix (click)="editor.Start = !editor.Start">create</mat-icon>
+                <input matInput (keyup.enter)="editor.Start = true" [(ngModel)]="element.datetimeStart">
               </mat-form-field>
 
               <!-- End editor -->
               <mat-form-field class="edit-input" appearance="outline" class="half-size margin-2">
                 <mat-label>Konec</mat-label>
-                <input matInput (keyup.enter)="editor.End = true" [disabled]="editor.End" [(ngModel)]="element.datetimeEnd">
-                <mat-icon matSuffix (click)="editor.End = !editor.End">create</mat-icon>
+                <input matInput (keyup.enter)="editor.End = true" [(ngModel)]="element.datetimeEnd">
               </mat-form-field>
 
               <!-- School editor -->
               <mat-form-field appearance="outline" class="half-size">
                 <mat-label>Škola</mat-label>
-                <mat-select (keyup.enter)="editor.School = true" [disabled]="editor.School" [(value)]="element.school">
+                <mat-select (keyup.enter)="editor.School = true" [(value)]="element.school">
                   <mat-option value="0">Všechny</mat-option>
                   <mat-option value="1">Ostrava</mat-option>
                   <mat-option value="2">Třinec</mat-option>
                   <mat-option value="3">Český Těšín</mat-option>
+                  <mat-option value="4">Těrlicko</mat-option>
                 </mat-select>
-                <mat-icon matSuffix (click)="editor.School = !editor.School">create</mat-icon>
               </mat-form-field>
-
-              <!-- Description editor -->
-              <!--<mat-form-field appearance="outline">
-                <mat-label>Popis</mat-label>
-                <textarea matInput
-                          (keyup.enter)="editor.Description = true" [disabled]="editor.Description"
-                          cdkTextareaAutosize [(ngModel)]="element.description"></textarea>
-                <mat-icon matSuffix (click)="editor.Description = !editor.Description">create</mat-icon>
-              </mat-form-field>-->
 
               <br>
               <mat-label>Text</mat-label>

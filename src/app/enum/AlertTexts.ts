@@ -21,4 +21,6 @@ export enum AlertTexts {
   pic_format_fail = 'Špatný formát obrázku',
   fail_check_console = 'Chyba, zkontroluj consoli.',
   member_created = 'Člen vytvořen.',
+  member_deleted = 'Člen smazán',
+  member_updated = 'Člen upraven',
 }

@@ -1,0 +1,39 @@
+<h1 mat-dialog-title>Změna člena</h1>
+
+<div mat-dialog-content>
+
+  <mat-form-field appearance="outline">
+    <mat-label>Jméno</mat-label>
+    <input matInput (keyup)="validate()" [(ngModel)]="data.m.name"/>
+  </mat-form-field>
+
+  <mat-form-field appearance="outline">
+    <mat-label>Příjmení</mat-label>
+    <input matInput (keyup)="validate()" [(ngModel)]="data.m.surname"/>
+  </mat-form-field>
+
+  <mat-form-field appearance="outline">
+    <mat-label>Login</mat-label>
+    <input matInput (keyup)="validate()" [(ngModel)]="data.m.login"/>
+  </mat-form-field>
+
+  <mat-form-field appearance="outline">
+    <mat-label>Škola</mat-label>
+    <mat-select [(value)]="data.m.school">
+      <mat-option value="0">Všechny</mat-option>
+      <mat-option value="1">Ostrava</mat-option>
+      <mat-option value="2">Třinec</mat-option>
+      <mat-option value="3">Český Těšín</mat-option>
+      <mat-option value="4">Těrlicko</mat-option>
+    </mat-select>
+  </mat-form-field>
+</div>
+
+<div mat-dialog-actions style="float: right;">
+  <button mat-raised-button (click)="onNoClick()">Zrušit</button>
+  <button
+    mat-raised-button
+    color="primary"
+    [mat-dialog-close]="data"
+    [disabled]="!enabled">Ok</button>
+</div>

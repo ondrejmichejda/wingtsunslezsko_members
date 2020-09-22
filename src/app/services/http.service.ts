@@ -59,6 +59,50 @@ export class HttpService {
   }
 
   /**
+   * Delete member.
+   */
+  deleteMember_post(member: WTMember){
+    const body = new HttpParams()
+      .set('id', member.id.toString());
+
+    return this.http.post(`${this.baseUrl}member_delete.php`, body.toString(), {
+      headers: new HttpHeaders()
+        .set('Content-Type', 'application/x-www-form-urlencoded')
+    });
+  }
+
+  /**
+   * Update member's password.
+   */
+  updatePwdMember_post(member: WTMember){
+    const body = new HttpParams()
+      .set('id', member.id.toString())
+      .set('pwd', member.pwd.toString());
+
+    return this.http.post(`${this.baseUrl}member_updatepwd.php`, body.toString(), {
+      headers: new HttpHeaders()
+        .set('Content-Type', 'application/x-www-form-urlencoded')
+    });
+  }
+
+  /**
+   * Update member's password.
+   */
+  updateMember_post(member: WTMember){
+    const body = new HttpParams()
+      .set('id', member.id.toString())
+      .set('name', member.name.toString())
+      .set('surname', member.surname.toString())
+      .set('login', member.login.toString())
+      .set('school', member.school.toString());
+
+    return this.http.post(`${this.baseUrl}member_update.php`, body.toString(), {
+      headers: new HttpHeaders()
+        .set('Content-Type', 'application/x-www-form-urlencoded')
+    });
+  }
+
+  /**
    * Create member.
    */
   createMember_post(member: WTMember){
@@ -359,6 +403,19 @@ export class HttpService {
       map((res) => {
         articles = res[data];
         return articles;
+      }), catchError(this.handleError));
+  }
+
+  /**
+   * Get members from db.
+   */
+  getMembers(): Observable<WTMember[]> {
+    let members: WTMember[];
+    const data = 'data';
+    return this.http.get(`${this.baseUrl}member_get_all.php`).pipe(
+      map((res) => {
+        members = res[data];
+        return members;
       }), catchError(this.handleError));
   }
 

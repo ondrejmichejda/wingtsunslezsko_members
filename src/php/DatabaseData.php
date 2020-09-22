@@ -523,7 +523,61 @@ class EventRegistration extends DatabaseData
 class Member extends DatabaseData
 {
   public function GetData(){
-    //Not implemented
+    $data = [];
+    $sql = "SELECT * FROM in_members ORDER BY id DESC";
+
+    if($result = mysqli_query($this->connection,$sql))
+    {
+      $cr = 0;
+      while($row = mysqli_fetch_assoc($result))
+      {
+        $data[$cr]['id'] = $row['id'];
+        $data[$cr]['datetime'] = $row['datetime'];
+        $data[$cr]['login'] = $row['login'];
+        $data[$cr]['pwd'] = $row['pwd'];
+        $data[$cr]['name'] = $row['name'];
+        $data[$cr]['surname'] = $row['surname'];
+        $data[$cr]['school'] = $row['school'];
+        $data[$cr]['news'] = $row['news'];
+        $data[$cr]['admin'] = $row['admin'];
+        $cr++;
+      }
+      echo json_encode(['data'=>$data]);
+    }
+    else
+      http_response_code(404);
+  }
+
+  public function DeleteData($id)
+  {
+    $sql = "DELETE FROM in_members WHERE id=".$id;
+    $result = mysqli_query($this->connection,$sql);
+
+    $sql = "DELETE FROM in_events_registrations WHERE user_id=".$id;
+    $result = mysqli_query($this->connection,$sql);
+
+    echo $result;
+  }
+
+  public function UpdatePwd($id, $pwd){
+    $pwd_hashed = password_hash($pwd, PASSWORD_DEFAULT);
+    $sql = "UPDATE in_members SET pwd='".$pwd_hashed."' WHERE  id=".$id;
+
+    $result = mysqli_query($this->connection,$sql);
+    echo $result;
+  }
+
+  public function UpdateData($id, $name, $surname, $login, $school){
+
+    $sql = "UPDATE in_members SET
+            name='".$name."',
+            surname='".$surname."',
+            login='".$login."',
+            school=".$school."
+            WHERE  id=".$id;
+
+    $result = mysqli_query($this->connection,$sql);
+    echo $result;
   }
 
   public function GetAllOnEvent($eventId){
@@ -579,6 +633,7 @@ class Member extends DatabaseData
       while($row = mysqli_fetch_assoc($result))
       {
         $data[$cr]['id'] = $row['id'];
+        $data[$cr]['datetime'] = $row['datetime'];
         $data[$cr]['login'] = $row['login'];
         $data[$cr]['pwd'] = $row['pwd'];
         $data[$cr]['name'] = $row['name'];

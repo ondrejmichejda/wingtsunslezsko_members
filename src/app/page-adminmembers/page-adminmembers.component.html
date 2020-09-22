@@ -6,6 +6,7 @@
       </ng-template>
       <br>
       <div class="member-form">
+
         <mat-form-field appearance="outline">
           <mat-label>Jméno</mat-label>
           <input (keyup)="emptyFieldsCheck()" matInput [(ngModel)]="member.name">
@@ -34,6 +35,7 @@
             <mat-option value="1">Ostrava</mat-option>
             <mat-option value="2">Třinec</mat-option>
             <mat-option value="3">Český Těšín</mat-option>
+            <mat-option value="4">Těrlicko</mat-option>
           </mat-select>
         </mat-form-field>
 
@@ -43,8 +45,8 @@
           <mat-hint>Pro odeslání přihlašovacích údajů.</mat-hint>
         </mat-form-field>
         <br>
+        <br>
         <!-- Buttons area -->
-
         <button mat-raised-button
                 class="bottomButton"
                 color="primary"
@@ -64,6 +66,76 @@
       <ng-template mat-tab-label>
         <mat-icon>groups</mat-icon>
       </ng-template>
+      <div class="error-text" *ngIf="error">{{error}}</div>
+
+      <mat-form-field>
+        <mat-label>Filter</mat-label>
+        <input matInput (keyup)="applyFilter($event)" placeholder="Ex. ium" #input>
+      </mat-form-field>
+
+      <table mat-table
+             matSort
+             [dataSource]="dataSource"
+             #eventSort="matSort"
+             multiTemplateDataRows
+             class="mat-elevation-z8">
+
+        <ng-container matColumnDef="id">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header> ID </th>
+          <td mat-cell *matCellDef="let element"> {{element.id}} </td>
+        </ng-container>
+
+        <ng-container *ngIf="!device.IsMobile()" matColumnDef="login">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header> Login </th>
+          <td mat-cell *matCellDef="let element"> {{element.login}} </td>
+        </ng-container>
+
+        <ng-container *ngIf="!device.IsMobile()" matColumnDef="name">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header> Jméno </th>
+          <td  mat-cell *matCellDef="let element"> {{element.name}} </td>
+        </ng-container>
+
+        <ng-container matColumnDef="surname">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header> Příjmení </th>
+          <td mat-cell *matCellDef="let element"> {{element.surname}} </td>
+        </ng-container>
+
+        <ng-container *ngIf="!device.IsMobile()" matColumnDef="school">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header> Škola </th>
+          <td mat-cell *matCellDef="let element"> {{common.getSchool(element.school)}} </td>
+        </ng-container>
+
+        <ng-container matColumnDef="control">
+          <th mat-header-cell *matHeaderCellDef></th>
+          <td (click)="$event.stopPropagation();" mat-cell *matCellDef="let element">
+            <button mat-icon-button
+                    style="float: right;"
+                    color="warn"
+                    (click)="dialogDelete(element)"
+                    matTooltip="Smazat">
+              <mat-icon>delete</mat-icon>
+            </button>
+            <button mat-icon-button
+                    style="float: right;"
+                    color="primary"
+                    (click)="dialogReset(element)"
+                    matTooltip="Reset hesla">
+              <mat-icon>autorenew</mat-icon>
+            </button>
+            <button mat-icon-button
+                    style="float: right;"
+                    color="primary"
+                    (click)="dialogUpdate(element)"
+                    matTooltip="Změna údajů">
+              <mat-icon>create</mat-icon>
+            </button>
+
+          </td>
+        </ng-container>
+
+        <tr mat-header-row *matHeaderRowDef="columnsToDisplay"></tr>
+        <tr mat-row *matRowDef="let row; columns: columnsToDisplay;"></tr>
+      </table>
     </mat-tab>
   </mat-tab-group>
 

@@ -9,3 +9,7 @@ mat-form-field {
 .bottomButton {
   margin: 5px;
 }
+
+table {
+  width: 100%;
+}
