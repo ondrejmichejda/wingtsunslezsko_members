@@ -1,8 +1,31 @@
-<!--<div class="page-container">
-    <mat-form-field>
-        <mat-label>Vyber video</mat-label>
-        <mat-select [(value)]="selectedVideoID">
-            <mat-option value="{{video.Id}}" *ngFor="let video of videos">{{video.Name}}</mat-option>
-        </mat-select>
-    </mat-form-field>
-</div>-->
+<div class="page-container">
+  <p class="hint-text">Výuková a inspirační videa.</p>
+  <div class="error-text" *ngIf="error">{{error}}</div>
+
+  <mat-form-field>
+    <mat-label>Vyber kategorii</mat-label>
+    <mat-select [(value)]="category" (selectionChange)="getVideos()">
+      <mat-option value="1">Forma</mat-option>
+      <mat-option value="2">Principy</mat-option>
+      <mat-option value="3">Trénink</mat-option>
+      <mat-option value="4">Ostatní</mat-option>
+    </mat-select>
+  </mat-form-field>
+
+  <h1 *ngIf="category===0" class="choose-alert">Vyber kategorii</h1>
+
+  <mat-card *ngFor="let video of videos" [ngClass]="device.IsMobile() ? 'video-card-mobile' : 'video-card'">
+    <mat-card-header>
+      <mat-card-title>{{commonFc.ShortText(video.name, 50)}}</mat-card-title>
+    </mat-card-header>
+    <img mat-card-image [src]="getVideoThumbnail(video.link)" alt="">
+    <mat-card-content>
+      <p>
+        {{getDescription(video)}}
+      </p>
+    </mat-card-content>
+    <mat-card-actions>
+      <button mat-raised-button color="primary" style="float: right;" (click)="dialogVideo(video)">Spustit</button>
+    </mat-card-actions>
+  </mat-card>
+</div>

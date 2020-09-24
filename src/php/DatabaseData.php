@@ -260,6 +260,7 @@ class Event extends DatabaseData
         $data[$cr]['datetimeStart'] = $this->getISOtime($row['datetime_start']);
         $data[$cr]['datetimeDeadline'] = $this->getISOtime($row['datetime_deadline']);
         $data[$cr]['datetimeEnd'] = $this->getISOtime($row['datetime_end']);
+        $data[$cr]['autoconfirm'] = $row['autoconfirm'];
         $cr++;
       }
 
@@ -333,6 +334,7 @@ class Event extends DatabaseData
         $data[$cr]['datetimeStart'] = $this->getISOtime($row['datetime_start']);
         $data[$cr]['datetimeDeadline'] = $this->getISOtime($row['datetime_deadline']);
         $data[$cr]['datetimeEnd'] = $this->getISOtime($row['datetime_end']);
+        $data[$cr]['autoconfirm'] = $row['autoconfirm'];
         $data[$cr]['visible'] = $row['visible'];
         $cr++;
       }
@@ -346,7 +348,7 @@ class Event extends DatabaseData
   }
 
   public function SetData($id, $name, $school, $location, $prize, $description, $memberlimit,
-                          $memberlimitMin, $datetimeStart, $datetimeEnd, $datetimeDeadline, $visible)
+                          $memberlimitMin, $datetimeStart, $datetimeEnd, $datetimeDeadline, $autoconfirm, $visible)
   {
     $sql = "UPDATE in_events SET
             name='".$name."',
@@ -359,6 +361,7 @@ class Event extends DatabaseData
             datetime_start='".$this->getDBtime($datetimeStart)."',
             datetime_end='".$this->getDBtime($datetimeEnd)."',
             datetime_deadline='".$this->getDBtime($datetimeDeadline)."',
+            autoconfirm=".$autoconfirm.",
             visible=".$visible."
             WHERE id=".$id;
 
@@ -679,11 +682,11 @@ class Sign extends DatabaseData
     // not implemented
   }
 
-  public function SignIn($eventId, $userId)
+  public function SignIn($eventId, $userId, $confirmed)
   {
     $result = true;
 
-    $sql = "INSERT INTO in_events_registrations(event_id, user_id) VALUES (".$eventId.", ".$userId.")";
+    $sql = "INSERT INTO in_events_registrations(event_id, user_id, confirmed) VALUES (".$eventId.", ".$userId.", ".$confirmed.")";
 
     $result = mysqli_query($this->connection,$sql);
     $result = self::UpdateEvent($eventId);
@@ -904,4 +907,36 @@ class Article extends DatabaseData{
 
     echo $result;
   }
+}
+
+class Video extends DatabaseData{
+
+  public function GetData()
+  {
+    $data = [];
+    $sql = "SELECT * FROM in_videos WHERE visible = true ORDER BY datetime DESC";
+
+    if($result = mysqli_query($this->connection,$sql))
+    {
+      $cr = 0;
+      while($row = mysqli_fetch_assoc($result))
+      {
+        $data[$cr]['id'] = $row['id'];
+        $data[$cr]['datetime'] = $row['datetime'];
+        $data[$cr]['name'] = $row['name'];
+        $data[$cr]['category'] = $row['category'];
+        $data[$cr]['description'] = $row['description'];
+        $data[$cr]['link'] = $row['link'];
+        $data[$cr]['visible'] = $row['visible'];
+        $cr++;
+      }
+
+      echo json_encode(['data'=>$data]);
+    }
+    else
+    {
+      http_response_code(404);
+    }
+  }
+
 }

@@ -45,6 +45,15 @@
         <button mat-icon-button
                 style="float: right;"
                 [disabled]="!editor.Same"
+                (click)="changeAutoconfirm(element)"
+                matTooltip="Automatické potvrzování">
+          <mat-icon *ngIf="!!+element.autoconfirm">flash_on</mat-icon>
+          <mat-icon *ngIf="!!!+element.autoconfirm">flash_off</mat-icon>
+        </button>
+
+        <button mat-icon-button
+                style="float: right;"
+                [disabled]="!editor.Same"
                 (click)="changeVisibility(element)"
                 matTooltip="Viditelnost">
           <mat-icon *ngIf="!!+element.visible">visibility</mat-icon>

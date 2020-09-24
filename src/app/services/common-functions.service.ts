@@ -35,4 +35,15 @@ export class CommonFunctionsService {
     const re = /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
     return re.test(email);
   }
+
+  ShortText(text: string, length: number) : string {
+    let result: string
+    if(text.length <= length){
+      result = text;
+    }
+    else{
+      result = text.substr(0, length -3) + '...';
+    }
+    return result;
+  }
 }

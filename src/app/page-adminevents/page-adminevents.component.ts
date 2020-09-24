@@ -212,6 +212,11 @@ export class PageAdmineventsComponent implements OnInit {
     this.updateEvent(event);
   }
 
+  changeAutoconfirm(event: WTEvent){
+    event.autoconfirm = !!!+event.autoconfirm;
+    this.updateEvent(event);
+  }
+
   applyFilter(event: Event) {
     const filterValue = (event.target as HTMLInputElement).value;
     this.dataSource.filter = filterValue.trim().toLowerCase();
@@ -224,6 +229,7 @@ export class PageAdmineventsComponent implements OnInit {
       this.editor.shadowCopyEvent();
       this.refresh();
     },Error => {
+      console.log(Error);
       this.alertService.alert(AlertTexts.fail, SnackType.error);
     });
   }
@@ -473,6 +479,7 @@ class Editor {
         this._event.datetimeStart,
         this._event.datetimeDeadline,
         this._event.datetimeEnd,
+        this._event.autoconfirm,
         this._event.visible);
     }
 

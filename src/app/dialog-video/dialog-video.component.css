@@ -1,0 +1,14 @@
+.mat-dialog-content {
+  height: 100%;
+}
+
+iframe {
+  width: 100%;
+  height: 100%;
+}
+
+.exit-button {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+}

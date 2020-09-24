@@ -42,7 +42,7 @@ export class PageAdminmembersComponent implements OnInit {
               private exceptions: ExceptionsService,
               public device: DeviceService,
               public common: CommonFunctionsService,
-              private dialog: MatDialog,) {
+              private dialog: MatDialog) {
     this.headerService.setTitle('Správa členů');
   }
 

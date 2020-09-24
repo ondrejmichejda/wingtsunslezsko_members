@@ -9,6 +9,7 @@ import {WTEventRegistration} from '../class/data/WTEventRegistration';
 import {WTMembersOnEvent} from '../class/data/WTMembersOnEvent';
 import {WTArticle} from '../class/data/WTArticle';
 import {WTImage} from '../class/data/WTImage';
+import {WTVideo} from '../class/data/WTVideo';
 
 @Injectable({
   providedIn: 'root'
@@ -181,6 +182,7 @@ export class HttpService {
       .set('datetimeStart', event.datetimeStart.toString())
       .set('datetimeEnd', event.datetimeEnd.toString())
       .set('datetimeDeadline', event.datetimeDeadline.toString())
+      .set('autoconfirm', event.autoconfirm.toString())
       .set('visible', event.visible.toString());
 
     return this.http.post(`${this.baseUrl}event_set.php`, body.toString(), {
@@ -376,6 +378,33 @@ export class HttpService {
     });
   }
 
+  /**
+   * Sign in member to event
+   */
+  signIn(eventId: number, userId: number, confirmed: boolean) {
+    const body = new HttpParams()
+      .set('eventId', eventId.toString())
+      .set('userId', userId.toString())
+      .set('confirmed', confirmed.toString());
+
+    return this.http.post(`${this.baseUrl}sign_in.php`, body.toString(),{
+      headers: new HttpHeaders()
+        .set('Content-Type', 'application/x-www-form-urlencoded')
+    });
+  }
+
+  /**
+   * Sign out member from event
+   */
+  signOut(eventId: number, userId: number): Observable<boolean> {
+    let result: boolean;
+    return this.http.get(`${this.baseUrl}sign_out.php?eventId=`+eventId+`&userId=`+userId).pipe(
+      map((res) => {
+        result = Boolean(res);
+        return result;
+      }), catchError(this.handleError));
+  }
+
   /**************************
    **** GET REQUESTS
    **************************/
@@ -403,6 +432,19 @@ export class HttpService {
       map((res) => {
         articles = res[data];
         return articles;
+      }), catchError(this.handleError));
+  }
+
+  /**
+   * Get articles from db.
+   */
+  getVideos(): Observable<WTVideo[]> {
+    let videos: WTVideo[];
+    const data = 'data';
+    return this.http.get(`${this.baseUrl}video_get.php`).pipe(
+      map((res) => {
+        videos = res[data];
+        return videos;
       }), catchError(this.handleError));
   }
 
@@ -507,30 +549,6 @@ export class HttpService {
       map((res) => {
         events = res[data];
         return events;
-      }), catchError(this.handleError));
-  }
-
-  /**
-   * Sign in member to event
-   */
-  signIn(eventId: number, userId: number): Observable<boolean> {
-    let result: boolean;
-    return this.http.get(`${this.baseUrl}sign_in.php?eventId=`+eventId+`&userId=`+userId).pipe(
-      map((res) => {
-        result = Boolean(res);
-        return result;
-      }), catchError(this.handleError));
-  }
-
-  /**
-   * Sign out member from event
-   */
-  signOut(eventId: number, userId: number): Observable<boolean> {
-    let result: boolean;
-    return this.http.get(`${this.baseUrl}sign_out.php?eventId=`+eventId+`&userId=`+userId).pipe(
-      map((res) => {
-        result = Boolean(res);
-        return result;
       }), catchError(this.handleError));
   }
 

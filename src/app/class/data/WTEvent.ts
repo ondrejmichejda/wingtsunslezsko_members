@@ -17,6 +17,7 @@ export class WTEvent {
   datetimeStart: string;
   datetimeDeadline: string;
   datetimeEnd: string;
+  autoconfirm: boolean;
   visible: boolean;
 
   regStatus = 0;
@@ -37,6 +38,7 @@ export class WTEvent {
     datetimeStart: string,
     datetimeDeadline: string,
     datetimeEnd: string,
+    autoconfirm: boolean,
     visible: boolean) {
 
     this.id = id;
@@ -53,6 +55,7 @@ export class WTEvent {
     this.datetimeStart = datetimeStart;
     this.datetimeDeadline = datetimeDeadline;
     this.datetimeEnd = datetimeEnd;
+    this.autoconfirm = autoconfirm;
     this.visible = visible;
   }
 }

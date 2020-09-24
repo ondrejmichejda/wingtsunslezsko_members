@@ -80,12 +80,13 @@ export class PageEventsComponent implements OnInit {
   }
 
   public signIn(event: WTEvent){
-    this.httpService.signIn(event.id, this.dataStorage.Member.id).subscribe(
+    this.httpService.signIn(event.id, this.dataStorage.Member.id, event.autoconfirm).subscribe(
       (res: boolean) => {
         this.alertService.alert(AlertTexts.event_sign_in + event.name, SnackType.info);
         this.getEvents();
       },
       (err) => {
+        console.log(err);
         this.alertService.alert(AlertTexts.fail, SnackType.error);
       }
     );

@@ -13,4 +13,5 @@ $event->SetData(
   $_POST['datetimeStart'],
   $_POST['datetimeEnd'],
   $_POST['datetimeDeadline'],
+  $_POST['autoconfirm'],
   $_POST['visible']);

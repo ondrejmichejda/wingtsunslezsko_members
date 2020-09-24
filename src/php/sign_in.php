@@ -1,4 +1,4 @@
 <?php
 require('DatabaseData.php');
 $sign = new Sign();
-$sign->SignIn($_GET['eventId'], $_GET['userId']);
+$sign->SignIn($_POST['eventId'], $_POST['userId'], $_POST['confirmed']);
