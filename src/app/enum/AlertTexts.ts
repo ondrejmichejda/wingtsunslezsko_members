@@ -23,4 +23,7 @@ export enum AlertTexts {
   member_created = 'Člen vytvořen.',
   member_deleted = 'Člen smazán',
   member_updated = 'Člen upraven',
+  video_created = 'Video vytvořeno',
+  video_deleted = 'Video smazáno',
+  video_updated = 'Video upraveno',
 }

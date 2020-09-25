@@ -12,6 +12,7 @@ import {AuthGuardService} from './services/auth-guard.service';
 import {PageNewarticleComponent} from './page-newarticle/page-newarticle.component';
 import {PageAdminarticlesComponent} from './page-adminarticles/page-adminarticles.component';
 import {PageAdminmembersComponent} from './page-adminmembers/page-adminmembers.component';
+import {PageAdminvideosComponent} from './page-adminvideos/page-adminvideos.component';
 
 
 
@@ -62,6 +63,11 @@ const routes: Routes = [
   {
     path: 'admin-clenove',
     component: PageAdminmembersComponent,
+    canActivate: [AuthGuardService],
+  },
+  {
+    path: 'admin-videa',
+    component: PageAdminvideosComponent,
     canActivate: [AuthGuardService],
   },
 ];

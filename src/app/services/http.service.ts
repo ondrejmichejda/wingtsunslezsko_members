@@ -240,6 +240,16 @@ export class HttpService {
   }
 
   /**
+   * Create video.
+   */
+  createVideo(){
+    return this.http.post(`${this.baseUrl}video_create.php`, null, {
+      headers: new HttpHeaders()
+        .set('Content-Type', 'application/x-www-form-urlencoded')
+    });
+  }
+
+  /**
    * Delete notice.
    */
   deleteNotice_post(id: number){
@@ -363,6 +373,19 @@ export class HttpService {
   }
 
   /**
+   * Delete video by id.
+   */
+  deleteVideo(video: WTVideo){
+    const body = new HttpParams()
+      .set('id', video.id.toString());
+
+    return this.http.post(`${this.baseUrl}video_delete.php`, body.toString(), {
+      headers: new HttpHeaders()
+        .set('Content-Type', 'application/x-www-form-urlencoded')
+    });
+  }
+
+  /**
    * Update event registration.
    */
   updateRegistration_post(id: number, confirmed: boolean, present: boolean, eventId: number){
@@ -388,6 +411,24 @@ export class HttpService {
       .set('confirmed', confirmed.toString());
 
     return this.http.post(`${this.baseUrl}sign_in.php`, body.toString(),{
+      headers: new HttpHeaders()
+        .set('Content-Type', 'application/x-www-form-urlencoded')
+    });
+  }
+
+  /**
+   * Update video.
+   */
+  updateVideo(video: WTVideo) {
+    const body = new HttpParams()
+      .set('id', video.id.toString())
+      .set('name', video.name.toString())
+      .set('category', video.category.toString())
+      .set('description', video.description.toString())
+      .set('link', video.link.toString())
+      .set('visible', video.visible.toString());
+
+    return this.http.post(`${this.baseUrl}video_update.php`, body.toString(),{
       headers: new HttpHeaders()
         .set('Content-Type', 'application/x-www-form-urlencoded')
     });
@@ -436,12 +477,25 @@ export class HttpService {
   }
 
   /**
-   * Get articles from db.
+   * Get videos from db.
    */
   getVideos(): Observable<WTVideo[]> {
     let videos: WTVideo[];
     const data = 'data';
     return this.http.get(`${this.baseUrl}video_get.php`).pipe(
+      map((res) => {
+        videos = res[data];
+        return videos;
+      }), catchError(this.handleError));
+  }
+
+  /**
+   * Get all videos from db.
+   */
+  getVideosAll(): Observable<WTVideo[]> {
+    let videos: WTVideo[];
+    const data = 'data';
+    return this.http.get(`${this.baseUrl}video_get_all.php`).pipe(
       map((res) => {
         videos = res[data];
         return videos;

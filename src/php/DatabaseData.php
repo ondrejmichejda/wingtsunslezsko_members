@@ -939,4 +939,60 @@ class Video extends DatabaseData{
     }
   }
 
+  public function GetDataAll()
+  {
+    $data = [];
+    $sql = "SELECT * FROM in_videos ORDER BY datetime DESC";
+
+    if($result = mysqli_query($this->connection,$sql))
+    {
+      $cr = 0;
+      while($row = mysqli_fetch_assoc($result))
+      {
+        $data[$cr]['id'] = $row['id'];
+        $data[$cr]['datetime'] = $row['datetime'];
+        $data[$cr]['name'] = $row['name'];
+        $data[$cr]['category'] = $row['category'];
+        $data[$cr]['description'] = $row['description'];
+        $data[$cr]['link'] = $row['link'];
+        $data[$cr]['visible'] = $row['visible'];
+        $cr++;
+      }
+
+      echo json_encode(['data'=>$data]);
+    }
+    else
+    {
+      http_response_code(404);
+    }
+  }
+
+  public function UpdateData($id, $name, $category, $description, $link, $visible){
+
+    $sql = "UPDATE in_videos SET
+            name='".$name."',
+            category='".$category."',
+            description='".$description."',
+            link='".$link."',
+            visible=".$visible."
+            WHERE id=".$id;
+
+    $result = mysqli_query($this->connection,$sql);
+    echo $result;
+  }
+
+  public function DeleteData($id)
+  {
+    $sql = "DELETE FROM in_videos WHERE id=".$id;
+    $result = mysqli_query($this->connection,$sql);
+
+    echo $result;
+  }
+
+  public function CreateData()
+  {
+    $sql = "INSERT INTO in_videos (name) VALUES ('Nové video')";
+    $result = mysqli_query($this->connection,$sql);
+    echo $result;
+  }
 }

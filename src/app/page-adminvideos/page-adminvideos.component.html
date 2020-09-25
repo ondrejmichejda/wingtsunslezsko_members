@@ -1,0 +1,121 @@
+<div class="page-container">
+  <div class="error-text" *ngIf="error">{{error}}</div>
+
+  <mat-form-field>
+    <mat-label>Filter</mat-label>
+    <input matInput (keyup)="applyFilter($event)" placeholder="Ex. ium" #input>
+  </mat-form-field>
+
+  <button mat-icon-button
+          class="memberBtn"
+          (click)="createVideo()"
+          color="primary"
+          matTooltip="Nový">
+    <mat-icon>note_add</mat-icon>
+  </button>
+  <table mat-table
+         matSort
+         [dataSource]="dataSource"
+         #eventSort="matSort"
+         multiTemplateDataRows
+         class="mat-elevation-z8">
+
+    <ng-container *ngIf="!device.IsMobile()" matColumnDef="id">
+      <th mat-header-cell *matHeaderCellDef mat-sort-header=""> ID </th>
+      <td (click)="Expanded(element);" mat-cell *matCellDef="let element"> {{element.id}} </td>
+    </ng-container>
+
+    <ng-container matColumnDef="name">
+      <th mat-header-cell *matHeaderCellDef mat-sort-header> Jméno </th>
+      <td (click)="Expanded(element);" mat-cell *matCellDef="let element"> {{commonFc.ShortText(element.name, 30)}} </td>
+    </ng-container>
+
+    <ng-container *ngIf="!device.IsMobile()" matColumnDef="category">
+      <th mat-header-cell *matHeaderCellDef mat-sort-header> Kategorie </th>
+      <td (click)="Expanded(element);" mat-cell *matCellDef="let element"> {{getCategory(element.category)}} </td>
+    </ng-container>
+
+    <ng-container matColumnDef="control">
+      <th mat-header-cell *matHeaderCellDef></th>
+      <td (click)="$event.stopPropagation();" mat-cell *matCellDef="let element">
+
+        <button mat-icon-button
+                style="float: right;"
+                (click)="changeVisibility(element)"
+                matTooltip="Viditelnost">
+          <mat-icon *ngIf="!!+element.visible">visibility</mat-icon>
+          <mat-icon *ngIf="!!!+element.visible">visibility_off</mat-icon>
+        </button>
+
+        <button mat-icon-button
+                style="float: right;"
+                color="warn"
+                (click)="dialogDelete(element)"
+                matTooltip="Smazat">
+          <mat-icon>delete</mat-icon>
+        </button>
+
+      </td>
+    </ng-container>
+
+
+    <!-- Expanded Content Column - The detail row is made up of this one column that spans across all columns -->
+    <ng-container matColumnDef="expandedDetail">
+      <td mat-cell *matCellDef="let element" [attr.colspan]="columnsToDisplay.length">
+        <div class="example-element-detail" [@detailExpand]="element == expandedElement ? 'expanded' : 'collapsed'">
+
+          <!-- Name editor -->
+          <mat-form-field appearance="outline">
+            <mat-label>Jméno</mat-label>
+            <input matInput [(ngModel)]="element.name">
+          </mat-form-field>
+
+          <!-- Category editor -->
+          <mat-form-field appearance="outline">
+            <mat-label>Kategorie</mat-label>
+            <mat-select [(value)]="element.category">
+              <mat-option value="1">Forma</mat-option>
+              <mat-option value="2">Principy</mat-option>
+              <mat-option value="3">Trénink</mat-option>
+              <mat-option value="4">Ostatní</mat-option>
+            </mat-select>
+          </mat-form-field>
+
+          <!-- Description editor -->
+          <mat-form-field appearance="outline">
+            <mat-label>Popis</mat-label>
+            <input matInput [(ngModel)]="element.description">
+          </mat-form-field>
+
+          <!-- Link editor -->
+          <mat-form-field appearance="outline">
+            <mat-label>Odkaz</mat-label>
+            <input matInput [(ngModel)]="element.link">
+          </mat-form-field>
+
+          <!-- Preview -->
+          <iframe [src]="getSafeSource(element.link)"
+                  [ngClass]="device.IsMobile() ? 'fullscreen' : 'default'"
+                  frameborder="0"
+                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                  allowfullscreen></iframe>
+
+          <button mat-raised-button
+                  class="bottomButton"
+                  color="primary"
+                  (click)="updateVideo(element)">
+            Uložit
+          </button>
+        </div>
+      </td>
+    </ng-container>
+
+    <tr mat-header-row *matHeaderRowDef="columnsToDisplay"></tr>
+    <tr mat-row *matRowDef="let element; columns: columnsToDisplay;"
+        class="example-element-row"
+        [class.example-expanded-row]="expandedElement === element"
+        (click)="expandedElement = expandedElement === element ? null : element;">
+    </tr>
+    <tr mat-row *matRowDef="let row; columns: ['expandedDetail']" class="example-detail-row"></tr>
+  </table>
+</div>
