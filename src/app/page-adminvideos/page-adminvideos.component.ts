@@ -40,7 +40,7 @@ export class PageAdminvideosComponent implements OnInit {
               private httpService: HttpService,
               private dialog: MatDialog,
               private headerService: HeaderService,
-              public commonFc: CommonFunctionsService,
+              public common: CommonFunctionsService,
               private sanitizer: DomSanitizer,
               private alertService: AlertService) {
     this.headerService.setTitle('Správa videí');
@@ -64,6 +64,9 @@ export class PageAdminvideosComponent implements OnInit {
       (videos: WTVideo[]) => {
         this.videos = videos;
         this.dataSource = new MatTableDataSource(this.videos);
+        this.dataSource.filterPredicate = (data, filter: string): boolean =>
+          data.category.includes(this.common.getVideoCategoryCode(filter)) ||
+          data.name.toLowerCase().includes(filter);
         this.dataSource.sort = this.videoSort;
         this.video = this.videos[0];
       },
@@ -97,21 +100,6 @@ export class PageAdminvideosComponent implements OnInit {
 
   getSafeSource(link: string): SafeUrl {
     return this.sanitizer.bypassSecurityTrustResourceUrl(this.buildVideoUrl(link));
-  }
-
-  getCategory(cat: number): string {
-    switch (+cat) {
-      case 1:
-        return 'Forma';
-      case 2:
-        return 'Principy';
-      case 3:
-        return 'Trénink';
-      case 4:
-        return 'Ostatní';
-      default:
-        return 'Nenastaveno';
-    }
   }
 
   updateVideo(video: WTVideo) {

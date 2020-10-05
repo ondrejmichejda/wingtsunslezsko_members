@@ -13,6 +13,7 @@ import {PageNewarticleComponent} from './page-newarticle/page-newarticle.compone
 import {PageAdminarticlesComponent} from './page-adminarticles/page-adminarticles.component';
 import {PageAdminmembersComponent} from './page-adminmembers/page-adminmembers.component';
 import {PageAdminvideosComponent} from './page-adminvideos/page-adminvideos.component';
+import {PageSettingsComponent} from './page-settings/page-settings.component';
 
 
 
@@ -44,6 +45,10 @@ const routes: Routes = [
   {
     path: 'video',
     component: PageVideoComponent,
+  },
+  {
+    path: 'nastaveni',
+    component: PageSettingsComponent,
   },
   {
     path: 'admin-udalosti',

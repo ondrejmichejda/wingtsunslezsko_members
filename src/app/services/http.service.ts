@@ -50,7 +50,7 @@ export class HttpService {
   }
 
   /**
-   * Create notice.
+   * Create event.
    */
   createEvent_post(){
     return this.http.post(`${this.baseUrl}event_create.php`, null, {
@@ -81,6 +81,19 @@ export class HttpService {
       .set('pwd', member.pwd.toString());
 
     return this.http.post(`${this.baseUrl}member_updatepwd.php`, body.toString(), {
+      headers: new HttpHeaders()
+        .set('Content-Type', 'application/x-www-form-urlencoded')
+    });
+  }
+
+  /**
+   * Update member's logged datetime.
+   */
+  updateMemberLogged_post(member: WTMember){
+    const body = new HttpParams()
+      .set('id', member.id.toString());
+
+    return this.http.post(`${this.baseUrl}member_updatelogged.php`, body.toString(), {
       headers: new HttpHeaders()
         .set('Content-Type', 'application/x-www-form-urlencoded')
     });

@@ -31,7 +31,7 @@ import {QuilloptionsService} from '../services/quilloptions.service';
 export class PageAdmineventsComponent implements OnInit {
   dataSource;
   dataSourceMembers;
-  columnsToDisplay = this.device.IsMobile() ? ['name', 'control'] : ['id', 'name', 'datetimeStart', 'control'];
+  columnsToDisplay = this.device.IsMobile() ? ['name', 'control'] : ['id', 'name', 'datetimeStart', 'members', 'control'];
   columnsToDisplayMembers = this.device.IsMobile() ? ['surname', 'status', 'control'] :
     ['name', 'surname', 'datetime', 'status', 'control'];
   expandedElement: WTEvent | null;
@@ -140,6 +140,8 @@ export class PageAdmineventsComponent implements OnInit {
             ev => this.formatDate(ev.datetimeEnd) >= new Date());
           }
         this.dataSource = new MatTableDataSource(this.events);
+        this.dataSource.filterPredicate = (data, filter: string): boolean =>
+          data.name.toLowerCase().includes(filter);
         this.dataSource.sort = this.eventSort;
         this.event = this.events[0];
       },

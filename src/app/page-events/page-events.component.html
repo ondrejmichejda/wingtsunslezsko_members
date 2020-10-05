@@ -35,7 +35,7 @@
             <button mat-raised-button
                     color="primary"
                     (click)="this.signIn(event)"
-                    [disabled]="event.regStatus > 0 || dateTimeNow > GetDate(event.datetimeDeadline)">
+                    [disabled]="event.regStatus > 0 || dateTimeNow > GetDate(event.datetimeDeadline) || (event.confirmed >= event.memberlimit && event.memberlimit != 0)">
               Přihlásit
             </button>
           </ng-template>

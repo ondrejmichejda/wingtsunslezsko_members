@@ -9,6 +9,7 @@ export class WTMember{
   surname: string;
   school: number;
   news: string;
+  logged: string;
   admin: boolean;
 
   constructor(
@@ -20,6 +21,7 @@ export class WTMember{
     surname: string,
     school: number,
     news: string,
+    logged: string,
     admin: boolean) {
 
     this.id = id;
@@ -30,6 +32,7 @@ export class WTMember{
     this.surname = surname;
     this.school = school;
     this.news = news;
+    this.logged = logged;
     this.admin = admin;
   }
 }

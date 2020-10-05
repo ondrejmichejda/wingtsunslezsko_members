@@ -19,6 +19,7 @@ import {MatDialog} from '@angular/material/dialog';
 import {DomSanitizer, SafeHtml} from '@angular/platform-browser';
 import { Pipe, PipeTransform } from '@angular/core';
 import {DialogArticleComponent} from '../dialog-article/dialog-article.component';
+import {CommonFunctionsService} from '../services/common-functions.service';
 
 @Component({
   selector: 'app-page-adminarticles',
@@ -39,7 +40,8 @@ export class PageAdminarticlesComponent implements OnInit {
               private httpService: HttpService,
               private exceptions: ExceptionsService,
               private alertService: AlertService,
-              private dialog: MatDialog) {
+              private dialog: MatDialog,
+              public common: CommonFunctionsService) {
     this.headerService.setTitle('Správa článků');
   }
 
@@ -131,6 +133,9 @@ export class PageAdminarticlesComponent implements OnInit {
           this.articles = articles.filter(art => this.formatDate(art.datetime) >= actDate);
         }
         this.dataSource = new MatTableDataSource(this.articles);
+        this.dataSource.filterPredicate = (data, filter: string): boolean =>
+          data.topic.includes(this.common.getArticleTopicCode(filter)) ||
+          data.name.toLowerCase().includes(filter);
         this.dataSource.sort = this.articleSort;
         this.article = this.articles[0];
       },
@@ -166,7 +171,7 @@ export class PageAdminarticlesComponent implements OnInit {
 
   updateArticle(article: WTArticle){
     // set url
-    article.url = this.slugify(article.name);
+    article.url = this.common.slugify(article.name);
     this.httpService.setArticle_post(article).subscribe(data => {
       this.alertService.alert(AlertTexts.article_updated, SnackType.info);
       this.getArticles();
@@ -225,40 +230,7 @@ export class PageAdminarticlesComponent implements OnInit {
     else return text;
   }
 
-  getTopic(topic: number): string{
-    switch(Number(topic)){
-      case 1:
-        return 'Aktualita';
-      case 2:
-        return 'Kurz';
-      case 3:
-        return 'Wing Tsun';
-      case 4:
-        return 'Prevence';
-      case 5:
-        return 'Děti';
-      default:
-        return 'NUTNO DOPLNIT!';
-    }
-  }
-
-  slugify(str: string): string {
-    const a = 'àáâäæãåāăąçćčđďèéêëēėęěğǵḧîïíīįìłḿñńǹňôöòóœøōõőṕŕřßśšşșťțûüùúūǘůűųẃẍÿýžźż·/_,:;'
-    const b = 'aaaaaaaaaacccddeeeeeeeegghiiiiiilmnnnnoooooooooprrsssssttuuuuuuuuuwxyyzzz------'
-    const p = new RegExp(a.split('').join('|'), 'g')
-
-    return str.toString().toLowerCase()
-      .replace(/\s+/g, '-') // Replace spaces with -
-      .replace(p, c => b.charAt(a.indexOf(c))) // Replace special characters
-      .replace(/&/g, '-and-') // Replace & with 'and'
-      .replace(/[^\w\-]+/g, '') // Remove all non-word characters
-      .replace(/\-\-+/g, '-') // Replace multiple - with single -
-      .replace(/^-+/, '') // Trim - from start of text
-      .replace(/-+$/, '') // Trim - from end of text
-  }
-
   // file upload
-
   multipleFileInput(files: FileList, article: WTArticle) {
     this.fileUploadProgressStep = 100 / files.length;
     this.resetProgress();

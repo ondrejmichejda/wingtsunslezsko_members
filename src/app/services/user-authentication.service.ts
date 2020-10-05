@@ -31,6 +31,12 @@ export class UserAuthenticationService {
         else{
           this.dataStorage.Member = _member;
           this.alertService.alert(AlertTexts.log_in, SnackType.info);
+
+          // update last logged time
+          this.httpService.updateMemberLogged_post(_member).subscribe(
+            (result: WTMember) => {},
+            (error) => {console.log(error);}
+          );
         }
       },
       (err) => {

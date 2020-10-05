@@ -57,6 +57,7 @@ import { DialogResetpwdComponent } from './dialog-resetpwd/dialog-resetpwd.compo
 import { DialogUpdatememberComponent } from './dialog-updatemember/dialog-updatemember.component';
 import { DialogVideoComponent } from './dialog-video/dialog-video.component';
 import { PageAdminvideosComponent } from './page-adminvideos/page-adminvideos.component';
+import { PageSettingsComponent } from './page-settings/page-settings.component';
 
 
 @NgModule({
@@ -83,7 +84,8 @@ import { PageAdminvideosComponent } from './page-adminvideos/page-adminvideos.co
     DialogResetpwdComponent,
     DialogUpdatememberComponent,
     DialogVideoComponent,
-    PageAdminvideosComponent
+    PageAdminvideosComponent,
+    PageSettingsComponent
   ],
   imports: [
     BrowserModule,

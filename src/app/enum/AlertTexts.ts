@@ -26,4 +26,7 @@ export enum AlertTexts {
   video_created = 'Video vytvořeno',
   video_deleted = 'Video smazáno',
   video_updated = 'Video upraveno',
+  set_wrongpwd = 'Neplatné heslo',
+  set_pwdnotmatch = 'Nové heslo se neshoduje',
+  set_pwdudpated = 'Heslo bylo upraveno',
 }

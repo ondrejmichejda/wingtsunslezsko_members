@@ -28,9 +28,11 @@ export class PageAdminmembersComponent implements OnInit {
   saveEnable: boolean;
   email: string;
   saveBtnText = 'Uložit';
+  loginExists = false;
 
   // Table
   error = '';
+  filter = '';
   members: WTMember[];
   dataSource;
   columnsToDisplay = this.device.IsMobile() ? ['surname', 'control'] : ['id', 'login', 'name', 'surname', 'school', 'control'];
@@ -86,8 +88,17 @@ export class PageAdminmembersComponent implements OnInit {
     const surnameL = this.member.surname.length > 0;
     const loginL = this.member.login.length > 0;
     const pwdL = this.member.pwd.length > 0;
-    this.saveEnable =  nameL && surnameL && loginL && pwdL && this.emailCheck();
+    this.saveEnable =  nameL && surnameL && loginL && pwdL && this.emailCheck() && !this.loginExists;
     this.saveBtnText = this.email.length > 0 ? 'Uložit a poslat' : 'Uložit';
+  }
+
+  loginUniqueCheck() {
+    this.loginExists = (this.members.find(m => m.login.toLowerCase() === this.member.login.toLowerCase()) !== undefined);
+  }
+
+  buildLogin() {
+    this.member.login = this.common.slugify(this.member.name.substr(0,3) + this.member.surname.substr(0, 3));
+    this.loginUniqueCheck();
   }
 
   emailCheck() {
@@ -95,14 +106,17 @@ export class PageAdminmembersComponent implements OnInit {
   }
 
   initMember(){
-    this.member = new WTMember(0,'','','', '', '', 1, '', false);
+    this.member = new WTMember(0,'','','', '', '', 1, '', '', false);
     this.email = '';
   }
 
   // member list tab
-  applyFilter(event: Event) {
-    const filterValue = (event.target as HTMLInputElement).value;
-    this.dataSource.filter = filterValue.trim().toLowerCase();
+  applyFilter() {
+    const filterValue = this.filter;
+    if(filterValue.length > 0)
+      this.dataSource.filter = filterValue.trim().toLowerCase();
+    else
+      this.dataSource.filter = 'nevimjakjinaktotoodfiltrovat';
   }
 
   dialogDelete(member: WTMember): void {
@@ -182,7 +196,13 @@ export class PageAdminmembersComponent implements OnInit {
       (members: WTMember[]) => {
         this.members = members;
         this.dataSource = new MatTableDataSource(members);
+        this.dataSource.filterPredicate = (data, filter: string): boolean =>
+          data.login.toLowerCase().includes(filter) ||
+          data.name.toLowerCase().includes(filter) ||
+          data.surname.toLowerCase().includes(filter)||
+          data.school.includes(this.common.getSchoolCode(filter));
         this.dataSource.sort = this.eventSort;
+        this.applyFilter();
       },
       (err) => {
         this.error = err;

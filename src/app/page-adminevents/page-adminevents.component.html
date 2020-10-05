@@ -39,6 +39,11 @@
       <td (click)="Expanded(element);" mat-cell *matCellDef="let element"> {{ formatDate(element.datetimeStart).toLocaleString('cs-CZ')}} </td>
     </ng-container>
 
+    <ng-container *ngIf="!device.IsMobile()" matColumnDef="members">
+      <th mat-header-cell *matHeaderCellDef> Přihlášených </th>
+      <td (click)="Expanded(element);" mat-cell *matCellDef="let element" matTooltip="Přihlášených / Potvrzených / Přítomných / Limit"> {{ event.members }} / {{ event.confirmed }} / {{ event.present }} / {{ event.memberlimit }} </td>
+    </ng-container>
+
     <ng-container matColumnDef="control">
       <th mat-header-cell *matHeaderCellDef></th>
       <td (click)="$event.stopPropagation();" mat-cell *matCellDef="let element">

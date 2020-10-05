@@ -27,12 +27,12 @@
 
     <ng-container matColumnDef="name">
       <th mat-header-cell *matHeaderCellDef mat-sort-header> Jméno </th>
-      <td (click)="Expanded(element);" mat-cell *matCellDef="let element"> {{commonFc.ShortText(element.name, 30)}} </td>
+      <td (click)="Expanded(element);" mat-cell *matCellDef="let element"> {{common.ShortText(element.name, 30)}} </td>
     </ng-container>
 
     <ng-container *ngIf="!device.IsMobile()" matColumnDef="category">
       <th mat-header-cell *matHeaderCellDef mat-sort-header> Kategorie </th>
-      <td (click)="Expanded(element);" mat-cell *matCellDef="let element"> {{getCategory(element.category)}} </td>
+      <td (click)="Expanded(element);" mat-cell *matCellDef="let element"> {{common.getVideoCategory(element.category)}} </td>
     </ng-container>
 
     <ng-container matColumnDef="control">

@@ -542,6 +542,7 @@ class Member extends DatabaseData
         $data[$cr]['surname'] = $row['surname'];
         $data[$cr]['school'] = $row['school'];
         $data[$cr]['news'] = $row['news'];
+        $data[$cr]['logged'] = $row['logged'];
         $data[$cr]['admin'] = $row['admin'];
         $cr++;
       }
@@ -578,6 +579,16 @@ class Member extends DatabaseData
             login='".$login."',
             school=".$school."
             WHERE  id=".$id;
+
+    $result = mysqli_query($this->connection,$sql);
+    echo $result;
+  }
+
+  public function UpdateLogged($id){
+
+    $sql = "UPDATE in_members SET
+            logged = NOW()
+            WHERE id=".$id;
 
     $result = mysqli_query($this->connection,$sql);
     echo $result;
@@ -643,6 +654,7 @@ class Member extends DatabaseData
         $data[$cr]['surname'] = $row['surname'];
         $data[$cr]['school'] = $row['school'];
         $data[$cr]['news'] = $row['news'];
+        $data[$cr]['logged'] = $row['logged'];
         $data[$cr]['admin'] = $row['admin'];
         $cr++;
       }

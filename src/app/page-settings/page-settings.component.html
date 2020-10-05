@@ -1,0 +1,36 @@
+<div class="page-container">
+  <h2>Změna hesla</h2>
+  <mat-form-field appearance="outline">
+    <mat-label>Původní heslo</mat-label>
+    <input (keyup)="formCheck()" [type]="hideOld ? 'password' : 'text'" [(ngModel)]="oldPwd" matInput>
+    <button mat-icon-button matSuffix (click)="hideOld = !hideOld" ><mat-icon>{{hideOld ? 'visibility_off' : 'visibility'}}</mat-icon>
+    </button>
+  </mat-form-field><br>
+
+  <mat-form-field appearance="outline">
+    <mat-label>Nové heslo</mat-label>
+    <input (keyup)="formCheck()" [type]="hideNew ? 'password' : 'text'" [(ngModel)]="newPwd" matInput>
+    <button mat-icon-button matSuffix (click)="hideNew = !hideNew" ><mat-icon>{{hideNew ? 'visibility_off' : 'visibility'}}</mat-icon>
+    </button>
+  </mat-form-field><br>
+
+  <mat-form-field appearance="outline">
+    <mat-label>Znovu nové heslo</mat-label>
+    <input (keyup)="formCheck()" [type]="hideNew2 ? 'password' : 'text'" [(ngModel)]="newPwd2" matInput>
+    <button mat-icon-button matSuffix (click)="hideNew2 = !hideNew2" ><mat-icon>{{hideNew2 ? 'visibility_off' : 'visibility'}}</mat-icon>
+    </button>
+  </mat-form-field>
+
+  <div style="width: 100%;">
+    <button mat-raised-button
+            class="save-button"
+            color="primary"
+            [disabled]="!saveEnable"
+            (click)="changePassword()">
+      Uložit
+    </button>
+  </div>
+
+  <mat-divider></mat-divider>
+
+</div>

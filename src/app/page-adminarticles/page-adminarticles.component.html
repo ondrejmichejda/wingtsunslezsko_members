@@ -33,7 +33,7 @@
 
     <ng-container *ngIf="!device.IsMobile()" matColumnDef="topic">
       <th mat-header-cell *matHeaderCellDef mat-sort-header> Téma </th>
-      <td (click)="expanded(element);" mat-cell *matCellDef="let element" [class.red]="element.topic === '0'"> {{getTopic(element.topic)}} </td>
+      <td (click)="expanded(element);" mat-cell *matCellDef="let element" [class.red]="element.topic === '0'"> {{common.getArticleTopic(element.topic)}} </td>
     </ng-container>
 
     <ng-container matColumnDef="name">
