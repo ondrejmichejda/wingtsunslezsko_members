@@ -415,6 +415,20 @@ export class HttpService {
   }
 
   /**
+   * Delete event registration.
+   */
+  deleteRegistration_post(id: number, eventId: number){
+    const body = new HttpParams()
+      .set('id', id.toString())
+      .set('eventId', eventId.toString());
+
+    return this.http.post(`${this.baseUrl}event_registration_delete.php`, body.toString(), {
+      headers: new HttpHeaders()
+        .set('Content-Type', 'application/x-www-form-urlencoded')
+    });
+  }
+
+  /**
    * Sign in member to event
    */
   signIn(eventId: number, userId: number, confirmed: boolean) {

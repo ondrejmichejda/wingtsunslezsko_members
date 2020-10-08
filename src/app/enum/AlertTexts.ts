@@ -11,6 +11,7 @@ export enum AlertTexts {
   event_copied = 'Událost zkopírována',
   event_deleted = 'Událost smazána',
   event_reg_updated = 'Registrace upravena',
+  event_reg_deleted = 'Registrace smazána',
   event_reg_all = 'Hromadné potvrzení ok',
   notice_created = 'Příspěvek vytvořen',
   notice_deleted = 'Příspěvek smazán',

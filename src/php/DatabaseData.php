@@ -435,6 +435,19 @@ class EventRegistration extends DatabaseData
     echo $result;
   }
 
+  public function Delete($id, $eventId)
+  {
+    $result = true;
+
+    $sql = "DELETE FROM in_events_registrations
+            WHERE id=".$id;
+
+    $result = mysqli_query($this->connection,$sql);
+    $result = self::UpdateEvent($eventId);
+
+    echo $result;
+  }
+
   public function ResetAll($eventId)
   {
     $result = true;

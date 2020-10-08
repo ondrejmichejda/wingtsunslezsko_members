@@ -41,6 +41,16 @@ export class PageSettingsComponent implements OnInit {
       this.newPwd2.length > 0;
   }
 
+  initFields() {
+    this.oldPwd = '';
+    this.newPwd = '';
+    this.newPwd2 = '';
+
+    this.hideOld = true;
+    this.hideNew = true;
+    this.hideNew2 = true;
+  }
+
   changePassword() {
     const me = this.dataStorage.Member;
     this.httpService.getMember_post(me.login, this.oldPwd).subscribe(
@@ -56,19 +66,23 @@ export class PageSettingsComponent implements OnInit {
             member.pwd = this.newPwd;
             this.httpService.updatePwdMember_post(member).subscribe(data => {
               this.alertService.alert(AlertTexts.set_pwdudpated, SnackType.info);
+              this.initFields();
             },Error => {
               console.log(Error);
               this.alertService.alert(AlertTexts.fail, SnackType.error);
+              this.initFields();
             });
           }
           else {
             this.alertService.alert(AlertTexts.set_pwdnotmatch, SnackType.error);
+            this.initFields();
           }
         }
       },
       (err) => {
         console.log(err);
         this.alertService.alert(AlertTexts.set_wrongpwd, SnackType.error);
+        this.initFields();
       }
     );
   }

@@ -216,6 +216,8 @@ export class PageAdmineventsComponent implements OnInit {
 
   changeAutoconfirm(event: WTEvent){
     event.autoconfirm = !!!+event.autoconfirm;
+    if(event.autoconfirm)
+      this.dialogConfirmAll(event.id);
     this.updateEvent(event);
   }
 
@@ -271,7 +273,31 @@ export class PageAdmineventsComponent implements OnInit {
       this.alertService.alert(AlertTexts.event_reg_updated, SnackType.info);
       this.refreshMembers(this.curEventId);
     },Error => {
+      console.log(Error);
       this.alertService.alert(AlertTexts.fail, SnackType.error);
+    });
+  }
+
+  private _delete(id: number){
+    this.httpService.deleteRegistration_post(id, this.curEventId).subscribe(data => {
+      this.alertService.alert(AlertTexts.event_reg_deleted, SnackType.info);
+      this.refreshMembers(this.curEventId);
+    },Error => {
+      console.log(Error);
+      this.alertService.alert(AlertTexts.fail, SnackType.error);
+    });
+  }
+
+  dialogMemberDelete(id: number): void {
+    const dialogRef = this.dialog.open(DialogConfirmComponent, {
+      width: '250px',
+      data: {text: 'Opravdu smazat?'}
+    });
+
+    dialogRef.afterClosed().subscribe(result => {
+      if (result !== undefined) {
+        this._delete(id);
+      }
     });
   }
 

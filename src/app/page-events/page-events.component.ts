@@ -22,6 +22,7 @@ export class PageEventsComponent implements OnInit {
   eventsRegistrations: WTEventRegistration[];
   error = '';
   dateTimeNow = new Date();
+  signing = false;
   identifyer = (index:number, item: any) => item.name;
 
   constructor(private headerService: HeaderService,
@@ -51,6 +52,7 @@ export class PageEventsComponent implements OnInit {
               else{
                 event.regStatus = 0;
               }
+              this.signing = false;
             });
           },
           (err) => {
@@ -80,16 +82,34 @@ export class PageEventsComponent implements OnInit {
   }
 
   public signIn(event: WTEvent){
-    this.httpService.signIn(event.id, this.dataStorage.Member.id, event.autoconfirm).subscribe(
-      (res: boolean) => {
-        this.alertService.alert(AlertTexts.event_sign_in + event.name, SnackType.info);
-        this.getEvents();
-      },
-      (err) => {
-        console.log(err);
-        this.alertService.alert(AlertTexts.fail, SnackType.error);
-      }
-    );
+    if(this.canSign(event)) {
+      this.signing = true;
+      this.httpService.signIn(event.id, this.dataStorage.Member.id, event.autoconfirm).subscribe(
+        (res: boolean) => {
+          this.alertService.alert(AlertTexts.event_sign_in + event.name, SnackType.info);
+          this.getEvents();
+        },
+        (err) => {
+          console.log(err);
+          this.alertService.alert(AlertTexts.fail, SnackType.error);
+          this.signing = false;
+        });
+    }
+    else {
+      this.alertService.alert(AlertTexts.fail, SnackType.error);
+    }
+  }
+
+  public canSign(event: WTEvent): boolean {
+    const school = +event.school === 0 || +this.dataStorage.Member.school === 0 || +event.school === +this.dataStorage.Member.school;
+    const time = this.dateTimeNow < this.GetDate(event.datetimeDeadline);
+    const limit = +event.confirmed < +event.memberlimit || +event.memberlimit === 0;
+    const notsigned = event.regStatus === 0;
+    /*console.log('school: ' + school);
+    console.log('time: ' + time);
+    console.log('limit: ' + limit);
+    console.log('notsigned: ' + notsigned);*/
+    return school && time && limit && notsigned && !this.signing;
   }
 
   public signOut(event: WTEvent){

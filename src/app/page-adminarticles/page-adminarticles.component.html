@@ -185,42 +185,8 @@
                   </mat-card-actions>
                 </mat-card>
               </div>
-
-
-
             </mat-tab>
-            <!--
-            <mat-tab>
-              <div style="max-width: 960px; margin: auto; margin-top: 1rem;">
-                <button mat-raised-button
-                        color="primary"
-                        (click)="togglePickupGallery()">
-                  Galerie
-                </button>
-              </div>
-              <div class="pickup-gallery"
-                        [class.pickup-gallery-colapsed]="!showPG"
-                        [class.pickup-gallery-extended]="showPG">
-                <div *ngFor="let img of images"><img (dblclick)="addImg(element, img)" [src]="'..'+img.url" /></div>
-              </div>
 
-
-              <ng-template mat-tab-label>
-                <mat-icon>edit</mat-icon>
-              </ng-template>
-
-              <br>
-              <div class="editor">
-                <quill-editor
-                  id="quill"
-                  style="min-height: 600px;"
-                  [modules]="modules"
-                  [(ngModel)]="element.text"
-                  (onEditorCreated)="onEditorCreated($event)"
-                ></quill-editor>
-              </div>
-
-            </mat-tab>-->
             <mat-tab>
               <!-- Preview -->
               <ng-template mat-tab-label>

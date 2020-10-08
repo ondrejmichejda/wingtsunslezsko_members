@@ -11,7 +11,7 @@ export class WTImage {
     url: string,
     visible: boolean) {
 
-      this.id= id;
+      this.id = id;
       this.articleId = articleId;
       this.url = url;
       this.visible = visible;

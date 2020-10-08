@@ -12,7 +12,8 @@ export class DialogUpdatememberComponent implements OnInit {
   enabled: boolean;
 
   constructor(public dialogRef: MatDialogRef<DialogUpdatememberComponent>,
-              @Inject(MAT_DIALOG_DATA) public data: DialogDataMember) { }
+              @Inject(MAT_DIALOG_DATA) public data: DialogDataMember) {
+  }
 
   ngOnInit(): void {
   }
