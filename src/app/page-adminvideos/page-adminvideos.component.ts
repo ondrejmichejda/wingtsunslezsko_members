@@ -11,8 +11,10 @@ import {HttpService} from '../services/http.service';
 import {MatDialog} from '@angular/material/dialog';
 import {animate, state, style, transition, trigger} from '@angular/animations';
 import {HeaderService} from '../services/header-title-change.service';
-import {CommonFunctionsService} from '../services/common-functions.service';
 import {DomSanitizer, SafeUrl} from '@angular/platform-browser';
+import {CommonFunctions} from '../class/CommonFunctions';
+import {LogService, Section} from '../services/log.service';
+import {WTEvent} from '../class/data/WTEvent';
 
 @Component({
   selector: 'app-page-adminvideos',
@@ -28,6 +30,8 @@ import {DomSanitizer, SafeUrl} from '@angular/platform-browser';
 })
 export class PageAdminvideosComponent implements OnInit {
 
+  editor: Editor;
+  common = CommonFunctions;
   error: string;
   video: WTVideo;
   videos: WTVideo[];
@@ -40,14 +44,15 @@ export class PageAdminvideosComponent implements OnInit {
               private httpService: HttpService,
               private dialog: MatDialog,
               private headerService: HeaderService,
-              public common: CommonFunctionsService,
               private sanitizer: DomSanitizer,
-              private alertService: AlertService) {
+              private alertService: AlertService,
+              private log: LogService) {
     this.headerService.setTitle('Správa videí');
   }
 
   ngOnInit(): void {
     this.getVideos()
+
   }
 
   applyFilter(event: Event) {
@@ -57,6 +62,8 @@ export class PageAdminvideosComponent implements OnInit {
 
   Expanded(el: WTVideo){
     this.video = el;
+    this.editor = new Editor(el);
+    this.editor.video = this.video;
   }
 
   getVideos(): void {
@@ -65,10 +72,11 @@ export class PageAdminvideosComponent implements OnInit {
         this.videos = videos;
         this.dataSource = new MatTableDataSource(this.videos);
         this.dataSource.filterPredicate = (data, filter: string): boolean =>
-          data.category.includes(this.common.getVideoCategoryCode(filter)) ||
+          data.category.includes(CommonFunctions.getVideoCategoryCode(filter)) ||
           data.name.toLowerCase().includes(filter);
         this.dataSource.sort = this.videoSort;
         this.video = this.videos[0];
+        this.editor = new Editor(this.video);
       },
       (err) => {
         this.error = err;
@@ -79,11 +87,12 @@ export class PageAdminvideosComponent implements OnInit {
   createVideo(){
     this.httpService.createVideo().subscribe(
       (res: boolean) => {
+        this.log.aInfo(Section.Video, `Video vytvořeno`);
         this.alertService.alert(AlertTexts.video_created, SnackType.info);
         this.getVideos();
       },
       (err) => {
-        console.log(err);
+        this.log.aError(Section.Video, `Chyba při tvorbě videa`, undefined, err);
         this.alertService.alert(AlertTexts.fail, SnackType.error);
       }
     );
@@ -104,10 +113,17 @@ export class PageAdminvideosComponent implements OnInit {
 
   updateVideo(video: WTVideo) {
     this.httpService.updateVideo(video).subscribe(data => {
+
+      for(const change of this.editor.GetChanges()){
+        this.log.aInfo(Section.Video, `Video upraveno: ${video.name} (${video.id})`, undefined,
+          change);
+      }
+
       this.alertService.alert(AlertTexts.video_updated, SnackType.info);
       this.getVideos();
     },Error => {
-      console.log(Error);
+      this.log.aError(Section.Video, `Chyba při úpravě videa: ${video.name} (${video.id})`, undefined,
+        Error);
       this.alertService.alert(AlertTexts.fail, SnackType.error);
     });
   }
@@ -127,12 +143,71 @@ export class PageAdminvideosComponent implements OnInit {
 
   deleteVideo(video: WTVideo){
     this.httpService.deleteVideo(video).subscribe(data => {
+      this.log.aInfo(Section.Video, `Video smazáno: ${video.name} (${video.id})`,
+        undefined, CommonFunctions.getVideoCategory(video.category));
       this.alertService.alert(AlertTexts.video_deleted, SnackType.info);
       this.getVideos();
     },Error => {
-      console.log(Error);
+      this.log.aError(Section.Video, `Chyba při mazání videa: ${video.name} (${video.id})`, undefined, Error);
       this.alertService.alert(AlertTexts.fail, SnackType.error);
     });
   }
+}
 
+class Editor{
+
+  private videoOrig: WTVideo;
+  video: WTVideo;
+
+  constructor(video: WTVideo){
+    this.videoOrig = new WTVideo(video.id, video.datetime, video.name, video.category, video.description, video.link, video.visible);
+  }
+
+  Same(): boolean{
+    let result = true;
+    const o: WTVideo = this.videoOrig;
+    const n: WTVideo = this.video;
+
+    if(o != null && n != null){
+      if(o.name !== n.name) result = false;
+      if(o.description !== n.description) result = false;
+      if(o.link !== n.link) result = false;
+      if(o.category !== n.category) result = false;
+    }
+    return result;
+  }
+
+  GetChanges(): string[]{
+    const arr: string[] = Array();
+    const o: WTVideo = this.videoOrig;
+    const n: WTVideo = this.video;
+    arr.push(this.eval('Jméno', o.name, n.name));
+    arr.push(this.eval('Kategorie', CommonFunctions.getVideoCategory(o.category), CommonFunctions.getVideoCategory(n.category)));
+    arr.push(this.eval('Link', o.link, n.link));
+    arr.push(this.eval('Viditelnost', o.visible, n.visible, true));
+
+    if(o.description !== n.description){
+      arr.push(`Změna popisu`);
+    }
+
+    const result: string[] = Array();
+
+    for(const element of arr){
+      if(element !== undefined)
+        result.push(element);
+    }
+
+    return result;
+  }
+
+  private eval(name: string,propOrig: any, propNew: any, b: boolean = false): string{
+    if(propOrig !== propNew){
+      if(b){
+        return `${name}: ${!!Number(propOrig)} -> ${!!Number(propNew)}`;
+      }
+      else {
+        return `${name}: ${propOrig} -> ${propNew}`;
+      }
+    }
+  }
 }

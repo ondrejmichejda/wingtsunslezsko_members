@@ -6,6 +6,7 @@ import {HttpService} from '../services/http.service';
 import {AlertTexts} from '../enum/AlertTexts';
 import {SnackType} from '../enum/SnackType';
 import {AlertService} from '../services/alert.service';
+import {LogService, Role, Section} from '../services/log.service';
 
 @Component({
   selector: 'app-page-settings',
@@ -27,7 +28,8 @@ export class PageSettingsComponent implements OnInit {
   constructor(private header: HeaderService,
               private dataStorage: DatastorageService,
               private httpService: HttpService,
-              private alertService: AlertService) {
+              private alertService: AlertService,
+              private log: LogService) {
     this.header.setTitle('Nastavení');
   }
 
@@ -65,22 +67,24 @@ export class PageSettingsComponent implements OnInit {
             const member = me;
             member.pwd = this.newPwd;
             this.httpService.updatePwdMember_post(member).subscribe(data => {
+              this.log.Info(Section.Settings, 'Heslo upraveno.');
               this.alertService.alert(AlertTexts.set_pwdudpated, SnackType.info);
               this.initFields();
             },Error => {
-              console.log(Error);
+              this.log.Error(Section.Settings, 'Chyba při změně hesla. Chyba databáze.', undefined, Error);
               this.alertService.alert(AlertTexts.fail, SnackType.error);
               this.initFields();
             });
           }
           else {
             this.alertService.alert(AlertTexts.set_pwdnotmatch, SnackType.error);
+            this.log.Error(Section.Settings, 'Chyba při změně hesla.', undefined, 'Hesla se neshodují.');
             this.initFields();
           }
         }
       },
       (err) => {
-        console.log(err);
+        this.log.Error(Section.Settings, 'Chyba při změně hesla', undefined, 'Špatné původní heslo');
         this.alertService.alert(AlertTexts.set_wrongpwd, SnackType.error);
         this.initFields();
       }

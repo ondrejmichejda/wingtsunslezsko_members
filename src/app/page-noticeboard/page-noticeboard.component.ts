@@ -2,8 +2,8 @@ import { Component, OnInit } from '@angular/core';
 import {HeaderService} from '../services/header-title-change.service';
 import {HttpService} from '../services/http.service';
 import {WTNotice} from '../class/data/WTNotice';
-import {Convert} from '../class/Convert';
 import {DatastorageService} from '../services/datastorage.service';
+import {CommonFunctions} from '../class/CommonFunctions';
 
 @Component({
   selector: 'app-page-noticeboard',
@@ -25,7 +25,7 @@ export class PageNoticeboardComponent implements OnInit {
   }
 
   public GetDate(date: string): Date{
-    return Convert.sqlToJsDate(date);
+    return CommonFunctions.sqlToJsDate(date);
   }
 
   getNotices(school: number): void {

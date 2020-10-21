@@ -11,11 +11,11 @@ import {MatSort} from '@angular/material/sort';
 import {WTMembersOnEvent} from '../class/data/WTMembersOnEvent';
 import {MatTableDataSource} from '@angular/material/table';
 import {ExceptionsService} from '../services/exceptions.service';
-import {CommonFunctionsService} from '../services/common-functions.service';
 import {DialogConfirmComponent} from '../dialog-confirm/dialog-confirm.component';
 import {MatDialog} from '@angular/material/dialog';
 import {DialogDataReset, DialogResetpwdComponent} from '../dialog-resetpwd/dialog-resetpwd.component';
 import {DialogUpdatememberComponent} from '../dialog-updatemember/dialog-updatemember.component';
+import {CommonFunctions} from '../class/CommonFunctions';
 
 @Component({
   selector: 'app-page-adminmembers',
@@ -29,6 +29,7 @@ export class PageAdminmembersComponent implements OnInit {
   email: string;
   saveBtnText = 'Uložit';
   loginExists = false;
+  common = CommonFunctions;
 
   // Table
   error = '';
@@ -43,7 +44,6 @@ export class PageAdminmembersComponent implements OnInit {
               private headerService: HeaderService,
               private exceptions: ExceptionsService,
               public device: DeviceService,
-              public common: CommonFunctionsService,
               private dialog: MatDialog) {
     this.headerService.setTitle('Správa členů');
   }
@@ -97,12 +97,12 @@ export class PageAdminmembersComponent implements OnInit {
   }
 
   buildLogin() {
-    this.member.login = this.common.slugify(this.member.name.substr(0,3) + this.member.surname.substr(0, 3));
+    this.member.login = CommonFunctions.slugify(this.member.name.substr(0,3) + this.member.surname.substr(0, 3));
     this.loginUniqueCheck();
   }
 
   emailCheck() {
-    return (this.email.length === 0) || (this.email.length > 0 && this.common.ValidateEmail(this.email));
+    return (this.email.length === 0) || (this.email.length > 0 && CommonFunctions.ValidateEmail(this.email));
   }
 
   initMember(){
@@ -200,7 +200,7 @@ export class PageAdminmembersComponent implements OnInit {
           data.login.toLowerCase().includes(filter) ||
           data.name.toLowerCase().includes(filter) ||
           data.surname.toLowerCase().includes(filter)||
-          data.school.includes(this.common.getSchoolCode(filter));
+          data.school.includes(CommonFunctions.getSchoolCode(filter));
         this.dataSource.sort = this.eventSort;
         this.applyFilter();
       },

@@ -8,6 +8,7 @@ import {WTMember} from '../class/data/WTMember';
 import {HttpService} from './http.service';
 import {SnackType} from '../enum/SnackType';
 import {DatastorageService} from './datastorage.service';
+import {LogService, Role, Section} from './log.service';
 
 @Injectable({
   providedIn: 'root'
@@ -17,7 +18,8 @@ export class UserAuthenticationService {
   constructor(private router: Router,
               private alertService: AlertService,
               private httpService: HttpService,
-              private dataStorage: DatastorageService) {
+              private dataStorage: DatastorageService,
+              private log: LogService) {
   }
 
   login(login: string, password: string): void {
@@ -30,6 +32,7 @@ export class UserAuthenticationService {
         }
         else{
           this.dataStorage.Member = _member;
+          this.log.Info(Section.Login, 'Přihlášení do členské sekce.');
           this.alertService.alert(AlertTexts.log_in, SnackType.info);
 
           // update last logged time
@@ -46,6 +49,7 @@ export class UserAuthenticationService {
   }
 
   logout(): void {
+    this.log.Info(Section.Login, 'Odhlášení z členské sekce.');
     this.dataStorage.Member = null;
     this.alertService.alert(AlertTexts.log_out);
   }

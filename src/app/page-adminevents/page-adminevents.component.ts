@@ -9,11 +9,12 @@ import {SnackType} from '../enum/SnackType';
 import {AlertService} from '../services/alert.service';
 import {MatDialog} from '@angular/material/dialog';
 import {DialogConfirmComponent} from '../dialog-confirm/dialog-confirm.component';
-import {Convert} from '../class/Convert';
 import {DeviceService} from '../services/device.service';
 import {WTMembersOnEvent} from '../class/data/WTMembersOnEvent';
 import {HeaderService} from '../services/header-title-change.service';
 import {QuilloptionsService} from '../services/quilloptions.service';
+import {LogService, Section} from '../services/log.service';
+import {CommonFunctions} from '../class/CommonFunctions';
 
 @Component({
   selector: 'app-page-adminevents',
@@ -42,7 +43,10 @@ export class PageAdmineventsComponent implements OnInit {
   events: WTEvent[];
   event: WTEvent;
   members: WTMembersOnEvent[];
-  curEventId: number;
+  curEvent: WTEvent;
+
+  eventOld: WTEvent;
+  eventNew: WTEvent;
 
   error = '';
   membersError = '';
@@ -59,7 +63,8 @@ export class PageAdmineventsComponent implements OnInit {
               private changeDetectorRefs: ChangeDetectorRef,
               public device: DeviceService,
               private headerService: HeaderService,
-              private quillService: QuilloptionsService){
+              private quillService: QuilloptionsService,
+              private log: LogService){
     this.editor = new Editor();
     this.history = false;
     this.headerService.setTitle('Správa událostí');
@@ -69,15 +74,11 @@ export class PageAdmineventsComponent implements OnInit {
     this.getEvents();
   }
 
-  formatDate(d: string): Date{
-    return Convert.sqlToJsDate(d);
-  }
-
   historyChange(){
     this.refresh();
   }
 
-  dialogDelete(id: number): void {
+  dialogDelete(event: WTEvent): void {
     const dialogRef = this.dialog.open(DialogConfirmComponent, {
       width: '250px',
       data: {text: 'Opravdu smazat?'}
@@ -85,12 +86,12 @@ export class PageAdmineventsComponent implements OnInit {
 
     dialogRef.afterClosed().subscribe(result => {
       if (result !== undefined) {
-        this.deleteEvent(id);
+        this.deleteEvent(event);
       }
     });
   }
 
-  dialogResetAll(eventId: number): void {
+  dialogResetAll(event: WTEvent): void {
     const dialogRef = this.dialog.open(DialogConfirmComponent, {
       width: '250px',
       data: {text: 'Opravdu všechny potvrdit?'}
@@ -98,12 +99,12 @@ export class PageAdmineventsComponent implements OnInit {
 
     dialogRef.afterClosed().subscribe(result => {
       if (result !== undefined) {
-        this._resetAll(eventId);
+        this._resetAll(event);
       }
     });
   }
 
-  dialogConfirmAll(eventId: number): void {
+  dialogConfirmAll(event: WTEvent): void {
     const dialogRef = this.dialog.open(DialogConfirmComponent, {
       width: '250px',
       data: {text: 'Opravdu všechny potvrdit?'}
@@ -111,12 +112,12 @@ export class PageAdmineventsComponent implements OnInit {
 
     dialogRef.afterClosed().subscribe(result => {
       if (result !== undefined) {
-        this._confirmedAll(eventId);
+        this._confirmedAll(event);
       }
     });
   }
 
-  dialogPresentAll(eventId: number): void {
+  dialogPresentAll(event: WTEvent): void {
     const dialogRef = this.dialog.open(DialogConfirmComponent, {
       width: '250px',
       data: {text: 'Opravdu všichni dorazili?'}
@@ -124,7 +125,7 @@ export class PageAdmineventsComponent implements OnInit {
 
     dialogRef.afterClosed().subscribe(result => {
       if (result !== undefined) {
-        this._presentAll(eventId);
+        this._presentAll(event);
       }
     });
   }
@@ -137,38 +138,41 @@ export class PageAdmineventsComponent implements OnInit {
         }
         else{
           this.events = events.filter(
-            ev => this.formatDate(ev.datetimeEnd) >= new Date());
-          }
+            ev => CommonFunctions.sqlToJsDate(ev.datetimeEnd) >= new Date());
+        }
         this.dataSource = new MatTableDataSource(this.events);
         this.dataSource.filterPredicate = (data, filter: string): boolean =>
-          data.name.toLowerCase().includes(filter);
+          data.name.toLowerCase().includes(filter) || data.id.includes(filter);
         this.dataSource.sort = this.eventSort;
         this.event = this.events[0];
       },
       (err) => {
+        this.log.aError(Section.Event, 'Chyba při načítání událostí', undefined, err);
         this.error = err;
       }
     );
   }
 
-  getMembers(eventId: number): void {
-    this.httpService.getMembersOnEvent(eventId).subscribe(
+  getMembers(event: WTEvent): void {
+    this.httpService.getMembersOnEvent(event.id).subscribe(
       (members: WTMembersOnEvent[]) => {
         this.members = members;
         this.dataSourceMembers = new MatTableDataSource(this.members);
       },
       (err) => {
+        this.log.aError(Section.Event, 'Chyba při načítání členů přihlášených na událost: '+event.name, event.school, err);
         this.error = err;
       }
     );
   }
 
-  getEvent(eventId: number): void {
-    this.httpService.getEvent(eventId).subscribe(
+  getEvent(event: WTEvent): void {
+    this.httpService.getEvent(event.id).subscribe(
       (events: WTEvent[]) => {
         this.event = events[0];
       },
       (err) => {
+        this.log.aError(Section.Event, 'Chyba při načítání eventu: ' + event.name, event.school, err);
         this.alertService.alert(AlertTexts.fail, SnackType.error);
       }
     );
@@ -177,10 +181,12 @@ export class PageAdmineventsComponent implements OnInit {
   createEvent(){
     this.httpService.createEvent_post().subscribe(
       (res: boolean) => {
+        this.log.aInfo(Section.Event, 'Událost vytvořena');
         this.alertService.alert(AlertTexts.event_created, SnackType.info);
         this.getEvents();
       },
       (err) => {
+        this.log.aError(Section.Event, 'Chyba při tvorbě události', undefined, err);
         this.alertService.alert(AlertTexts.fail, SnackType.error);
       }
     );
@@ -204,20 +210,23 @@ export class PageAdmineventsComponent implements OnInit {
   }
 
   tabChanged(event: WTEvent){
-    this.getMembers(event.id);
-    this.curEventId = event.id;
-    this.getEvent(event.id);
+    this.getMembers(event);
+    this.curEvent = event;
+    this.getEvent(event);
   }
 
   changeVisibility(event: WTEvent){
+    this.editor = new Editor(event);
     event.visible = !!!+event.visible;
     this.updateEvent(event);
   }
 
   changeAutoconfirm(event: WTEvent){
+    this.curEvent = event;
+    this.editor = new Editor(event);
     event.autoconfirm = !!!+event.autoconfirm;
     if(event.autoconfirm)
-      this.dialogConfirmAll(event.id);
+      this.dialogConfirmAll(event);
     this.updateEvent(event);
   }
 
@@ -228,67 +237,93 @@ export class PageAdmineventsComponent implements OnInit {
 
   updateEvent(event: WTEvent) {
     this.httpService.setEvent_post(event).subscribe(data => {
+      // create log for every change
+      for(const info of this.editor.GetChanges()){
+        this.log.aInfo(Section.Event, `Událost upravena: ${event.name} (${event.id})`, event.school, info);
+      }
+
       this.alertService.alert(AlertTexts.event_udpated, SnackType.info);
       this.editor.ResetAll();
       this.editor.shadowCopyEvent();
       this.refresh();
+
     },Error => {
-      console.log(Error);
+      this.log.aError(Section.Event, 'Chyba při update eventu', event.school, Error);
       this.alertService.alert(AlertTexts.fail, SnackType.error);
     });
   }
 
-  copyEvent(id: number) {
-    this.httpService.copyEvent_post(id).subscribe(data => {
+  copyEvent(event: WTEvent) {
+    this.httpService.copyEvent_post(event.id).subscribe(data => {
+      this.log.aInfo(Section.Event, `Událost zkopírována: ${event.name} (${event.id})`, event.school);
       this.alertService.alert(AlertTexts.event_copied, SnackType.info);
       this.refresh();
     },Error => {
+      this.log.aError(Section.Event, 'Chyba při kopírování události', event.school, Error);
       this.alertService.alert(AlertTexts.fail, SnackType.error);
     });
   }
 
-  deleteEvent(id: number){
-    this.httpService.deleteEvent_post(id).subscribe(data => {
+  deleteEvent(event: WTEvent){
+    this.httpService.deleteEvent_post(event.id).subscribe(data => {
+      this.log.aInfo(Section.Event, `Událost smazána: ${event.name} (${event.id})`, event.school)
       this.alertService.alert(AlertTexts.event_deleted, SnackType.info);
       this.refresh();
     },Error => {
+      this.log.aError(Section.Event, 'Chyba při mazání eventu', event.school, Error);
       this.alertService.alert(AlertTexts.fail, SnackType.error);
     });
   }
 
-  confirm(id: number){
-    this._updateEventRegistration(id, true, false);
+  confirm(reg: WTMembersOnEvent){
+    this._updateEventRegistration(reg, true, false);
   }
 
-  present(id: number){
-    this._updateEventRegistration(id, true, true);
+  present(reg: WTMembersOnEvent){
+    this._updateEventRegistration(reg, true, true);
   }
 
-  cancel(id: number){
-    this._updateEventRegistration(id, false, false);
+  cancel(reg: WTMembersOnEvent){
+    this._updateEventRegistration(reg, false, false);
   }
 
-  private _updateEventRegistration(id: number, confirmed: boolean, present: boolean){
-    this.httpService.updateRegistration_post(id, confirmed, present, this.curEventId).subscribe(data => {
+  private _updateEventRegistration(reg: WTMembersOnEvent, confirmed: boolean, present: boolean){
+    this.httpService.updateRegistration_post(reg.id, confirmed, present, this.curEvent.id).subscribe(data => {
+
+      if(confirmed && !present)
+        this.log.aInfo(Section.Event, `Potvrzen ${reg.name} ${reg.surname} (${reg.login})`, this.curEvent.school, `Událost ${this.curEvent.name} (${this.curEvent.id})`);
+      else if(confirmed && present)
+        this.log.aInfo(Section.Event, `Přítomen ${reg.name} ${reg.surname} (${reg.login})`, this.curEvent.school, `Událost ${this.curEvent.name} (${this.curEvent.id})`);
+      else if(!confirmed && !present)
+        this.log.aInfo(Section.Event, `Reset potvrzení ${reg.name} ${reg.surname} (${reg.login})`, this.curEvent.school, `Událost ${this.curEvent.name} (${this.curEvent.id})`);
+
       this.alertService.alert(AlertTexts.event_reg_updated, SnackType.info);
-      this.refreshMembers(this.curEventId);
+      this.refreshMembers(this.curEvent);
     },Error => {
-      console.log(Error);
+
+      if(confirmed && !present)
+        this.log.aInfo(Section.Event, `Chyba Potvrzen ${reg.name} ${reg.surname} (${reg.login})`, this.curEvent.school, `Událost ${this.curEvent.name} (${this.curEvent.id}) - ${Error}`);
+      else if(confirmed && present)
+        this.log.aInfo(Section.Event, `Chyba Přítomen ${reg.name} ${reg.surname} (${reg.login})`, this.curEvent.school, `Událost ${this.curEvent.name} (${this.curEvent.id}) - ${Error}`);
+      else if(!confirmed && !present)
+        this.log.aInfo(Section.Event, `Chyba Reset potvrzení ${reg.name} ${reg.surname} (${reg.login})`, this.curEvent.school, `Událost ${this.curEvent.name} (${this.curEvent.id}) - ${Error}`);
+
       this.alertService.alert(AlertTexts.fail, SnackType.error);
     });
   }
 
-  private _delete(id: number){
-    this.httpService.deleteRegistration_post(id, this.curEventId).subscribe(data => {
+  private _delete(reg: WTMembersOnEvent){
+    this.httpService.deleteRegistration_post(reg.id, this.curEvent.id).subscribe(data => {
+      this.log.aInfo(Section.Event, `${reg.name} ${reg.surname} (${reg.login}) z události smazán`, this.curEvent.school, `Událost ${this.curEvent.name} (${this.curEvent.id})`);
       this.alertService.alert(AlertTexts.event_reg_deleted, SnackType.info);
-      this.refreshMembers(this.curEventId);
+      this.refreshMembers(this.curEvent);
     },Error => {
-      console.log(Error);
+      this.log.aError(Section.Event, `${reg.name} ${reg.surname} (${reg.login}) nelze smazat`, this.curEvent.school, `Událost ${this.curEvent.name} (${this.curEvent.id}) - ${Error}`);
       this.alertService.alert(AlertTexts.fail, SnackType.error);
     });
   }
 
-  dialogMemberDelete(id: number): void {
+  dialogMemberDelete(element: WTMembersOnEvent): void {
     const dialogRef = this.dialog.open(DialogConfirmComponent, {
       width: '250px',
       data: {text: 'Opravdu smazat?'}
@@ -296,34 +331,41 @@ export class PageAdmineventsComponent implements OnInit {
 
     dialogRef.afterClosed().subscribe(result => {
       if (result !== undefined) {
-        this._delete(id);
+        this._delete(element);
       }
     });
   }
 
-  private _resetAll(eventId: number){
-    this.httpService.eventResetAll_post(eventId).subscribe(data => {
-      this.refreshMembers(eventId);
+  private _resetAll(event: WTEvent){
+    this.httpService.eventResetAll_post(event.id).subscribe(data => {
+      this.log.aInfo(Section.Event, `Hromadný reset členů na udalosti ${event.name} (${event.id})`, event.school);
+      this.refreshMembers(event);
       this.alertService.alert(AlertTexts.event_reg_all, SnackType.info);
     },Error => {
+      this.log.aError(Section.Event, `Chyba při hromadném členů resetu na události ${event.name} (${event.id})`, event.school, Error);
       this.alertService.alert(AlertTexts.fail, SnackType.error);
     });
   }
 
-  private _confirmedAll(eventId: number){
-    this.httpService.eventConfirmedAll_post(eventId).subscribe(data => {
-      this.refreshMembers(eventId);
+  private _confirmedAll(event: WTEvent){
+    this.httpService.eventConfirmedAll_post(event.id).subscribe(data => {
+      this.log.aInfo(Section.Event, `Hromadné potvrzení na události: ${event.name} (${event.id})`, event.school);
+      this.refreshMembers(event);
       this.alertService.alert(AlertTexts.event_reg_all, SnackType.info);
     },Error => {
+      this.log.aError(Section.Event, `Chyba při hromadném potvrzení události ${event.name} (${event.id})`, event.school, Error);
       this.alertService.alert(AlertTexts.fail, SnackType.error);
     });
   }
 
-  private _presentAll(eventId: number){
-    this.httpService.eventPresentAll_post(eventId).subscribe(data => {
-      this.refreshMembers(eventId);
+  private _presentAll(event: WTEvent){
+    this.httpService.eventPresentAll_post(event.id).subscribe(data => {
+      this.log.aInfo(Section.Event, `Hromadné potvrzení přítomnosti na události: ${event.name} (${event.id})`, event.school);
+      this.refreshMembers(event);
       this.alertService.alert(AlertTexts.event_reg_all, SnackType.info);
     },Error => {
+      this.log.aError(Section.Event, `Chyba při hromadném potvrzení přítomnosti na události ${event.name} (${event.id})`,
+        event.school, Error);
       this.alertService.alert(AlertTexts.fail, SnackType.error);
     });
   }
@@ -337,9 +379,13 @@ export class PageAdmineventsComponent implements OnInit {
     // this.changeDetectorRefs.detectChanges();
   }
 
-  refreshMembers(id: number){
-    this.getMembers(id);
-    this.getEvent(this.curEventId);
+  refreshMembers(event: WTEvent){
+    this.getMembers(event);
+    this.getEvent(this.curEvent);
+  }
+
+  formatDate(datetime: any): string {
+    return CommonFunctions.getDate(datetime);
   }
 }
 
@@ -460,6 +506,47 @@ class Editor {
       this._event = event;
       this.shadowCopyEvent();
       this.ResetAll();
+    }
+  }
+
+  public GetChanges(): string[] {
+    const arr: string[] = Array();
+    const o: WTEvent = this._eventOrigin;
+    const n: WTEvent = this._event;
+    arr.push(this._evaluateProperty('Jméno', o.name, n.name));
+    arr.push(this._evaluateProperty('Místo', o.location, n.location));
+    arr.push(this._evaluateProperty('Cena', o.prize, n.prize));
+    arr.push(this._evaluateProperty('Limit členů', o.memberlimit, n.memberlimit));
+    arr.push(this._evaluateProperty('Minimum členů', o.memberlimitMin, n.memberlimitMin));
+    arr.push(this._evaluateProperty('Deadline', o.datetimeDeadline, n.datetimeDeadline));
+    arr.push(this._evaluateProperty('Začátek', o.datetimeStart, n.datetimeStart));
+    arr.push(this._evaluateProperty('Konec', o.datetimeEnd, n.datetimeEnd));
+    arr.push(this._evaluateProperty('Škola', CommonFunctions.getSchool(o.school), CommonFunctions.getSchool(n.school)));
+    arr.push(this._evaluateProperty('Viditelnost', o.visible, n.visible, true));
+    arr.push(this._evaluateProperty('Automatické potvrzování', o.autoconfirm, n.autoconfirm, true));
+
+    if(o.description !== n.description){
+      arr.push(`Změna popisu`);
+    }
+
+    const result: string[] = Array();
+
+    for(const element of arr){
+      if(element !== undefined)
+        result.push(element);
+    }
+
+    return result;
+  }
+
+  private _evaluateProperty(name: string, propOrig: any, propNew: any, b:boolean = false): string{
+    if(propOrig !== propNew){
+      if(b){
+        return `${name}: ${!!Number(propOrig)} -> ${!!Number(propNew)}`;
+      }
+      else {
+        return `${name}: ${propOrig} -> ${propNew}`;
+      }
     }
   }
 

@@ -3,6 +3,7 @@ export class WTMembersOnEvent{
 
   id: number;
   datetime: string;
+  login: string;
   name: string;
   surname: string;
   confirmed: boolean;
@@ -14,6 +15,7 @@ export class WTMembersOnEvent{
   constructor(
     id: number,
     datetime: string,
+    login: string,
     name: string,
     surname: string,
     confirmed: boolean,
@@ -24,6 +26,7 @@ export class WTMembersOnEvent{
 
     this.id = id;
     this.datetime = datetime;
+    this.login = login;
     this.name = name;
     this.surname = surname;
     this.confirmed = confirmed;

@@ -28,22 +28,22 @@
 
     <ng-container *ngIf="!device.IsMobile()" matColumnDef="id">
       <th mat-header-cell *matHeaderCellDef mat-sort-header> ID </th>
-      <td (click)="expanded(element);" mat-cell *matCellDef="let element"> {{element.id}} </td>
+      <td (click)="expanded(element);updateEditor(element)" mat-cell *matCellDef="let element"> {{element.id}} </td>
     </ng-container>
 
     <ng-container *ngIf="!device.IsMobile()" matColumnDef="topic">
       <th mat-header-cell *matHeaderCellDef mat-sort-header> Téma </th>
-      <td (click)="expanded(element);" mat-cell *matCellDef="let element" [class.red]="element.topic === '0'"> {{common.getArticleTopic(element.topic)}} </td>
+      <td (click)="expanded(element);updateEditor(element)" mat-cell *matCellDef="let element" [class.red]="element.topic === '0'"> {{common.getArticleTopic(element.topic)}} </td>
     </ng-container>
 
     <ng-container matColumnDef="name">
       <th mat-header-cell *matHeaderCellDef mat-sort-header> Jméno </th>
-      <td (click)="expanded(element);" mat-cell *matCellDef="let element"> {{stringCut(element.name, 35)}} </td>
+      <td (click)="expanded(element);updateEditor(element)" mat-cell *matCellDef="let element"> {{stringCut(element.name, 35)}} </td>
     </ng-container>
 
     <ng-container *ngIf="!device.IsMobile()" matColumnDef="release">
       <th mat-header-cell *matHeaderCellDef mat-sort-header> Publikovat </th>
-      <td (click)="expanded(element);" mat-cell *matCellDef="let element"> {{formatDate(element.releaseDatetime).toLocaleDateString('cs-CZ')}} </td>
+      <td (click)="expanded(element);updateEditor(element)" mat-cell *matCellDef="let element"> {{formatDate(element.releaseDatetime).toLocaleDateString('cs-CZ')}} </td>
     </ng-container>
 
     <ng-container matColumnDef="control">

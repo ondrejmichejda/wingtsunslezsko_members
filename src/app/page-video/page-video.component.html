@@ -16,7 +16,7 @@
 
   <mat-card *ngFor="let video of videos" [ngClass]="device.IsMobile() ? 'video-card-mobile' : 'video-card'">
     <mat-card-header>
-      <mat-card-title>{{commonFc.ShortText(video.name, 50)}}</mat-card-title>
+      <mat-card-title>{{functions.ShortText(video.name, 50)}}</mat-card-title>
     </mat-card-header>
     <img mat-card-image [src]="getVideoThumbnail(video.link)" alt="">
     <mat-card-content>

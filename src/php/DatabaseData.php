@@ -609,7 +609,7 @@ class Member extends DatabaseData
 
   public function GetAllOnEvent($eventId){
     $data = [];
-    $sql = "SELECT in_events_registrations.id, in_events_registrations.datetime, in_members.name, in_members.surname, in_events_registrations.confirmed,
+    $sql = "SELECT in_events_registrations.id, in_events_registrations.datetime, in_members.login, in_members.name, in_members.surname, in_events_registrations.confirmed,
             in_events_registrations.present, in_events_registrations.guest, in_events_registrations.guest_name, in_events_registrations.guest_surname
             FROM in_events_registrations
             LEFT JOIN in_members ON in_events_registrations.user_id=in_members.id
@@ -622,6 +622,7 @@ class Member extends DatabaseData
       {
         $data[$cr]['id'] = $row['id'];
         $data[$cr]['datetime'] = $this->getISOtime($row['datetime']);
+        $data[$cr]['login'] = $row['login'];
         $data[$cr]['name'] = $row['name'];
         $data[$cr]['surname'] = $row['surname'];
         $data[$cr]['confirmed'] = $row['confirmed'];
@@ -1017,6 +1018,60 @@ class Video extends DatabaseData{
   public function CreateData()
   {
     $sql = "INSERT INTO in_videos (name) VALUES ('Nové video')";
+    $result = mysqli_query($this->connection,$sql);
+    echo $result;
+  }
+}
+
+class Log extends DatabaseData{
+
+  public function GetData()
+  {
+    $data = [];
+    $sql = "SELECT in_log.id, in_log.datetime, in_members.id, in_members.login, in_members.name, in_members.surname, in_log.type, in_log.role, in_log.section, in_log.city, in_log.info1, in_log.info2
+            FROM
+            in_log
+            LEFT JOIN
+            in_members
+            ON
+            in_log.user=in_members.id
+            ORDER BY in_log.datetime DESC";
+
+    if($result = mysqli_query($this->connection,$sql))
+    {
+      $cr = 0;
+      while($row = mysqli_fetch_assoc($result))
+      {
+        $data[$cr]['id'] = $row['id'];
+        $data[$cr]['datetime'] = $row['datetime'];
+        $data[$cr]['userId'] = $row['id'];
+        $data[$cr]['userLogin'] = $row['login'];
+        $data[$cr]['userName'] = $row['name'];
+        $data[$cr]['userSurname'] = $row['surname'];
+        $data[$cr]['type'] = $row['type'];
+        $data[$cr]['role'] = $row['role'];
+        $data[$cr]['section'] = $row['section'];
+        $data[$cr]['city'] = $row['city'];
+        $data[$cr]['info1'] = $row['info1'];
+        $data[$cr]['info2'] = $row['info2'];
+        $cr++;
+      }
+
+      echo json_encode(['data'=>$data]);
+    }
+    else
+    {
+      http_response_code(404);
+    }
+  }
+
+  public function CreateData($user, $type, $role, $city, $section, $info1, $info2)
+  {
+    $sql = "INSERT INTO in_log (user, type, role, section, city, info1, info2)
+            VALUES
+            ('".$user."','".$type."', '".$role."', '".$section."', '".$city."', '".$info1."', '".$info2."')";
+
+
     $result = mysqli_query($this->connection,$sql);
     echo $result;
   }

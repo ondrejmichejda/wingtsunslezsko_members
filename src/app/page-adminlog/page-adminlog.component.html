@@ -1,0 +1,48 @@
+<div class="page-container">
+  <div class="error-text" *ngIf="error">{{error}}</div>
+
+  <div class="mat-elevation-z8">
+    <table mat-table [dataSource]="dataSource">
+
+      <ng-container matColumnDef="datetime">
+        <th mat-header-cell *matHeaderCellDef> Datum </th>
+        <td [ngClass]="getClass(element)" mat-cell *matCellDef="let element"> {{element.datetime}} </td>
+      </ng-container>
+
+      <ng-container matColumnDef="user">
+        <th mat-header-cell *matHeaderCellDef> Člen </th>
+        <td [ngClass]="getClass(element)" mat-cell *matCellDef="let element"> {{combineUser(element)}} </td>
+      </ng-container>
+
+      <ng-container matColumnDef="role">
+        <th mat-header-cell *matHeaderCellDef> Role </th>
+        <td [ngClass]="getClass(element)" mat-cell *matCellDef="let element"> {{element.role}} </td>
+      </ng-container>
+
+      <ng-container matColumnDef="section">
+        <th mat-header-cell *matHeaderCellDef> Sekce </th>
+        <td [ngClass]="getClass(element)" mat-cell *matCellDef="let element"> {{element.section}} </td>
+      </ng-container>
+
+      <ng-container matColumnDef="city">
+        <th mat-header-cell *matHeaderCellDef> Město </th>
+        <td [ngClass]="getClass(element)" mat-cell *matCellDef="let element"> {{element.city}} </td>
+      </ng-container>
+
+      <ng-container matColumnDef="info1">
+        <th mat-header-cell *matHeaderCellDef> Info 1 </th>
+        <td [ngClass]="getClass(element)" mat-cell *matCellDef="let element"> {{element.info1}} </td>
+      </ng-container>
+
+      <ng-container matColumnDef="info2">
+        <th mat-header-cell *matHeaderCellDef> Info 2 </th>
+        <td [ngClass]="getClass(element)" mat-cell *matCellDef="let element"> {{element.info2}} </td>
+      </ng-container>
+
+      <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+      <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+    </table>
+
+    <mat-paginator [pageSizeOptions]="[5, 10, 20]" showFirstLastButtons></mat-paginator>
+  </div>
+</div>

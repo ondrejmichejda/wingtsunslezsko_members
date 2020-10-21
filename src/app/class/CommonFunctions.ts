@@ -1,13 +1,30 @@
-import { Injectable } from '@angular/core';
+export class CommonFunctions{
 
-@Injectable({
-  providedIn: 'root'
-})
-export class CommonFunctionsService {
+  static sqlToJsDate(sqlDate: string): Date{
+    // sqlDate in SQL DATETIME format ("yyyy-mm-dd hh:mm:ss.ms")
+    const sqlDateArr1 = sqlDate.split('-');
+    // format of sqlDateArr1[] = ['yyyy','mm','dd hh:mm:ms']
+    const sYear = Number(sqlDateArr1[0]);
+    const sMonth = (Number(sqlDateArr1[1]) - 1);
+    const sqlDateArr2 = sqlDateArr1[2].split(' ');
+    // format of sqlDateArr2[] = ['dd', 'hh:mm:ss.ms']
+    const sDay = Number(sqlDateArr2[0]);
+    const sqlDateArr3 = sqlDateArr2[1].split(':');
+    // format of sqlDateArr3[] = ['hh','mm','ss.ms']
+    const sHour = Number(sqlDateArr3[0]);
+    const sMinute = Number(sqlDateArr3[1]);
+    const sqlDateArr4 = sqlDateArr3[2].split('.');
+    // format of sqlDateArr4[] = ['ss','ms']
+    const sSecond = Number(sqlDateArr4[0]);
+    // const sMillisecond = sqlDateArr4[1];
+    return new Date(sYear,sMonth,sDay,sHour,sMinute,sSecond);
+  }
 
-  constructor() { }
+  static getDate(sqlDate: string) : string {
+    return this.sqlToJsDate(sqlDate).toLocaleDateString('cs-CZ');
+  }
 
-  getSchool(value: number): string {
+  static getSchool(value: number): string {
     let result: string;
     switch(+value){
       case 0:
@@ -25,13 +42,16 @@ export class CommonFunctionsService {
       case 4:
         result = 'Těrlicko';
         break;
+      case 99:
+        result = '';
+        break;
       default:
         result = 'Undefined';
     }
     return result;
   }
 
-  getSchoolCode(value: string): number {
+  static getSchoolCode(value: string): number {
     let result: number;
     switch(this.slugify(value.toLowerCase())){
       case 'vse':
@@ -55,7 +75,7 @@ export class CommonFunctionsService {
     return result;
   }
 
-  getArticleTopic(topic: number): string{
+  static getArticleTopic(topic: number): string{
     switch(Number(topic)){
       case 1:
         return 'Aktualita';
@@ -72,7 +92,7 @@ export class CommonFunctionsService {
     }
   }
 
-  getArticleTopicCode(topic: string): number{
+  static getArticleTopicCode(topic: string): number{
     switch(this.slugify(topic.toLowerCase())){
       case 'aktualita':
         return 1;
@@ -89,7 +109,7 @@ export class CommonFunctionsService {
     }
   }
 
-  getVideoCategory(cat: number): string {
+  static getVideoCategory(cat: number): string {
     switch (+cat) {
       case 1:
         return 'Forma';
@@ -104,7 +124,7 @@ export class CommonFunctionsService {
     }
   }
 
-  getVideoCategoryCode(cat: string): number {
+  static getVideoCategoryCode(cat: string): number {
     switch (this.slugify(cat.toLowerCase())) {
       case 'forma':
         return 1;
@@ -119,12 +139,12 @@ export class CommonFunctionsService {
     }
   }
 
-  ValidateEmail(email: string): boolean {
+  static ValidateEmail(email: string): boolean {
     const re = /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
     return re.test(email);
   }
 
-  ShortText(text: string, length: number) : string {
+  static ShortText(text: string, length: number) : string {
     let result: string
     if(text.length <= length){
       result = text;
@@ -135,7 +155,7 @@ export class CommonFunctionsService {
     return result;
   }
 
-  slugify(str: string): string {
+  static slugify(str: string): string {
     const a = 'àáâäæãåāăąçćčđďèéêëēėęěğǵḧîïíīįìłḿñńǹňôöòóœøōõőṕŕřßśšşșťțûüùúūǘůűųẃẍÿýžźż·/_,:;'
     const b = 'aaaaaaaaaacccddeeeeeeeegghiiiiiilmnnnnoooooooooprrsssssttuuuuuuuuuwxyyzzz------'
     const p = new RegExp(a.split('').join('|'), 'g')
@@ -150,3 +170,5 @@ export class CommonFunctionsService {
       .replace(/-+$/, '') // Trim - from end of text
   }
 }
+
+

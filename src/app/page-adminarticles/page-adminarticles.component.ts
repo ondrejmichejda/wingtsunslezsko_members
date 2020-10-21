@@ -3,7 +3,6 @@ import {animate, state, style, transition, trigger} from '@angular/animations';
 import {DeviceService} from '../services/device.service';
 import {WTArticle} from '../class/data/WTArticle';
 import {MatSort} from '@angular/material/sort';
-import {Convert} from '../class/Convert';
 import {MatTableDataSource} from '@angular/material/table';
 import {HttpService} from '../services/http.service';
 import {HeaderService} from '../services/header-title-change.service';
@@ -19,7 +18,8 @@ import {MatDialog} from '@angular/material/dialog';
 import {DomSanitizer, SafeHtml} from '@angular/platform-browser';
 import { Pipe, PipeTransform } from '@angular/core';
 import {DialogArticleComponent} from '../dialog-article/dialog-article.component';
-import {CommonFunctionsService} from '../services/common-functions.service';
+import {CommonFunctions} from '../class/CommonFunctions';
+import {LogService, Section} from '../services/log.service';
 
 @Component({
   selector: 'app-page-adminarticles',
@@ -41,10 +41,12 @@ export class PageAdminarticlesComponent implements OnInit {
               private exceptions: ExceptionsService,
               private alertService: AlertService,
               private dialog: MatDialog,
-              public common: CommonFunctionsService) {
+              private log: LogService) {
     this.headerService.setTitle('Správa článků');
   }
 
+  editor: Editor;
+  common = CommonFunctions;
   dataSource;
   columnsToDisplay = this.device.IsMobile() ? ['name', 'control'] : ['id', 'topic', 'name', 'release', 'control'];
   expandedElement: WTArticle | null;
@@ -84,6 +86,7 @@ export class PageAdminarticlesComponent implements OnInit {
   imgUpdateVisibility(img: WTImage) {
     this.httpService.updateVisibleArticlePic_post(img.id, !!!+img.visible).subscribe(
       (res: WTImage[]) => {
+        this.log.aInfo(Section.Article, `Změna viditelnosti obrázku článku: ${img.articleId}`, undefined, `${img.url}`)
         this.alertService.alert(AlertTexts.article_updated, SnackType.info);
         this.getArticleImages(img.articleId);
       },
@@ -110,14 +113,18 @@ export class PageAdminarticlesComponent implements OnInit {
   }
 
   expanded(article: WTArticle){
-    this.article = article;
     this.updatePic();
     this.getArticleImages(this.article.id);
     this.resetProgress();
   }
 
+  updateEditor(article: WTArticle){
+    this.article = article;
+    this.editor = new Editor(this.article);
+  }
+
   formatDate(d: string): Date{
-    return Convert.sqlToJsDate(d);
+    return CommonFunctions.sqlToJsDate(d);
   }
 
   // Data workflows
@@ -134,10 +141,11 @@ export class PageAdminarticlesComponent implements OnInit {
         }
         this.dataSource = new MatTableDataSource(this.articles);
         this.dataSource.filterPredicate = (data, filter: string): boolean =>
-          data.topic.includes(this.common.getArticleTopicCode(filter)) ||
+          data.topic.includes(CommonFunctions.getArticleTopicCode(filter)) ||
           data.name.toLowerCase().includes(filter);
         this.dataSource.sort = this.articleSort;
         this.article = this.articles[0];
+        this.editor = new Editor(this.article);
       },
       (err) => {
         this.error = err;
@@ -171,7 +179,8 @@ export class PageAdminarticlesComponent implements OnInit {
 
   updateArticle(article: WTArticle){
     // set url
-    article.url = this.common.slugify(article.name);
+    console.log(this.editor.GetChanges());
+    article.url = CommonFunctions.slugify(article.name);
     this.httpService.setArticle_post(article).subscribe(data => {
       this.alertService.alert(AlertTexts.article_updated, SnackType.info);
       this.getArticles();
@@ -273,6 +282,76 @@ export class PageAdminarticlesComponent implements OnInit {
       this.alertService.alert(AlertTexts.fail_check_console, SnackType.error);
     });
   }
+}
 
+class Editor{
 
+  private articleOrig: WTArticle;
+  private article: WTArticle;
+
+  constructor(article: WTArticle){
+    this.articleOrig =
+      new WTArticle(article.id, article.datetime, article.topic, article.url, article.keywords, article.metadesc,
+        article.name, article.short, article.pic, article.text, article.releaseDatetime, article.visible);
+    this.article = article;
+  }
+
+  Same(): boolean{
+    let result = true;
+    const o: WTArticle = this.articleOrig;
+    const n: WTArticle = this.article;
+
+    if(o != null && n != null){
+      if(o.topic !== n.topic) result = false;
+      if(o.keywords !== n.keywords) result = false;
+      if(o.metadesc !== n.metadesc) result = false;
+      if(o.name !== n.name) result = false;
+      if(o.short !== n.short) result = false;
+      if(o.text !== n.text) result = false;
+      if(o.releaseDatetime !== n.releaseDatetime) result = false;
+
+    }
+    return result;
+  }
+
+  GetChanges(): string[]{
+    const arr: string[] = Array();
+    const o: WTArticle = this.articleOrig;
+    const n: WTArticle = this.article;
+    arr.push(this.eval('Jméno', o.name, n.name));
+    arr.push(this.eval('Kategorie', CommonFunctions.getArticleTopic(o.topic), CommonFunctions.getArticleTopic(n.topic)));
+    arr.push(this.eval('Klíčová slova', o.keywords, n.keywords));
+    arr.push(this.eval('Meta popis', o.metadesc, n.metadesc));
+    arr.push(this.eval('Náhledový obrázek', o.pic, n.pic));
+    arr.push(this.eval('Datum publikace', o.releaseDatetime, n.releaseDatetime));
+    arr.push(this.eval('Viditelnost', o.visible, n.visible, true));
+
+    if(o.text !== n.text){
+      arr.push(`Změna textu`);
+    }
+
+    if(o.short !== n.short){
+      arr.push(`Změna popisu`);
+    }
+
+    const result: string[] = Array();
+
+    for(const element of arr){
+      if(element !== undefined)
+        result.push(element);
+    }
+
+    return result;
+  }
+
+  private eval(name: string,propOrig: any, propNew: any, b: boolean = false): string{
+    if(propOrig !== propNew){
+      if(b){
+        return `${name}: ${!!Number(propOrig)} -> ${!!Number(propNew)}`;
+      }
+      else {
+        return `${name}: ${propOrig} -> ${propNew}`;
+      }
+    }
+  }
 }

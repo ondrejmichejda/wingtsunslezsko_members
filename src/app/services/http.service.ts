@@ -10,6 +10,8 @@ import {WTMembersOnEvent} from '../class/data/WTMembersOnEvent';
 import {WTArticle} from '../class/data/WTArticle';
 import {WTImage} from '../class/data/WTImage';
 import {WTVideo} from '../class/data/WTVideo';
+import {WTLog} from '../class/data/WTLog';
+import {WTLogExt} from '../class/data/WTLogExt';
 
 @Injectable({
   providedIn: 'root'
@@ -429,6 +431,25 @@ export class HttpService {
   }
 
   /**
+   * Create log record.
+   */
+  createLog_post(log: WTLog){
+    const body = new HttpParams()
+      .set('user', log.user.toString())
+      .set('type', log.type.toString())
+      .set('role', log.role.toString())
+      .set('section', log.section.toString())
+      .set('city', log.city.toString())
+      .set('info1', log.info1.toString())
+      .set('info2', log.info2.toString());
+
+    return this.http.post(`${this.baseUrl}log_create.php`, body.toString(), {
+      headers: new HttpHeaders()
+        .set('Content-Type', 'application/x-www-form-urlencoded')
+    });
+  }
+
+  /**
    * Sign in member to event
    */
   signIn(eventId: number, userId: number, confirmed: boolean) {
@@ -487,6 +508,19 @@ export class HttpService {
       map((res) => {
         member = res[data];
         return member;
+      }), catchError(this.handleError));
+  }
+
+  /**
+   * Get logs.
+   */
+  getLogs(): Observable<WTLogExt[]> {
+    let logs: WTLogExt[];
+    const data = 'data';
+    return this.http.get(`${this.baseUrl}log_get.php`).pipe(
+      map((res) => {
+        logs = res[data];
+        return logs;
       }), catchError(this.handleError));
   }
 

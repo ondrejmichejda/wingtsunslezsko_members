@@ -103,6 +103,7 @@
           <button mat-raised-button
                   class="bottomButton"
                   color="primary"
+                  [disabled]="editor.Same()"
                   (click)="updateVideo(element)">
             Uložit
           </button>

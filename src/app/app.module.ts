@@ -29,11 +29,9 @@ import { MatCardModule } from '@angular/material/card';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatExpansionModule } from '@angular/material/expansion';
 import { MatMenuModule } from '@angular/material/menu';
-import { PageArtiklComponent } from './page-artikl/page-artikl.component';
 import { MatDialogModule } from '@angular/material/dialog';
 import { DialogComponent } from './dialog/dialog.component';
 import { MatInputModule } from '@angular/material/input';
-import { PageChatComponent } from './page-chat/page-chat.component';
 import { PageDashboardComponent } from './page-dashboard/page-dashboard.component';
 import { MatTabsModule } from '@angular/material/tabs';
 import { HeaderService } from './services/header-title-change.service';
@@ -58,6 +56,7 @@ import { DialogUpdatememberComponent } from './dialog-updatemember/dialog-update
 import { DialogVideoComponent } from './dialog-video/dialog-video.component';
 import { PageAdminvideosComponent } from './page-adminvideos/page-adminvideos.component';
 import { PageSettingsComponent } from './page-settings/page-settings.component';
+import { PageAdminlogComponent } from './page-adminlog/page-adminlog.component';
 
 
 @NgModule({
@@ -66,9 +65,7 @@ import { PageSettingsComponent } from './page-settings/page-settings.component';
     NavigationComponent,
     PageEventsComponent,
     PageLoginComponent,
-    PageArtiklComponent,
     DialogComponent,
-    PageChatComponent,
     PageDashboardComponent,
     PageVideoComponent,
     PageNoticeboardComponent,
@@ -85,7 +82,8 @@ import { PageSettingsComponent } from './page-settings/page-settings.component';
     DialogUpdatememberComponent,
     DialogVideoComponent,
     PageAdminvideosComponent,
-    PageSettingsComponent
+    PageSettingsComponent,
+    PageAdminlogComponent
   ],
   imports: [
     BrowserModule,

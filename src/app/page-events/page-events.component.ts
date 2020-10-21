@@ -4,11 +4,12 @@ import {HttpService} from '../services/http.service';
 import {WTEvent} from '../class/data/WTEvent';
 import {WTEventRegistration} from '../class/data/WTEventRegistration';
 import {DatastorageService} from '../services/datastorage.service';
-import {Convert} from '../class/Convert';
 import {DeviceService} from '../services/device.service';
 import {AlertService} from '../services/alert.service';
 import {SnackType} from '../enum/SnackType';
 import {AlertTexts} from '../enum/AlertTexts';
+import {LogService, Role, Section} from '../services/log.service';
+import {CommonFunctions} from '../class/CommonFunctions';
 
 @Component({
   selector: 'app-page-events',
@@ -29,7 +30,8 @@ export class PageEventsComponent implements OnInit {
               private httpService: HttpService,
               private dataStorage: DatastorageService,
               private device: DeviceService,
-              private alertService: AlertService) {
+              private alertService: AlertService,
+              private log: LogService) {
     this.headerService.setTitle('Události');
   }
 
@@ -56,6 +58,7 @@ export class PageEventsComponent implements OnInit {
             });
           },
           (err) => {
+            this.log.Error(Section.Video, 'Chyba načtení událostí.', undefined, err);
             this.error = err;
           }
         );
@@ -82,15 +85,18 @@ export class PageEventsComponent implements OnInit {
   }
 
   public signIn(event: WTEvent){
+    this.log.Info(Section.Event, `Kliknutí na přihlášení události : ${event.name} (${event.id})`);
     if(this.canSign(event)) {
       this.signing = true;
       this.httpService.signIn(event.id, this.dataStorage.Member.id, event.autoconfirm).subscribe(
         (res: boolean) => {
+          this.log.Info(Section.Event, `Přihlášení na událost: ${event.name} (${event.id})`,
+            undefined, `Limity: ${event.members}/${event.confirmed}/${event.memberlimit} | Autopřihlášení: ${!!event.autoconfirm}`);
           this.alertService.alert(AlertTexts.event_sign_in + event.name, SnackType.info);
           this.getEvents();
         },
         (err) => {
-          console.log(err);
+          this.log.Error(Section.Event, `Přihlášení na událost : ${event.name} (${event.id}) selhalo`, err);
           this.alertService.alert(AlertTexts.fail, SnackType.error);
           this.signing = false;
         });
@@ -105,27 +111,27 @@ export class PageEventsComponent implements OnInit {
     const time = this.dateTimeNow < this.GetDate(event.datetimeDeadline);
     const limit = +event.confirmed < +event.memberlimit || +event.memberlimit === 0;
     const notsigned = event.regStatus === 0;
-    /*console.log('school: ' + school);
-    console.log('time: ' + time);
-    console.log('limit: ' + limit);
-    console.log('notsigned: ' + notsigned);*/
     return school && time && limit && notsigned && !this.signing;
   }
 
   public signOut(event: WTEvent){
+    this.log.Info(Section.Event, `Kliknutí na odhlášení z události : ${event.name} (${event.id})`);
     this.httpService.signOut(event.id, this.dataStorage.Member.id).subscribe(
       (res: boolean) => {
+        this.log.Info(Section.Event, `Odhlášení z události: ${event.name} (${event.id})`,
+          undefined, `Limity: ${event.members}/${event.confirmed}/${event.memberlimit}`);
         this.alertService.alert(AlertTexts.event_sign_out + event.name, SnackType.info);
         this.getEvents();
       },
       (err) => {
+        this.log.Error(Section.Event, `Odhlášení z události : ${event.name} (${event.id}) selhalo`, err);
         this.alertService.alert(AlertTexts.fail, SnackType.error);
       }
     );
   }
 
   public GetDate(date: string): Date{
-    return Convert.sqlToJsDate(date);
+    return CommonFunctions.sqlToJsDate(date);
   }
 
 }

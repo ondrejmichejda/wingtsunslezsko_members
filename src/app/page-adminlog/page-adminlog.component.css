@@ -1,0 +1,13 @@
+table {
+  width: 100%;
+}
+
+.error {
+  color: #f44336;
+}
+
+.warning {
+  color: #f49f36;
+}
+
+

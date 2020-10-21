@@ -1,5 +1,3 @@
-import {Convert} from '../Convert';
-
 export class WTEvent {
 
   id: number;
@@ -52,6 +50,7 @@ export class WTEvent {
     this.memberlimitMin = memberlimitMin;
     this.members = members;
     this.confirmed = confirmed;
+    this.present = present;
     this.datetimeStart = datetimeStart;
     this.datetimeDeadline = datetimeDeadline;
     this.datetimeEnd = datetimeEnd;

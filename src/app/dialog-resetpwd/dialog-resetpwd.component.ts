@@ -1,6 +1,6 @@
 import {Component, Inject, OnInit} from '@angular/core';
 import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material/dialog';
-import {CommonFunctionsService} from '../services/common-functions.service';
+import {CommonFunctions} from '../class/CommonFunctions';
 
 @Component({
   selector: 'app-dialog-resetpwd',
@@ -12,8 +12,7 @@ export class DialogResetpwdComponent implements OnInit {
   enabled: boolean;
 
   constructor(public dialogRef: MatDialogRef<DialogResetpwdComponent>,
-              @Inject(MAT_DIALOG_DATA) public data: DialogDataReset,
-              private common: CommonFunctionsService) { }
+              @Inject(MAT_DIALOG_DATA) public data: DialogDataReset) { }
 
   ngOnInit(): void {
   }
@@ -23,7 +22,7 @@ export class DialogResetpwdComponent implements OnInit {
   }
 
   validate() {
-    this.enabled = this.data.password.length > 0 && this.common.ValidateEmail(this.data.email) || this.data.email.length === 0;
+    this.enabled = this.data.password.length > 0 && CommonFunctions.ValidateEmail(this.data.email) || this.data.email.length === 0;
   }
 }
 

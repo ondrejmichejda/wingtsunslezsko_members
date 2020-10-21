@@ -13,7 +13,7 @@
     <mat-card-header>
       <mat-card-title>{{notice.head}}</mat-card-title>
       <mat-card-subtitle>{{GetDate(notice.datetime).toLocaleDateString('cs-CZ')}}</mat-card-subtitle>
-      <mat-card-subtitle>Škola: {{getSchool(notice.school)}}</mat-card-subtitle>
+      <mat-card-subtitle>Škola: {{common.getSchool(notice.school)}}</mat-card-subtitle>
       <div class="control-btns">
         <button mat-icon-button
                 class="memberBtn"
@@ -25,7 +25,7 @@
         <button mat-icon-button
                 class="memberBtn"
                 color="warn"
-                (click)="dialogDelete(notice.id)"
+                (click)="dialogDelete(notice)"
                 matTooltip="Smazat">
           <mat-icon>delete</mat-icon>
         </button>
