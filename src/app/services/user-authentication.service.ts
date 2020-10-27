@@ -32,7 +32,7 @@ export class UserAuthenticationService {
         }
         else{
           this.dataStorage.Member = _member;
-          this.log.Info(Section.Login, 'Přihlášení do členské sekce.');
+          this.log.Info(Section.Login, 'Login.');
           this.alertService.alert(AlertTexts.log_in, SnackType.info);
 
           // update last logged time
@@ -49,7 +49,7 @@ export class UserAuthenticationService {
   }
 
   logout(): void {
-    this.log.Info(Section.Login, 'Odhlášení z členské sekce.');
+    this.log.Info(Section.Login, 'Logout.');
     this.dataStorage.Member = null;
     this.alertService.alert(AlertTexts.log_out);
   }

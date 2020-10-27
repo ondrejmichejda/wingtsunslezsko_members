@@ -9,6 +9,7 @@ import {MatTableDataSource} from '@angular/material/table';
 import {Type} from '../services/log.service';
 import {MatPaginator} from '@angular/material/paginator';
 import {WTLogExt} from '../class/data/WTLogExt';
+import {CommonFunctions} from '../class/CommonFunctions';
 
 @Component({
   selector: 'app-page-adminlog',
@@ -18,15 +19,30 @@ import {WTLogExt} from '../class/data/WTLogExt';
 export class PageAdminlogComponent implements OnInit {
 
   error = '';
-  displayedColumns: string[] = ['datetime', 'role', 'user', 'section', 'city', 'info1', 'info2'];
+  displayedColumns: string[] = ['datetime', 'user', 'role', 'section', 'city', 'info1', 'info2'];
   dataSource;
+  common = CommonFunctions;
   @ViewChild(MatPaginator) paginator: MatPaginator;
+
+  // filters
+  usedFilters = '';
+
+  startFilter = '2000-01-01T00:00';
+  endFilter = '';
+  userFilter = '';
+  typeFilter = 'all';
+  roleFilter = 'all';
+  sectionFilter = 'all';
+  schoolFilter = '101';
+  info1Filter = '';
+  info2Filter = '';
 
 
   constructor(private headerService: HeaderService,
               private httpService: HttpService,
               private alertService: AlertService) {
     this.headerService.setTitle('System Log');
+    this.clearFilter();
   }
 
   ngOnInit(): void {
@@ -52,8 +68,7 @@ export class PageAdminlogComponent implements OnInit {
   getLogs(): void {
     this.httpService.getLogs().subscribe(
       (logs: WTLogExt[]) => {
-        console.log(logs);
-        this.dataSource = new MatTableDataSource(logs);
+        this.dataSource = new MatTableDataSource(this.filter(logs));
         this.dataSource.paginator = this.paginator;
       },
       (err) => {
@@ -61,5 +76,95 @@ export class PageAdminlogComponent implements OnInit {
         this.alertService.alert(AlertTexts.fail, SnackType.error);
       }
     );
+  }
+
+  filter(logs: WTLogExt[]): WTLogExt[]{
+    this.usedFilters = 'Čas, ';
+
+    // start and end
+    logs = logs.filter(log =>
+      this.common.getDatePure(log.datetime) >= this.common.getDateTimeFromInput(this.startFilter) &&
+      this.common.getDatePure(log.datetime) <= this.common.getDateTimeFromInput(this.endFilter)
+    );
+
+    // user
+    if(this.userFilter !== '') {
+      this.usedFilters += 'Člen, ';
+      logs = logs.filter(
+        log => this.common.slugify(this.combineUser(log).toLowerCase()).includes(this.userFilter.toLowerCase()));
+    }
+
+    // type
+    if(this.typeFilter !== 'all') {
+      this.usedFilters += 'Typ, ';
+      logs = logs.filter(
+        log => log.type === this.typeFilter);
+    }
+
+    // role
+    if(this.roleFilter !== 'all') {
+      this.usedFilters += 'Role, ';
+      logs = logs.filter(
+        log => log.role === this.roleFilter);
+    }
+
+    // section
+    if(this.sectionFilter !== 'all') {
+      this.usedFilters += 'Sekce, ';
+      logs = logs.filter(
+        log => log.section === this.sectionFilter);
+    }
+
+    // school
+    if(this.schoolFilter !== '101') {
+      this.usedFilters += 'Škola, ';
+      logs = logs.filter(
+        log => +log.city === +this.schoolFilter);
+    }
+
+    // info1
+    if(this.info1Filter !== '') {
+      this.usedFilters += 'Info1, ';
+      logs = logs.filter(
+        log => this.common.slugify(log.info1.toLowerCase()).includes(this.info1Filter.toLowerCase()));
+    }
+
+    // info2
+    if(this.info2Filter !== '') {
+      this.usedFilters += 'Info2, ';
+      logs = logs.filter(
+        log => this.common.slugify(log.info2.toLowerCase()).includes(this.info2Filter.toLowerCase()));
+    }
+    this.usedFilters = this.usedFilters.substr(0, this.usedFilters.length - 2);
+    return logs;
+  }
+
+  clearFilter() {
+    this.startFilter = '2000-01-01T00:00';
+    const act = new Date();
+    act.setHours(act.getHours() + 1);
+    this.endFilter = act.toISOString().substr(0, 16);
+    this.userFilter = '';
+    this.typeFilter = 'all';
+    this.roleFilter = 'all';
+    this.sectionFilter = 'all';
+    this.schoolFilter = '101';
+    this.info1Filter = '';
+    this.info2Filter = '';
+    this.usedFilters = '';
+    this.getLogs();
+  }
+
+  getFriedlyDate(dbDate: string): string {
+    let result = this.common.getDateTime(dbDate);
+    const dDate = this.common.getDatePure(dbDate);
+    const actDate = new Date();
+    if(dDate.getDate() === actDate.getDate()) {
+      result = `Dnes ${dDate.toLocaleTimeString('cs-CZ')}`;
+    }
+    else if(dDate.getDate() === actDate.getDate() - 1) {
+      result = `Včera ${dDate.toLocaleTimeString('cs-CZ')}`;
+    }
+    return result;
   }
 }

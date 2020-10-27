@@ -1,17 +1,108 @@
 <div class="page-container">
   <div class="error-text" *ngIf="error">{{error}}</div>
 
+  <mat-accordion>
+    <mat-expansion-panel>
+      <mat-expansion-panel-header>
+        <mat-panel-title>
+          Filtr
+        </mat-panel-title>
+        <mat-panel-description>
+          {{usedFilters}}
+        </mat-panel-description>
+      </mat-expansion-panel-header>
+
+      <mat-form-field>
+        <mat-label>Od</mat-label>
+        <input matInput type="datetime-local" [(ngModel)]="startFilter">
+      </mat-form-field>
+      <mat-form-field>
+        <mat-label>Do</mat-label>
+        <input matInput type="datetime-local" [(ngModel)]="endFilter">
+      </mat-form-field>
+
+      <mat-form-field>
+        <mat-label>Člen</mat-label>
+        <input matInput placeholder="Ex. ium" [(ngModel)]="userFilter">
+      </mat-form-field>
+
+      <mat-form-field>
+        <mat-label>Typ</mat-label>
+        <mat-select [(value)]="typeFilter">
+          <mat-option value="all">Vše</mat-option>
+          <mat-option value="Chyba">Chyba</mat-option>
+          <mat-option value="Varování">Varování</mat-option>
+          <mat-option value="Informace">Informace</mat-option>
+        </mat-select>
+      </mat-form-field>
+
+      <mat-form-field>
+        <mat-label>Role</mat-label>
+        <mat-select appearance="outline" [(value)]="roleFilter">
+          <mat-option value="all">Vše</mat-option>
+          <mat-option value="Člen">Člen</mat-option>
+          <mat-option value="Admin">Admin</mat-option>
+        </mat-select>
+      </mat-form-field>
+
+      <mat-form-field>
+        <mat-label>Město</mat-label>
+        <mat-select [(value)]="schoolFilter">
+          <mat-option value="101">Vše</mat-option>
+          <mat-option value="0">Všechny školy</mat-option>
+          <mat-option value="1">Ostrava</mat-option>
+          <mat-option value="2">Třinec</mat-option>
+          <mat-option value="3">Český Těšín</mat-option>
+          <mat-option value="4">Těrlicko</mat-option>
+        </mat-select>
+      </mat-form-field>
+
+      <mat-form-field>
+        <mat-label>Sekce</mat-label>
+        <mat-select [(value)]="sectionFilter">
+          <mat-option value="all">Vše</mat-option>
+          <mat-option value="Přihlašování">Přihlašování</mat-option>
+          <mat-option value="Nástěnka">Nástěnka</mat-option>
+          <mat-option value="Události">Události</mat-option>
+          <mat-option value="Video">Video</mat-option>
+          <mat-option value="Nastavení">Nastavení</mat-option>
+          <mat-option value="Články">Články</mat-option>
+          <mat-option value="Členové">Členové</mat-option>
+        </mat-select>
+      </mat-form-field>
+
+      <mat-form-field>
+        <mat-label>Info1</mat-label>
+        <input matInput placeholder="Ex. ium" [(ngModel)]="info1Filter">
+      </mat-form-field>
+
+      <mat-form-field>
+        <mat-label>Info2</mat-label>
+        <input matInput placeholder="Ex. ium" [(ngModel)]="info2Filter">
+      </mat-form-field>
+
+      <button mat-raised-button
+              color="primary"
+              class="filter-button"
+              (click)="getLogs()">
+        Použít
+      </button>
+      <button mat-raised-button
+              color="basic"
+              class="filter-button"
+              (click)="clearFilter()">
+        Zrušit
+      </button>
+    </mat-expansion-panel>
+  </mat-accordion>
+
+
   <div class="mat-elevation-z8">
     <table mat-table [dataSource]="dataSource">
 
       <ng-container matColumnDef="datetime">
         <th mat-header-cell *matHeaderCellDef> Datum </th>
-        <td [ngClass]="getClass(element)" mat-cell *matCellDef="let element"> {{element.datetime}} </td>
-      </ng-container>
-
-      <ng-container matColumnDef="user">
-        <th mat-header-cell *matHeaderCellDef> Člen </th>
-        <td [ngClass]="getClass(element)" mat-cell *matCellDef="let element"> {{combineUser(element)}} </td>
+        <td [ngClass]="getClass(element)" mat-cell *matCellDef="let element"> {{getFriedlyDate(element.datetime)}} </td>
       </ng-container>
 
       <ng-container matColumnDef="role">
@@ -26,7 +117,12 @@
 
       <ng-container matColumnDef="city">
         <th mat-header-cell *matHeaderCellDef> Město </th>
-        <td [ngClass]="getClass(element)" mat-cell *matCellDef="let element"> {{element.city}} </td>
+        <td [ngClass]="getClass(element)" mat-cell *matCellDef="let element"> {{common.getSchool(element.city)}} </td>
+      </ng-container>
+
+      <ng-container matColumnDef="user">
+        <th mat-header-cell *matHeaderCellDef> Člen </th>
+        <td [ngClass]="getClass(element)" mat-cell *matCellDef="let element"> {{combineUser(element)}} </td>
       </ng-container>
 
       <ng-container matColumnDef="info1">
@@ -43,6 +139,6 @@
       <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
     </table>
 
-    <mat-paginator [pageSizeOptions]="[5, 10, 20]" showFirstLastButtons></mat-paginator>
+    <mat-paginator [pageSizeOptions]="[20, 40, 80]" showFirstLastButtons></mat-paginator>
   </div>
 </div>

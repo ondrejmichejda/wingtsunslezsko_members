@@ -1,4 +1,4 @@
-import {ChangeDetectorRef, Component, OnInit, ViewChild} from '@angular/core';
+import {Component, OnInit, ViewChild} from '@angular/core';
 import {animate, state, style, transition, trigger} from '@angular/animations';
 import {DeviceService} from '../services/device.service';
 import {WTArticle} from '../class/data/WTArticle';
@@ -6,8 +6,6 @@ import {MatSort} from '@angular/material/sort';
 import {MatTableDataSource} from '@angular/material/table';
 import {HttpService} from '../services/http.service';
 import {HeaderService} from '../services/header-title-change.service';
-import Quill from 'quill';
-import BlotFormatter from 'quill-blot-formatter';
 import {ExceptionsService} from '../services/exceptions.service';
 import {AlertTexts} from '../enum/AlertTexts';
 import {SnackType} from '../enum/SnackType';
@@ -15,8 +13,6 @@ import {AlertService} from '../services/alert.service';
 import {WTImage} from '../class/data/WTImage';
 import {DialogConfirmComponent} from '../dialog-confirm/dialog-confirm.component';
 import {MatDialog} from '@angular/material/dialog';
-import {DomSanitizer, SafeHtml} from '@angular/platform-browser';
-import { Pipe, PipeTransform } from '@angular/core';
 import {DialogArticleComponent} from '../dialog-article/dialog-article.component';
 import {CommonFunctions} from '../class/CommonFunctions';
 import {LogService, Section} from '../services/log.service';
@@ -83,10 +79,10 @@ export class PageAdminarticlesComponent implements OnInit {
     });
   }
 
-  imgUpdateVisibility(img: WTImage) {
+  imgUpdateVisibility(img: WTImage, article: WTArticle) {
     this.httpService.updateVisibleArticlePic_post(img.id, !!!+img.visible).subscribe(
       (res: WTImage[]) => {
-        this.log.aInfo(Section.Article, `Změna viditelnosti obrázku článku: ${img.articleId}`, undefined, `${img.url}`)
+        this.log.aInfo(Section.Article, `Změna viditelnosti fota: ${article.name} (${article.id})`, undefined, `Foto: ${img.url}`)
         this.alertService.alert(AlertTexts.article_updated, SnackType.info);
         this.getArticleImages(img.articleId);
       },
@@ -144,11 +140,14 @@ export class PageAdminarticlesComponent implements OnInit {
           data.topic.includes(CommonFunctions.getArticleTopicCode(filter)) ||
           data.name.toLowerCase().includes(filter);
         this.dataSource.sort = this.articleSort;
-        this.article = this.articles[0];
-        this.editor = new Editor(this.article);
+        if(this.articles.length > 0){
+          this.article = this.articles[0];
+          this.editor = new Editor(this.article);
+        }
       },
       (err) => {
         this.error = err;
+        this.log.aError(Section.Article, `Chyba při načítání článků`, undefined, err);
         this.alertService.alert(AlertTexts.fail, SnackType.error);
       }
     );
@@ -168,10 +167,12 @@ export class PageAdminarticlesComponent implements OnInit {
   createArticle(){
     this.httpService.createArticle_post().subscribe(
       (res: boolean) => {
+        this.log.aInfo(Section.Article, `Nový článek`, undefined);
         this.alertService.alert(AlertTexts.article_created, SnackType.info);
         this.getArticles();
       },
       (err) => {
+        this.log.aError(Section.Article, `Chyba při vytváření`, undefined, err);
         this.alertService.alert(AlertTexts.fail, SnackType.error);
       }
     );
@@ -179,24 +180,34 @@ export class PageAdminarticlesComponent implements OnInit {
 
   updateArticle(article: WTArticle){
     // set url
-    console.log(this.editor.GetChanges());
-    article.url = CommonFunctions.slugify(article.name);
-    this.httpService.setArticle_post(article).subscribe(data => {
-      this.alertService.alert(AlertTexts.article_updated, SnackType.info);
-      this.getArticles();
-    },Error => {
-      console.log(Error);
-      this.alertService.alert(AlertTexts.fail, SnackType.error);
-    });
+    if(article.topic > 0){
+      article.url = CommonFunctions.slugify(article.name);
+      this.httpService.setArticle_post(article).subscribe(data => {
+        for(const info of this.editor.GetChanges()){
+          this.log.aInfo(Section.Article, `Upraven: ${article.name} (${article.id})`, undefined, info)
+        }
+        this.alertService.alert(AlertTexts.article_updated, SnackType.info);
+        this.getArticles();
+      },Error => {
+        this.log.aError(Section.Article, `Chyba při úpravě: ${article.name} (${article.id})`, undefined, Error);
+        this.alertService.alert(AlertTexts.fail, SnackType.error);
+      });
+    }
+    else{
+      this.alertService.alert('Nastav téma!', SnackType.error);
+    }
   }
 
   changeVisibility(article: WTArticle){
     this.httpService.updateVisibleArticle_post(article.id, !!!+article.visible).subscribe(
       (res: WTArticle[]) => {
+        this.log.aInfo(Section.Article, `Upraven: ${article.name} (${article.id})`,
+          undefined, `Viditelnost: ${!!!+article.visible}`);
         this.alertService.alert(AlertTexts.article_updated, SnackType.info);
         this.getArticles();
       },
       (err) => {
+        this.log.aError(Section.Article, `Chyba při úpravě viditelnosti: ${article.name} (${article.id})`, undefined, err);
         this.alertService.alert(AlertTexts.fail, SnackType.error);
       }
     );
@@ -215,20 +226,19 @@ export class PageAdminarticlesComponent implements OnInit {
     });
   }
 
-
-
   deleteArticle(article: WTArticle){
     this.httpService.deleteArticle_post(article.id).subscribe(data => {
+      this.log.aInfo(Section.Article, `Smazán: ${article.name} (${article.id})`, undefined);
       this.alertService.alert(AlertTexts.event_deleted, SnackType.info);
       this.getArticles();
     },Error => {
-      console.log(Error);
+      this.log.aError(Section.Article, `Chyba při mazání: ${article.name} (${article.id})`, undefined, Error);
       this.alertService.alert(AlertTexts.event_deleted, SnackType.info);
       this.getArticles();
     });
   }
 
-  copyEvent(article: WTArticle){
+  copyArticle(article: WTArticle){
     this.exceptions.NotImplemented();
   }
 
@@ -255,9 +265,9 @@ export class PageAdminarticlesComponent implements OnInit {
   photoUpload(file: File, article: WTArticle) {
     if(file.size < 3000000 && file.type ==='image/png') {
       this.httpService.postFileGallery(file, article.id).subscribe(data => {
+        this.log.aInfo(Section.Article, `Upraven: ${article.name} (${article.id})`, undefined, `Nové foto: ${file.name}`);
       }, error => {
-        console.log('error:');
-        console.log(error);
+        this.log.aError(Section.Article, `Chyba při nahrávání obrázku: ${article.name} (${article.id})`, undefined, error);
         this.alertService.alert(AlertTexts.fail_check_console, SnackType.error);
       });
     }
@@ -269,16 +279,17 @@ export class PageAdminarticlesComponent implements OnInit {
   handleFileInput(files: FileList, article: WTArticle) {
     const file = files.item(0);
     if(file.size < 3000000 && file.type ==='image/png')
-      this.uploadFileToActivity(file, article.id);
+      this.uploadFileToActivity(file, article);
     else
       this.alertService.alert(AlertTexts.pic_format_fail + ': ' + file.name, SnackType.error);
   }
-  uploadFileToActivity(file: File, articleId: number) {
-    this.httpService.postFilePic(file, articleId).subscribe(data => {
+  uploadFileToActivity(file: File, article: WTArticle) {
+    this.httpService.postFilePic(file, article.id).subscribe(data => {
+      this.log.aInfo(Section.Article, `Upraven: ${article.name} (${article.id})`,
+        undefined, `Náhledový obrázek: ${file.name}`);
       this.updatePic();
     }, error => {
-      console.log('error:');
-      console.log(error);
+      this.log.aError(Section.Article, `Chyba při nahrávání náhl. obrázku: ${article.name} (${article.id})`, undefined, error);
       this.alertService.alert(AlertTexts.fail_check_console, SnackType.error);
     });
   }
@@ -290,28 +301,15 @@ class Editor{
   private article: WTArticle;
 
   constructor(article: WTArticle){
-    this.articleOrig =
-      new WTArticle(article.id, article.datetime, article.topic, article.url, article.keywords, article.metadesc,
-        article.name, article.short, article.pic, article.text, article.releaseDatetime, article.visible);
-    this.article = article;
-  }
-
-  Same(): boolean{
-    let result = true;
-    const o: WTArticle = this.articleOrig;
-    const n: WTArticle = this.article;
-
-    if(o != null && n != null){
-      if(o.topic !== n.topic) result = false;
-      if(o.keywords !== n.keywords) result = false;
-      if(o.metadesc !== n.metadesc) result = false;
-      if(o.name !== n.name) result = false;
-      if(o.short !== n.short) result = false;
-      if(o.text !== n.text) result = false;
-      if(o.releaseDatetime !== n.releaseDatetime) result = false;
-
+    if(article !== null) {
+      this.articleOrig =
+        new WTArticle(article.id, article.datetime, article.topic, article.url, article.keywords, article.metadesc,
+          article.name, article.short, article.pic, article.text, article.releaseDatetime, article.visible);
+      this.article = article;
     }
-    return result;
+    else{
+     console.log('Null argument.');
+    }
   }
 
   GetChanges(): string[]{

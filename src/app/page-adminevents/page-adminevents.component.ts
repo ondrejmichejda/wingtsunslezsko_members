@@ -160,7 +160,7 @@ export class PageAdmineventsComponent implements OnInit {
         this.dataSourceMembers = new MatTableDataSource(this.members);
       },
       (err) => {
-        this.log.aError(Section.Event, 'Chyba při načítání členů přihlášených na událost: '+event.name, event.school, err);
+        this.log.aError(Section.Event, 'Chyba při načítání členů: '+event.name, event.school, err);
         this.error = err;
       }
     );
@@ -172,7 +172,7 @@ export class PageAdmineventsComponent implements OnInit {
         this.event = events[0];
       },
       (err) => {
-        this.log.aError(Section.Event, 'Chyba při načítání eventu: ' + event.name, event.school, err);
+        this.log.aError(Section.Event, 'Chyba při načítání: ' + event.name, event.school, err);
         this.alertService.alert(AlertTexts.fail, SnackType.error);
       }
     );
@@ -181,12 +181,12 @@ export class PageAdmineventsComponent implements OnInit {
   createEvent(){
     this.httpService.createEvent_post().subscribe(
       (res: boolean) => {
-        this.log.aInfo(Section.Event, 'Událost vytvořena');
+        this.log.aInfo(Section.Event, 'Vytvořena');
         this.alertService.alert(AlertTexts.event_created, SnackType.info);
         this.getEvents();
       },
       (err) => {
-        this.log.aError(Section.Event, 'Chyba při tvorbě události', undefined, err);
+        this.log.aError(Section.Event, 'Chyba při tvorbě', undefined, err);
         this.alertService.alert(AlertTexts.fail, SnackType.error);
       }
     );
@@ -239,7 +239,7 @@ export class PageAdmineventsComponent implements OnInit {
     this.httpService.setEvent_post(event).subscribe(data => {
       // create log for every change
       for(const info of this.editor.GetChanges()){
-        this.log.aInfo(Section.Event, `Událost upravena: ${event.name} (${event.id})`, event.school, info);
+        this.log.aInfo(Section.Event, `Upravena: ${event.name} (${event.id})`, event.school, info);
       }
 
       this.alertService.alert(AlertTexts.event_udpated, SnackType.info);
@@ -248,29 +248,29 @@ export class PageAdmineventsComponent implements OnInit {
       this.refresh();
 
     },Error => {
-      this.log.aError(Section.Event, 'Chyba při update eventu', event.school, Error);
+      this.log.aError(Section.Event, `Chyba při úpravě: ${event.name} (${event.id})`, event.school, Error);
       this.alertService.alert(AlertTexts.fail, SnackType.error);
     });
   }
 
   copyEvent(event: WTEvent) {
     this.httpService.copyEvent_post(event.id).subscribe(data => {
-      this.log.aInfo(Section.Event, `Událost zkopírována: ${event.name} (${event.id})`, event.school);
+      this.log.aInfo(Section.Event, `Zkopírována: ${event.name} (${event.id})`, event.school);
       this.alertService.alert(AlertTexts.event_copied, SnackType.info);
       this.refresh();
     },Error => {
-      this.log.aError(Section.Event, 'Chyba při kopírování události', event.school, Error);
+      this.log.aError(Section.Event, `Chyba při kopírování: ${event.name} (${event.id})`, event.school, Error);
       this.alertService.alert(AlertTexts.fail, SnackType.error);
     });
   }
 
   deleteEvent(event: WTEvent){
     this.httpService.deleteEvent_post(event.id).subscribe(data => {
-      this.log.aInfo(Section.Event, `Událost smazána: ${event.name} (${event.id})`, event.school)
+      this.log.aInfo(Section.Event, `Smazána: ${event.name} (${event.id})`, event.school)
       this.alertService.alert(AlertTexts.event_deleted, SnackType.info);
       this.refresh();
     },Error => {
-      this.log.aError(Section.Event, 'Chyba při mazání eventu', event.school, Error);
+      this.log.aError(Section.Event, `Chyba při mazání: ${event.name} (${event.id})`, event.school, Error);
       this.alertService.alert(AlertTexts.fail, SnackType.error);
     });
   }
@@ -338,33 +338,33 @@ export class PageAdmineventsComponent implements OnInit {
 
   private _resetAll(event: WTEvent){
     this.httpService.eventResetAll_post(event.id).subscribe(data => {
-      this.log.aInfo(Section.Event, `Hromadný reset členů na udalosti ${event.name} (${event.id})`, event.school);
+      this.log.aInfo(Section.Event, `Hromadný reset členů: ${event.name} (${event.id})`, event.school);
       this.refreshMembers(event);
       this.alertService.alert(AlertTexts.event_reg_all, SnackType.info);
     },Error => {
-      this.log.aError(Section.Event, `Chyba při hromadném členů resetu na události ${event.name} (${event.id})`, event.school, Error);
+      this.log.aError(Section.Event, `Chyba při hromadném resetu členů: ${event.name} (${event.id})`, event.school, Error);
       this.alertService.alert(AlertTexts.fail, SnackType.error);
     });
   }
 
   private _confirmedAll(event: WTEvent){
     this.httpService.eventConfirmedAll_post(event.id).subscribe(data => {
-      this.log.aInfo(Section.Event, `Hromadné potvrzení na události: ${event.name} (${event.id})`, event.school);
+      this.log.aInfo(Section.Event, `Hromadné potvrzení: ${event.name} (${event.id})`, event.school);
       this.refreshMembers(event);
       this.alertService.alert(AlertTexts.event_reg_all, SnackType.info);
     },Error => {
-      this.log.aError(Section.Event, `Chyba při hromadném potvrzení události ${event.name} (${event.id})`, event.school, Error);
+      this.log.aError(Section.Event, `Chyba při hromadném potvrzení: ${event.name} (${event.id})`, event.school, Error);
       this.alertService.alert(AlertTexts.fail, SnackType.error);
     });
   }
 
   private _presentAll(event: WTEvent){
     this.httpService.eventPresentAll_post(event.id).subscribe(data => {
-      this.log.aInfo(Section.Event, `Hromadné potvrzení přítomnosti na události: ${event.name} (${event.id})`, event.school);
+      this.log.aInfo(Section.Event, `Hromadné potvrzení přítomnosti: ${event.name} (${event.id})`, event.school);
       this.refreshMembers(event);
       this.alertService.alert(AlertTexts.event_reg_all, SnackType.info);
     },Error => {
-      this.log.aError(Section.Event, `Chyba při hromadném potvrzení přítomnosti na události ${event.name} (${event.id})`,
+      this.log.aError(Section.Event, `Chyba při hromadném potvrzení přítomnosti: ${event.name} (${event.id})`,
         event.school, Error);
       this.alertService.alert(AlertTexts.fail, SnackType.error);
     });

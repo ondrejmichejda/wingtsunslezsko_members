@@ -42,12 +42,12 @@ export class PageAdminnoticesComponent implements OnInit {
   changeVisibility(notice: WTNotice){
     this.httpService.updateVisibleNotice_post(notice.id, !!!+notice.visible).subscribe(
       (res: WTNotice[]) => {
-        this.log.aInfo(Section.Notice, `Viditelnost příspěvku upravena: ${notice.head} (${notice.id})`, notice.school, `Viditelnost: ${!!!+notice.visible}`);
+        this.log.aInfo(Section.Notice, `Viditelnost upravena: ${notice.head} (${notice.id})`, notice.school, `Viditelnost: ${!!!+notice.visible}`);
         this.alertService.alert(AlertTexts.notice_updated, SnackType.info);
         this.getNotices();
       },
       (err) => {
-        this.log.aError(Section.Notice, 'Chyba při změně viditelnosti příspěvku', notice.school, err);
+        this.log.aError(Section.Notice, 'Chyba při změně viditelnosti', notice.school, err);
         this.alertService.alert(AlertTexts.fail, SnackType.error);
       }
     );
@@ -56,13 +56,13 @@ export class PageAdminnoticesComponent implements OnInit {
   private _deleteNotice(notice: WTNotice){
     this.httpService.deleteNotice_post(notice.id).subscribe(
       (res: WTNotice[]) => {
-        this.log.aInfo(Section.Notice, `Smazán příspěvek: ${notice.head} (${notice.id})`,
+        this.log.aInfo(Section.Notice, `Smazán: ${notice.head} (${notice.id})`,
           notice.school, CommonFunctions.ShortText(notice.text, 20).replace(/<[^>]*>?/gm, ''));
         this.alertService.alert(AlertTexts.notice_deleted, SnackType.info);
         this.getNotices();
       },
       (err) => {
-        this.log.aError(Section.Notice, 'Chyba při mazání příspěvku', notice.school, err);
+        this.log.aError(Section.Notice, `Chyba při mazání: ${notice.head} (${notice.id})`, notice.school, err);
         this.alertService.alert(AlertTexts.fail, SnackType.error);
       }
     );
@@ -71,13 +71,13 @@ export class PageAdminnoticesComponent implements OnInit {
   private _createNotice(notice: WTNotice){
     this.httpService.createNotice_post(notice).subscribe(
       (res: WTNotice[]) => {
-        this.log.aInfo(Section.Notice, `Vytvořen nový příspěvek: ${notice.head} (${notice.id})`,
+        this.log.aInfo(Section.Notice, `Vytvořen nový: ${notice.head} (${notice.id})`,
           notice.school, CommonFunctions.ShortText(notice.text, 20).replace(/<[^>]*>?/gm, ''));
         this.alertService.alert(AlertTexts.notice_created, SnackType.info);
         this.getNotices();
       },
       (err) => {
-        this.log.aError(Section.Notice, 'Chyba při tvorbě příspěvku', notice.school, err);
+        this.log.aError(Section.Notice, 'Chyba při tvorbě', notice.school, err);
         this.alertService.alert(AlertTexts.fail, SnackType.error);
       }
     );

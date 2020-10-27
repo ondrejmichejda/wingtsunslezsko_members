@@ -10,4 +10,17 @@ table {
   color: #f49f36;
 }
 
+.filter-button {
+  margin-right: 1rem;
+  float: right;
+}
 
+mat-expansion-panel {
+  margin-bottom: 1rem !important;
+}
+
+mat-form-field {
+  width: 48%;
+  float: left;
+  padding-right: 2%;
+}

@@ -56,7 +56,6 @@
           <mat-icon *ngIf="!!+element.visible">visibility</mat-icon>
           <mat-icon *ngIf="!!!+element.visible">visibility_off</mat-icon>
         </button>
-
         <button mat-icon-button
                 style="float: right;"
                 color="warn"
@@ -64,20 +63,12 @@
                 matTooltip="Smazat">
           <mat-icon>delete</mat-icon>
         </button>
-
         <button mat-icon-button
                 style="float: right;"
                 color="primary"
-                (click)="copyEvent(element)"
+                (click)="copyArticle(element)"
                 matTooltip="Kopírovat">
           <mat-icon>file_copy</mat-icon>
-        </button>
-        <button mat-icon-button
-                style="float: right;"
-                color="primary"
-                (click)="dialogEdit(element)"
-                matTooltip="Upravit text">
-          <mat-icon>reorder</mat-icon>
         </button>
       </td>
     </ng-container>
@@ -170,7 +161,7 @@
                   <mat-card-actions>
                     <button mat-icon-button
                             class="memberBtn"
-                            (click)="imgUpdateVisibility(img)"
+                            (click)="imgUpdateVisibility(img, element)"
                             matTooltip="Viditelnost v galerii">
                       <mat-icon *ngIf="!!+img.visible">visibility</mat-icon>
                       <mat-icon *ngIf="!!!+img.visible">visibility_off</mat-icon>
@@ -192,6 +183,13 @@
               <ng-template mat-tab-label>
                 <mat-icon>preview</mat-icon>
               </ng-template>
+
+              <button mat-raised-button
+                      color="primary"
+                      class="top-space"
+                      (click)="dialogEdit(element)">
+                Upravit text
+              </button>
 
               <div class="ql-container ql-snow preview top-space">
                 <div class="ql-editor">

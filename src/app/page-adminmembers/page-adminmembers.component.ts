@@ -16,6 +16,8 @@ import {MatDialog} from '@angular/material/dialog';
 import {DialogDataReset, DialogResetpwdComponent} from '../dialog-resetpwd/dialog-resetpwd.component';
 import {DialogUpdatememberComponent} from '../dialog-updatemember/dialog-updatemember.component';
 import {CommonFunctions} from '../class/CommonFunctions';
+import {LogService, Section} from '../services/log.service';
+import {WTArticle} from '../class/data/WTArticle';
 
 @Component({
   selector: 'app-page-adminmembers',
@@ -30,6 +32,7 @@ export class PageAdminmembersComponent implements OnInit {
   saveBtnText = 'Uložit';
   loginExists = false;
   common = CommonFunctions;
+  editor: Editor;
 
   // Table
   error = '';
@@ -44,7 +47,8 @@ export class PageAdminmembersComponent implements OnInit {
               private headerService: HeaderService,
               private exceptions: ExceptionsService,
               public device: DeviceService,
-              private dialog: MatDialog) {
+              private dialog: MatDialog,
+              private log: LogService) {
     this.headerService.setTitle('Správa členů');
   }
 
@@ -54,31 +58,33 @@ export class PageAdminmembersComponent implements OnInit {
   }
 
   // add member tab
-  addMember() {
-    this.httpService.createMember_post(this.member).subscribe(data => {
+  addMember(member: WTMember) {
+    this.httpService.createMember_post(member).subscribe(data => {
       if(this.email.length > 0)
-        this.sendEmail(this.member.login, this.member.pwd, this.email);
+        this.sendEmail(member, this.email);
 
+      this.log.aInfo(Section.Member, `Vytvořen: ${member.name} ${member.surname} (${member.login})`, member.school);
       this.alertService.alert(AlertTexts.member_created, SnackType.info);
       this.initMember();
       this.getMembers();
     },Error => {
-      console.log(Error);
+      this.log.aError(Section.Member, `Chyba při tvorbě: ${member.login}`, member.school, Error);
       this.alertService.alert(AlertTexts.fail, SnackType.error);
     });
   }
 
-  sendEmail(login, pwd, email) {
+  sendEmail(member: WTMember, email: string) {
     const emailText =
       '<p>Ahoj, tvé přihlašovací údaje jsou:</p>' +
       '<ul>' +
-      '<li>Login: <b>' + login + '</b></li>' +
-      '<li>Heslo: <b>' + pwd + '</b></li>' +
+      '<li>Login: <b>' + member.login + '</b></li>' +
+      '<li>Heslo: <b>' + member.pwd + '</b></li>' +
       '</ul>';
     this.httpService.sendMail_post(email, emailText).subscribe(data => {
+      this.log.aInfo(Section.Member, `Email poslan pro: ${member.login}`, member.school);
       this.initMember();
     },Error => {
-      console.log(Error);
+      this.log.aError(Section.Member, `Chyba při posílání emailu: ${member.login}`, member.school, Error);
       this.alertService.alert(AlertTexts.fail, SnackType.error);
     });
   }
@@ -135,9 +141,10 @@ export class PageAdminmembersComponent implements OnInit {
   deleteMember(member: WTMember) {
     this.httpService.deleteMember_post(member).subscribe(data => {
       this.alertService.alert(AlertTexts.member_deleted, SnackType.info);
+      this.log.aInfo(Section.Member, `Smazán: ${member.name} ${member.surname} (${member.login})`, member.school);
       this.getMembers();
     },Error => {
-      console.log(Error);
+      this.log.aError(Section.Member, `Chyba při mazání: ${member.login}`, member.school, Error);
       this.alertService.alert(AlertTexts.fail, SnackType.error);
     });
   }
@@ -160,16 +167,17 @@ export class PageAdminmembersComponent implements OnInit {
   resetPwd(member: WTMember, email) {
     this.httpService.updatePwdMember_post(member).subscribe(data => {
       this.alertService.alert(AlertTexts.member_updated, SnackType.info);
-
+      this.log.aInfo(Section.Member, `Reset hesla: ${member.name} ${member.surname} (${member.login})`, member.school);
       if(email.length > 0)
-        this.sendEmail(member.login, member.pwd, email);
+        this.sendEmail(member, email);
     },Error => {
-      console.log(Error);
+      this.log.aError(Section.Member, `Chyba resetování hesla: ${member.login}`, member.school, Error);
       this.alertService.alert(AlertTexts.fail, SnackType.error);
     });
   }
 
   dialogUpdate(member: WTMember) {
+    this.editor = new Editor(member);
     const dialogRef = this.dialog.open(DialogUpdatememberComponent, {
       width: '300px',
       data: {m: member}
@@ -185,8 +193,11 @@ export class PageAdminmembersComponent implements OnInit {
   updateMember(member: WTMember) {
     this.httpService.updateMember_post(member).subscribe(data => {
       this.alertService.alert(AlertTexts.member_updated, SnackType.info);
+      for(const info of this.editor.GetChanges()){
+        this.log.aInfo(Section.Member, `Upraven: ${member.name} ${member.surname} (${member.login})`, member.school, info);
+      }
     },Error => {
-      console.log(Error);
+      this.log.aError(Section.Member, `Chyba úprav: ${member.login}`, member.school, Error);
       this.alertService.alert(AlertTexts.fail, SnackType.error);
     });
   }
@@ -205,8 +216,57 @@ export class PageAdminmembersComponent implements OnInit {
         this.applyFilter();
       },
       (err) => {
+        this.log.aError(Section.Member, `Chyba při načítání členů`, undefined, err);
         this.error = err;
       }
     );
   }
 }
+
+class Editor{
+
+  private memberOrig: WTMember;
+  private member: WTMember;
+
+  constructor(member: WTMember){
+    if(member !== null) {
+      this.memberOrig =
+        new WTMember(member.id, member.datetime, member.login, member.pwd, member.name, member.surname,
+          member.school, member.news, member.logged, member.admin);
+      this.member = member;
+    }
+    else{
+      console.log('Null argument.');
+    }
+  }
+
+  GetChanges(): string[]{
+    const arr: string[] = Array();
+    const o: WTMember = this.memberOrig;
+    const n: WTMember = this.member;
+    arr.push(this.eval('Login', o.login, n.login));
+    arr.push(this.eval('Jméno', o.name, n.name));
+    arr.push(this.eval('Příjmení', o.surname, n.surname));
+    arr.push(this.eval('Škola', o.school, n.school));
+
+    const result: string[] = Array();
+
+    for(const element of arr){
+      if(element !== undefined)
+        result.push(element);
+    }
+    return result;
+  }
+
+  private eval(name: string,propOrig: any, propNew: any, b: boolean = false): string{
+    if(propOrig !== propNew){
+      if(b){
+        return `${name}: ${!!Number(propOrig)} -> ${!!Number(propNew)}`;
+      }
+      else {
+        return `${name}: ${propOrig} -> ${propNew}`;
+      }
+    }
+  }
+}
+

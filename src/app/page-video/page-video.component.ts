@@ -46,7 +46,7 @@ export class PageVideoComponent implements OnInit {
   }
 
   dialogVideo(video: WTVideo) {
-    this.log.Info(Section.Video, `Video dialog otevřen: ${video.name}(${video.id})`, undefined, video.link);
+    this.log.Info(Section.Video, `Otevřeno: ${video.name}(${video.id})`, undefined, video.link);
     const dialogRef = this.dialog.open(DialogVideoComponent, {
       width: '90%',
       height: '80vh',

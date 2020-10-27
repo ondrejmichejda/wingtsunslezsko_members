@@ -79,6 +79,7 @@ export class PageAdminvideosComponent implements OnInit {
         this.editor = new Editor(this.video);
       },
       (err) => {
+        this.log.aError(Section.Video, `Chyba při načítání videí`, undefined, err);
         this.error = err;
       }
     );
@@ -87,12 +88,12 @@ export class PageAdminvideosComponent implements OnInit {
   createVideo(){
     this.httpService.createVideo().subscribe(
       (res: boolean) => {
-        this.log.aInfo(Section.Video, `Video vytvořeno`);
+        this.log.aInfo(Section.Video, `Vytvořeno`);
         this.alertService.alert(AlertTexts.video_created, SnackType.info);
         this.getVideos();
       },
       (err) => {
-        this.log.aError(Section.Video, `Chyba při tvorbě videa`, undefined, err);
+        this.log.aError(Section.Video, `Chyba při tvorbě`, undefined, err);
         this.alertService.alert(AlertTexts.fail, SnackType.error);
       }
     );
@@ -115,14 +116,14 @@ export class PageAdminvideosComponent implements OnInit {
     this.httpService.updateVideo(video).subscribe(data => {
 
       for(const change of this.editor.GetChanges()){
-        this.log.aInfo(Section.Video, `Video upraveno: ${video.name} (${video.id})`, undefined,
+        this.log.aInfo(Section.Video, `Upraveno: ${video.name} (${video.id})`, undefined,
           change);
       }
 
       this.alertService.alert(AlertTexts.video_updated, SnackType.info);
       this.getVideos();
     },Error => {
-      this.log.aError(Section.Video, `Chyba při úpravě videa: ${video.name} (${video.id})`, undefined,
+      this.log.aError(Section.Video, `Chyba při úpravě: ${video.name} (${video.id})`, undefined,
         Error);
       this.alertService.alert(AlertTexts.fail, SnackType.error);
     });
@@ -143,12 +144,12 @@ export class PageAdminvideosComponent implements OnInit {
 
   deleteVideo(video: WTVideo){
     this.httpService.deleteVideo(video).subscribe(data => {
-      this.log.aInfo(Section.Video, `Video smazáno: ${video.name} (${video.id})`,
+      this.log.aInfo(Section.Video, `Smazáno: ${video.name} (${video.id})`,
         undefined, CommonFunctions.getVideoCategory(video.category));
       this.alertService.alert(AlertTexts.video_deleted, SnackType.info);
       this.getVideos();
     },Error => {
-      this.log.aError(Section.Video, `Chyba při mazání videa: ${video.name} (${video.id})`, undefined, Error);
+      this.log.aError(Section.Video, `Chyba při mazání: ${video.name} (${video.id})`, undefined, Error);
       this.alertService.alert(AlertTexts.fail, SnackType.error);
     });
   }

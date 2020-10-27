@@ -85,18 +85,18 @@ export class PageEventsComponent implements OnInit {
   }
 
   public signIn(event: WTEvent){
-    this.log.Info(Section.Event, `Kliknutí na přihlášení události : ${event.name} (${event.id})`);
+    this.log.Info(Section.Event, `Kliknutí na přihlášení: ${event.name} (${event.id})`);
     if(this.canSign(event)) {
       this.signing = true;
       this.httpService.signIn(event.id, this.dataStorage.Member.id, event.autoconfirm).subscribe(
         (res: boolean) => {
-          this.log.Info(Section.Event, `Přihlášení na událost: ${event.name} (${event.id})`,
-            undefined, `Limity: ${event.members}/${event.confirmed}/${event.memberlimit} | Autopřihlášení: ${!!event.autoconfirm}`);
+          this.log.Info(Section.Event, `Přihlášení na: ${event.name} (${event.id})`,
+            undefined, `Limity: ${event.members}/${event.confirmed}/${event.memberlimit} | Autopřihlášení: ${!!+event.autoconfirm}`);
           this.alertService.alert(AlertTexts.event_sign_in + event.name, SnackType.info);
           this.getEvents();
         },
         (err) => {
-          this.log.Error(Section.Event, `Přihlášení na událost : ${event.name} (${event.id}) selhalo`, err);
+          this.log.Error(Section.Event, `Přihlášení na: ${event.name} (${event.id}) selhalo`, err);
           this.alertService.alert(AlertTexts.fail, SnackType.error);
           this.signing = false;
         });
@@ -115,16 +115,16 @@ export class PageEventsComponent implements OnInit {
   }
 
   public signOut(event: WTEvent){
-    this.log.Info(Section.Event, `Kliknutí na odhlášení z události : ${event.name} (${event.id})`);
+    this.log.Info(Section.Event, `Kliknutí na odhlášení : ${event.name} (${event.id})`);
     this.httpService.signOut(event.id, this.dataStorage.Member.id).subscribe(
       (res: boolean) => {
-        this.log.Info(Section.Event, `Odhlášení z události: ${event.name} (${event.id})`,
+        this.log.Info(Section.Event, `Odhlášení z: ${event.name} (${event.id})`,
           undefined, `Limity: ${event.members}/${event.confirmed}/${event.memberlimit}`);
         this.alertService.alert(AlertTexts.event_sign_out + event.name, SnackType.info);
         this.getEvents();
       },
       (err) => {
-        this.log.Error(Section.Event, `Odhlášení z události : ${event.name} (${event.id}) selhalo`, err);
+        this.log.Error(Section.Event, `Odhlášení z : ${event.name} (${event.id}) selhalo`, err);
         this.alertService.alert(AlertTexts.fail, SnackType.error);
       }
     );

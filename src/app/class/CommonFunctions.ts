@@ -20,8 +20,33 @@ export class CommonFunctions{
     return new Date(sYear,sMonth,sDay,sHour,sMinute,sSecond);
   }
 
-  static getDate(sqlDate: string) : string {
+  static getDate(sqlDate: string): string {
     return this.sqlToJsDate(sqlDate).toLocaleDateString('cs-CZ');
+  }
+
+  static getDateTime(sqlDate: string): string {
+    return this.sqlToJsDate(sqlDate).toLocaleString('cs-CZ');
+  }
+
+  static getDatePure(sqlDate: string): Date {
+    return this.sqlToJsDate(sqlDate);
+  }
+
+  static getDateTimeFromInput(datetime: string): Date {
+    const reggie = /(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2})/;
+    const dateArray = reggie.exec(datetime);
+    const dateObject = new Date(
+      (+dateArray[1]),
+      (+dateArray[2])-1, // Careful, month starts at 0!
+      (+dateArray[3]),
+      (+dateArray[4]),
+      (+dateArray[5])
+    );
+    return dateObject;
+  }
+
+  static getISODateTime(date: Date): string {
+    return `${date.getFullYear()}-${date.getMonth()}-${date.getDate()}T${date.getHours()}:${date.getMinutes()}`;
   }
 
   static getSchool(value: number): string {
