@@ -27,16 +27,6 @@
       </mat-form-field>
 
       <mat-form-field>
-        <mat-label>Typ</mat-label>
-        <mat-select [(value)]="typeFilter">
-          <mat-option value="all">Vše</mat-option>
-          <mat-option value="Chyba">Chyba</mat-option>
-          <mat-option value="Varování">Varování</mat-option>
-          <mat-option value="Informace">Informace</mat-option>
-        </mat-select>
-      </mat-form-field>
-
-      <mat-form-field>
         <mat-label>Role</mat-label>
         <mat-select appearance="outline" [(value)]="roleFilter">
           <mat-option value="all">Vše</mat-option>
@@ -81,6 +71,12 @@
         <input matInput placeholder="Ex. ium" [(ngModel)]="info2Filter">
       </mat-form-field>
 
+      <mat-checkbox [(ngModel)]="showErrors" color="primary">Chyby</mat-checkbox>
+      <mat-checkbox [(ngModel)]="showWarnings" color="primary">Varování</mat-checkbox>
+      <mat-checkbox [(ngModel)]="showInfos" color="primary">Informace</mat-checkbox>
+
+      <mat-checkbox [(ngModel)]="showLogin" color="primary">Přihlašování</mat-checkbox>
+
       <button mat-raised-button
               color="primary"
               class="filter-button"
@@ -96,8 +92,9 @@
     </mat-expansion-panel>
   </mat-accordion>
 
+  <mat-progress-bar *ngIf="showLoading" mode="indeterminate"></mat-progress-bar>
 
-  <div class="mat-elevation-z8">
+  <div *ngIf="!showLoading" class="mat-elevation-z8">
     <table mat-table [dataSource]="dataSource">
 
       <ng-container matColumnDef="datetime">
@@ -139,6 +136,6 @@
       <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
     </table>
 
-    <mat-paginator [pageSizeOptions]="[20, 40, 80]" showFirstLastButtons></mat-paginator>
+    <mat-paginator [pageSizeOptions]="[10, 20, 30]" showFirstLastButtons></mat-paginator>
   </div>
 </div>

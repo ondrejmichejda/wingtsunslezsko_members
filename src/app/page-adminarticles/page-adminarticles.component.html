@@ -18,7 +18,7 @@
           matTooltip="Nový">
     <mat-icon>note_add</mat-icon>
   </button>
-
+  <mat-progress-bar *ngIf="showLoading" mode="indeterminate"></mat-progress-bar>
   <table mat-table
          matSort
          [dataSource]="dataSource"

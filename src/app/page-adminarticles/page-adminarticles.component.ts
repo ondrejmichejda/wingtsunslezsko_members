@@ -55,6 +55,7 @@ export class PageAdminarticlesComponent implements OnInit {
   history = false;
   fileUploadProgress = 0;
   fileUploadProgressStep = 0;
+  showLoading = false;
 
   resetProgress(){
     this.fileUploadProgress = 0;
@@ -125,6 +126,7 @@ export class PageAdminarticlesComponent implements OnInit {
 
   // Data workflows
   getArticles(): void {
+    this.showLoading = true;
     this.httpService.getArticles().subscribe(
       (articles: WTArticle[]) => {
         if(this.history){
@@ -144,11 +146,13 @@ export class PageAdminarticlesComponent implements OnInit {
           this.article = this.articles[0];
           this.editor = new Editor(this.article);
         }
+        this.showLoading = false;
       },
       (err) => {
         this.error = err;
         this.log.aError(Section.Article, `Chyba při načítání článků`, undefined, err);
         this.alertService.alert(AlertTexts.fail, SnackType.error);
+        this.showLoading = false;
       }
     );
   }

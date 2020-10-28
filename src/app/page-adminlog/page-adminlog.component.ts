@@ -6,7 +6,7 @@ import {HttpService} from '../services/http.service';
 import {AlertService} from '../services/alert.service';
 import {WTLog} from '../class/data/WTLog';
 import {MatTableDataSource} from '@angular/material/table';
-import {Type} from '../services/log.service';
+import {Section, Type} from '../services/log.service';
 import {MatPaginator} from '@angular/material/paginator';
 import {WTLogExt} from '../class/data/WTLogExt';
 import {CommonFunctions} from '../class/CommonFunctions';
@@ -26,17 +26,20 @@ export class PageAdminlogComponent implements OnInit {
 
   // filters
   usedFilters = '';
-
   startFilter = '2000-01-01T00:00';
   endFilter = '';
   userFilter = '';
-  typeFilter = 'all';
   roleFilter = 'all';
   sectionFilter = 'all';
   schoolFilter = '101';
   info1Filter = '';
   info2Filter = '';
+  showErrors = true;
+  showWarnings = true;
+  showInfos = true;
+  showLogin = false;
 
+  showLoading = false;
 
   constructor(private headerService: HeaderService,
               private httpService: HttpService,
@@ -66,10 +69,12 @@ export class PageAdminlogComponent implements OnInit {
 
   // Data workflows
   getLogs(): void {
+    this.showLoading = true;
     this.httpService.getLogs().subscribe(
       (logs: WTLogExt[]) => {
         this.dataSource = new MatTableDataSource(this.filter(logs));
         this.dataSource.paginator = this.paginator;
+        this.showLoading = false;
       },
       (err) => {
         this.error = err;
@@ -80,6 +85,23 @@ export class PageAdminlogComponent implements OnInit {
 
   filter(logs: WTLogExt[]): WTLogExt[]{
     this.usedFilters = 'Čas, ';
+
+    // type
+    if(!this.showErrors){
+      logs = logs.filter(log =>
+        log.type !== Type.Error
+      );
+    }
+    if(!this.showWarnings){
+      logs = logs.filter(log =>
+        log.type !== Type.Warning
+      );
+    }
+    if(!this.showInfos){
+      logs = logs.filter(log =>
+        log.type !== Type.Info
+      );
+    }
 
     // start and end
     logs = logs.filter(log =>
@@ -92,13 +114,6 @@ export class PageAdminlogComponent implements OnInit {
       this.usedFilters += 'Člen, ';
       logs = logs.filter(
         log => this.common.slugify(this.combineUser(log).toLowerCase()).includes(this.userFilter.toLowerCase()));
-    }
-
-    // type
-    if(this.typeFilter !== 'all') {
-      this.usedFilters += 'Typ, ';
-      logs = logs.filter(
-        log => log.type === this.typeFilter);
     }
 
     // role
@@ -135,7 +150,15 @@ export class PageAdminlogComponent implements OnInit {
       logs = logs.filter(
         log => this.common.slugify(log.info2.toLowerCase()).includes(this.info2Filter.toLowerCase()));
     }
-    this.usedFilters = this.usedFilters.substr(0, this.usedFilters.length - 2);
+
+    // login
+    if(!this.showLogin){
+      logs = logs.filter(log =>
+        log.section !== Section.Login
+      );
+    }
+
+    this.usedFilters = this.usedFilters.substr(0, this.usedFilters.length - 2) + ` (${logs.length})`;
     return logs;
   }
 
@@ -145,13 +168,16 @@ export class PageAdminlogComponent implements OnInit {
     act.setHours(act.getHours() + 1);
     this.endFilter = act.toISOString().substr(0, 16);
     this.userFilter = '';
-    this.typeFilter = 'all';
     this.roleFilter = 'all';
     this.sectionFilter = 'all';
     this.schoolFilter = '101';
     this.info1Filter = '';
     this.info2Filter = '';
     this.usedFilters = '';
+    this.showErrors = true;
+    this.showWarnings = true;
+    this.showInfos = true;
+    this.showLogin = false;
     this.getLogs();
   }
 

@@ -19,3 +19,13 @@ table {
   text-align: center;
   margin-left: 0px !important;
 }
+
+.filter {
+  width: 90%;
+}
+
+.result {
+  width: 5%;
+  text-align: right;
+  float: right;
+}

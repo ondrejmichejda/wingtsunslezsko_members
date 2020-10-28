@@ -33,6 +33,7 @@ export class PageAdminmembersComponent implements OnInit {
   loginExists = false;
   common = CommonFunctions;
   editor: Editor;
+  showLoading = false;
 
   // Table
   error = '';
@@ -41,6 +42,7 @@ export class PageAdminmembersComponent implements OnInit {
   dataSource;
   columnsToDisplay = this.device.IsMobile() ? ['surname', 'control'] : ['id', 'login', 'name', 'surname', 'school', 'control'];
   @ViewChild('eventSort', {static: true}) eventSort: MatSort;
+  result = 0;
 
   constructor(private httpService: HttpService,
               private alertService: AlertService,
@@ -114,15 +116,6 @@ export class PageAdminmembersComponent implements OnInit {
   initMember(){
     this.member = new WTMember(0,'','','', '', '', 1, '', '', false);
     this.email = '';
-  }
-
-  // member list tab
-  applyFilter() {
-    const filterValue = this.filter;
-    if(filterValue.length > 0)
-      this.dataSource.filter = filterValue.trim().toLowerCase();
-    else
-      this.dataSource.filter = 'nevimjakjinaktotoodfiltrovat';
   }
 
   dialogDelete(member: WTMember): void {
@@ -203,23 +196,40 @@ export class PageAdminmembersComponent implements OnInit {
   }
 
   getMembers() {
+    this.showLoading = true;
     this.httpService.getMembers().subscribe(
       (members: WTMember[]) => {
         this.members = members;
-        this.dataSource = new MatTableDataSource(members);
-        this.dataSource.filterPredicate = (data, filter: string): boolean =>
-          data.login.toLowerCase().includes(filter) ||
-          data.name.toLowerCase().includes(filter) ||
-          data.surname.toLowerCase().includes(filter)||
-          data.school.includes(CommonFunctions.getSchoolCode(filter));
+        this.dataSource = new MatTableDataSource(this.filterMembers(members));
         this.dataSource.sort = this.eventSort;
-        this.applyFilter();
+        this.showLoading = false;
       },
       (err) => {
         this.log.aError(Section.Member, `Chyba při načítání členů`, undefined, err);
         this.error = err;
+        this.showLoading = false;
       }
     );
+  }
+
+  filterMembers(members: WTMember[]): WTMember[] {
+    if(this.filter === 'all') {
+      // show all
+    }
+    else if(this.filter.length > 0) {
+      members = members.filter(
+        member =>
+          member.login.toLowerCase().includes(this.filter) ||
+          member.name.toLowerCase().includes(this.filter) ||
+          member.surname.toLowerCase().includes(this.filter) ||
+          member.school === CommonFunctions.getSchoolCode(this.filter)
+      );
+    }
+    else {
+      members.length = 0;
+    }
+    this.result = members.length;
+    return members;
   }
 }
 

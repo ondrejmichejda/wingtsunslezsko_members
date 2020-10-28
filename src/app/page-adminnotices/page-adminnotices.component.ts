@@ -20,7 +20,7 @@ export class PageAdminnoticesComponent implements OnInit {
 
   notices: WTNotice[];
   error = '';
-
+  showLoading = false;
   common = CommonFunctions;
 
   constructor(private headerService: HeaderService,
@@ -106,13 +106,16 @@ export class PageAdminnoticesComponent implements OnInit {
   }
 
   getNotices(): void {
+    this.showLoading = true;
     this.httpService.getNoticesAll().subscribe(
       (res: WTNotice[]) => {
         this.notices = res;
+        this.showLoading = false;
       },
       (err) => {
         this.log.aError(Section.Notice, 'Chyba při načítání příspěvků', undefined, err);
         this.error = err;
+        this.showLoading = false;
       }
     );
   }

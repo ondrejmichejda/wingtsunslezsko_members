@@ -52,6 +52,7 @@ export class PageAdmineventsComponent implements OnInit {
   membersError = '';
 
   editor: Editor;
+  showLoading = false;
 
   modules = {
     toolbar: this.quillService.basicToolbar
@@ -131,6 +132,7 @@ export class PageAdmineventsComponent implements OnInit {
   }
 
   getEvents(): void {
+    this.showLoading = true;
     this.httpService.getEventsAll().subscribe(
       (events: WTEvent[]) => {
         if(this.history){
@@ -145,10 +147,12 @@ export class PageAdmineventsComponent implements OnInit {
           data.name.toLowerCase().includes(filter) || data.id.includes(filter);
         this.dataSource.sort = this.eventSort;
         this.event = this.events[0];
+        this.showLoading = false;
       },
       (err) => {
         this.log.aError(Section.Event, 'Chyba při načítání událostí', undefined, err);
         this.error = err;
+        this.showLoading = false;
       }
     );
   }

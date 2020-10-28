@@ -39,6 +39,7 @@ export class PageAdminvideosComponent implements OnInit {
   expandedElement: WTVideo | null;
   columnsToDisplay = this.device.IsMobile() ? ['name', 'control'] : ['id', 'name', 'category', 'control'];
   @ViewChild('eventSort', {static: true}) videoSort: MatSort;
+  showLoading = false;
 
   constructor(public device: DeviceService,
               private httpService: HttpService,
@@ -67,6 +68,7 @@ export class PageAdminvideosComponent implements OnInit {
   }
 
   getVideos(): void {
+    this.showLoading = true;
     this.httpService.getVideosAll().subscribe(
       (videos: WTVideo[]) => {
         this.videos = videos;
@@ -77,10 +79,12 @@ export class PageAdminvideosComponent implements OnInit {
         this.dataSource.sort = this.videoSort;
         this.video = this.videos[0];
         this.editor = new Editor(this.video);
+        this.showLoading = false;
       },
       (err) => {
         this.log.aError(Section.Video, `Chyba při načítání videí`, undefined, err);
         this.error = err;
+        this.showLoading = false;
       }
     );
   }

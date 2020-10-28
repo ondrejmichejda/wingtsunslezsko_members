@@ -69,11 +69,15 @@
       </ng-template>
       <div class="error-text" *ngIf="error">{{error}}</div>
 
-      <mat-form-field>
+      <mat-form-field class="filter">
         <mat-label>Filter</mat-label>
-        <input [(ngModel)]="filter" matInput (keyup)="applyFilter()" placeholder="Ex. ium" #input>
+        <input [(ngModel)]="filter" matInput (keyup)="getMembers()" placeholder="Ex. ium" #input>
       </mat-form-field>
 
+      <h4 class="result">
+        {{result}}
+      </h4>
+      <mat-progress-bar *ngIf="showLoading" mode="indeterminate"></mat-progress-bar>
       <table mat-table
              matSort
              [dataSource]="dataSource"

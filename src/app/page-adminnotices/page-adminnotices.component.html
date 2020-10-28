@@ -9,6 +9,7 @@
       <mat-icon>note_add</mat-icon>
     </button>
   </div>
+  <mat-progress-bar *ngIf="showLoading" mode="indeterminate"></mat-progress-bar>
   <mat-card *ngFor="let notice of notices">
     <mat-card-header>
       <mat-card-title>{{notice.head}}</mat-card-title>
