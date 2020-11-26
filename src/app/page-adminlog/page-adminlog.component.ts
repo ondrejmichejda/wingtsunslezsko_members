@@ -7,7 +7,6 @@ import {AlertService} from '../services/alert.service';
 import {WTLog} from '../class/data/WTLog';
 import {MatTableDataSource} from '@angular/material/table';
 import {Section, Type} from '../services/log.service';
-import {MatPaginator} from '@angular/material/paginator';
 import {WTLogExt} from '../class/data/WTLogExt';
 import {CommonFunctions} from '../class/CommonFunctions';
 
@@ -22,7 +21,7 @@ export class PageAdminlogComponent implements OnInit {
   displayedColumns: string[] = ['datetime', 'user', 'role', 'section', 'city', 'info1', 'info2'];
   dataSource;
   common = CommonFunctions;
-  @ViewChild(MatPaginator) paginator: MatPaginator;
+  ender = false;
 
   // filters
   usedFilters = '';
@@ -67,13 +66,16 @@ export class PageAdminlogComponent implements OnInit {
     return `${log.userName} ${log.userSurname} (${log.userLogin})`;
   }
 
+  onScroll(){
+    
+  }
+
   // Data workflows
   getLogs(): void {
     this.showLoading = true;
     this.httpService.getLogs().subscribe(
       (logs: WTLogExt[]) => {
         this.dataSource = new MatTableDataSource(this.filter(logs));
-        this.dataSource.paginator = this.paginator;
         this.showLoading = false;
       },
       (err) => {

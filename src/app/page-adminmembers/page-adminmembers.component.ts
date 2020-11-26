@@ -222,7 +222,7 @@ export class PageAdminmembersComponent implements OnInit {
           member.login.toLowerCase().includes(this.filter) ||
           member.name.toLowerCase().includes(this.filter) ||
           member.surname.toLowerCase().includes(this.filter) ||
-          member.school === CommonFunctions.getSchoolCode(this.filter)
+          +member.school === +CommonFunctions.getSchoolCode(this.filter)
       );
     }
     else {

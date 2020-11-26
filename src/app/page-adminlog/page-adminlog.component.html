@@ -94,8 +94,8 @@
 
   <mat-progress-bar *ngIf="showLoading" mode="indeterminate"></mat-progress-bar>
 
-  <div *ngIf="!showLoading" class="mat-elevation-z8">
-    <table mat-table [dataSource]="dataSource">
+  <div *ngIf="!showLoading" class="table-container">
+    <table mat-table [dataSource]="dataSource" (scroll)="onScroll()">
 
       <ng-container matColumnDef="datetime">
         <th mat-header-cell *matHeaderCellDef> Datum </th>
@@ -132,10 +132,9 @@
         <td [ngClass]="getClass(element)" mat-cell *matCellDef="let element"> {{element.info2}} </td>
       </ng-container>
 
-      <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+      <tr mat-header-row *matHeaderRowDef="displayedColumns, sticky: true" ></tr>
       <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
     </table>
-
-    <mat-paginator [pageSizeOptions]="[10, 20, 30]" showFirstLastButtons></mat-paginator>
   </div>
+  <div class="ender" *ngIf="ender"></div>
 </div>
