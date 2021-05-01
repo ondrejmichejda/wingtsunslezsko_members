@@ -76,6 +76,7 @@ export class CommonFunctions{
     return result;
   }
 
+  // returns school code
   static getSchoolCode(value: string): number {
     let result: number;
     switch(this.slugify(value.toLowerCase())){

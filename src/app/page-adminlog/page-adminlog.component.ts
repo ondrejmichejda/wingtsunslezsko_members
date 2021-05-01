@@ -67,7 +67,7 @@ export class PageAdminlogComponent implements OnInit {
   }
 
   onScroll(){
-    
+    ;
   }
 
   // Data workflows
